@@ -1,0 +1,49 @@
+.btn-round {
+  background-color: black;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 20px;
+}
+
+.btn-outline {
+  border: 1px solid #e5e5e5;
+  background-color: #fff;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-on {
+  background-image: linear-gradient(45deg, #0BC61D, #00C880);
+  color: #fff;
+}
+
+.btn-off {
+  background-color: #72889B;
+  color: #fff;
+}
+
+.btn-off img,
+.btn-on img {
+  float: left;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px;
+  cursor: pointer;
+}
+
+
+@media (max-width: 1919px) and (min-width: 1366px) {
+  button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}

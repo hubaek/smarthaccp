@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.haccp.in.master.HaccpInMasterMapper">
+	
+	<select id="formview" resultType="haccpInMasterVo" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.in.master.HaccpInMasterMapper.formview */
+	SELECT 
+		COMPANY				company			,
+		INSPECTION_MONTH	inspectionMonth	,
+		STATUS				status			,
+		WRITER				writer			,
+		APPROVER 			approver		,
+		REMARK1 			remark1			,
+		REMARK2 			remark2			,
+		CREATED_BY			createdBy		,
+		CREATED_AT			createdAt		,
+		UPDATED_BY			updatedBy		,
+		UPDATED_AT			updatedAt		
+		
+	FROM TB_CCP_IN000
+	WHERE 
+		1=1
+		
+		<if test="map.inspectionMonth != null and map.inspectionMonth != ''">
+			<![CDATA[
+				AND INSPECTION_MONTH = #{map.inspectionMonth}
+			]]>
+		</if>
+		
+		<if test="map.writer != null and map.writer != ''">
+			<![CDATA[
+				AND WRITER = #{map.writer}
+			]]>
+		</if>
+		
+	
+	
+	</select>
+	
+	<select id="checkSeq" parameterType="HaccpInMaster" resultType="String" statementType="STATEMENT">
+	/* com.ppm.mes.domain.haccp.in.master.HaccpInMasterMapper.checkSeq */
+		SELECT COUNT(SEQ)FROM tb_ccp_in000			
+	</select>
+	
+	<delete id="masterDel" parameterType="HaccpInMasterVo" >
+	/* com.ppm.mes.domain.haccp.in.master.HaccpInMasterMapper.masterDel */
+   		DELETE FROM tb_ccp_in000
+   		WHERE 
+   			INSPECTION_MONTH 	= #{inspectionMonth}
+</delete>
+</mapper>

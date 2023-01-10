@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.monit.prdSite.cleaner.CleanerMapper">
+    <select id="getCleanerMonitList" resultType="CleanerVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.cleaner.CleanerMapper.getCleanerMonitList*/        
+		
+	
+		 		SELECT 
+						a.W1 w1
+						
+					,if(a.STAT = 'Y','사용중','대기중') stat	 
+				    ,substr(a.DTM,12,20) dtm
+		from tb_get_wash a 
+		
+		WHERE a.DTM = (SELECT MAX(dtm) FROM tb_get_wash WHERE plc_ip ='1')
+		AND   a.PLC_IP = '1'
+		ORDER BY a.DTM DESC 
+	</select>
+	
+    <select id="getCleanerMonitList02" resultType="CleanerVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.cleaner.CleanerMapper.getCleanerMonitList02*/        
+		
+	
+		SELECT 
+			a.W1 w1,
+			a.W2 w2,
+			case 
+				when a.STAT ='10' then '세척시작' 
+				when a.STAT ='15' then '세척종료' 
+				else '대기중'
+			END AS stat,
+			a.CHK chk,
+			SUBSTRING(a.dtm, 12, 20 ) dtm
+					FROM tb_get_wash2 a
+						WHERE a.PLC_IP = '1'
+						and
+						DATE_FORMAT(dtm, "%Y-%m-%d")= CURDATE()
+						AND 
+						NOT a.W1 = ''
+						ORDER BY a.DTM DESC
+	</select>
+</mapper>

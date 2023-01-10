@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.qc.qc400.QcResultBadMapper">
+    <select id="getQcBadList" resultType="qcResultBadVO" parameterType="hashMap" statementType="PREPARED">    
+    	/*com.ppm.mes.domain.qc.qc400.QcResultBadMapper.getQcBadList*/
+		SELECT A.COMPANY company,
+		       A.SLIP_CD slipCd,
+               A.BAD_SEQ badSeq,
+               A.BAD_CD badCd,
+		       A2.STOCK_CD stockCd,
+               A2.QC_TYPE qcType,
+		       A2.QC_DT qcDt,              
+		       A2.ITEM_CD itemCd,
+		       B.ITEM_NM itemNm,
+		       B.PART_NO partNo,
+		       C.STOCK_CD stockCd,
+		       C.WH_CD whCd,
+		       C.LOT_NO lotNo,
+		       C.BARCODE barcode,
+		       B.SPEC spec,
+		       B.UNIT unit,               
+		       A.BAD_QTY badQty,
+		       A.ITEM_QTY itemQty,
+		       A.REMAIN_QTY remainQty,
+               A.REMARK remark,
+		       A2.END_FLAG endFlag
+		FROM   TB_MES_QC400 A
+		       INNER JOIN TB_MES_QC300 A2
+		       ON     A.COMPANY = A2.COMPANY
+		       AND    A.SLIP_CD = A2.SLIP_CD
+		       INNER JOIN TB_MES_ITEM000 B
+		       ON     A2.COMPANY = B.COMPANY
+		       AND    A2.ITEM_CD = B.ITEM_CD
+		       INNER JOIN TB_MES_ST000 C
+		       ON     A2.COMPANY = C.COMPANY
+		       AND    A2.STOCK_CD  = C.STOCK_CD
+		WHERE 1=1
+
+			 <if test="map.company != null and map.company != ''">
+				<![CDATA[  
+	      			AND   A.COMPANY = #{map.company}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.slipCd != null and map.slipCd != ''">
+				<![CDATA[  
+	      			AND   A.SLIP_CD = #{map.slipCd}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.itemCd != null and map.itemCd != ''">
+				<![CDATA[  
+	      			AND A2.ITEM_CD  LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+	  			]]>
+		    </if>	
+		       
+			 <if test="map.itemNm != null and map.itemNm != ''">
+				<![CDATA[  
+	      			AND B.ITEM_NM  LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+	  			]]>
+		    </if>	
+		    
+		    <if test="map.partNo != null and map.partNo != ''">
+				<![CDATA[  
+	      			AND B.PART_NO  LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+	  			]]>
+		    </if>
+		
+			 <if test="map.endFlag != null and map.endFlag != ''">
+				<![CDATA[  
+	      			AND A2.END_FLAG = #{map.endFlag}
+	  			]]>
+		    </if>       
+    </select>
+    
+    
+     <select id="getQcBadDetailList" resultType="qcResultBadVO" parameterType="hashMap" statementType="PREPARED"> 
+     	/*com.ppm.mes.domain.qc.qc400.QcResultBadMapper.getQcBadDetailList*/   
+		SELECT A.COMPANY company,
+		       A.SLIP_CD slipCd,
+               A.BAD_SEQ badSeq,
+               A.BAD_CD badCd,
+		       A2.STOCK_CD stockCd,
+               A2.QC_TYPE qcType,
+		       A2.QC_DT qcDt,              
+		       A.ITEM_CD itemCd,
+		       C.ITEM_NM itemNm,
+		       C.PART_NO partNo,
+		       E.STOCK_CD stockCd,
+		       E.WH_CD whCd,
+		       E.LOT_NO lotNo,
+		       E.BARCODE barcode,
+		       C.SPEC spec,
+		       C.UNIT unit,               
+		       A.BAD_QTY badQty,
+		       A.ITEM_QTY itemQty,
+		       A.REMAIN_QTY remainQty,
+               A.REMARK remark,
+		       A2.END_FLAG endFlag,		       
+		       B.BAD_ITEM_SEQ badItemSeq,
+		       B.REG_DT regDt,
+		       B.BAD_ITEM_PRC badItemPrc,
+		       B.USER_CD userCd,
+		       D.USER_NM userNm,
+               B.PRC_QTY prcQty
+		FROM   TB_MES_QC400 A
+		       INNER JOIN TB_MES_QC300 A2
+		       ON     A.COMPANY = A2.COMPANY
+		       AND    A.SLIP_CD = A2.SLIP_CD
+		       INNER JOIN TB_MES_QC450 B
+		       ON     A.COMPANY = B.COMPANY
+		       AND    A.SLIP_CD = B.SLIP_CD
+		       AND    A.BAD_SEQ = B.BAD_SEQ
+		       INNER JOIN TB_MES_ITEM000 C
+		       ON     A2.COMPANY = C.COMPANY
+		       AND    A2.ITEM_CD = C.ITEM_CD
+		       LEFT OUTER JOIN TB_MES_USER000 D
+		       ON   B.USER_CD = D.USER_CD
+		       INNER JOIN TB_MES_ST000 E
+		       ON     A2.COMPANY = E.COMPANY
+		       AND    A2.STOCK_CD  = E.STOCK_CD
+		WHERE 1=1
+
+			 <if test="map.company != null and map.company != ''">
+				<![CDATA[  
+	      			AND   A.COMPANY = #{map.company}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.slipCd != null and map.slipCd != ''">
+				<![CDATA[  
+	      			AND   A.SLIP_CD = #{map.slipCd}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.badSeq != null and map.badSeq != ''">
+				<![CDATA[  
+	      			AND   A.BAD_SEQ = #{map.badSeq}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.itemCd != null and map.itemCd != ''">
+				<![CDATA[  
+	      			AND A2.ITEM_CD  LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+	  			]]>
+		    </if>	
+		       
+			 <if test="map.itemNm != null and map.itemNm != ''">
+				<![CDATA[  
+	      			AND C.ITEM_NM  LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+	  			]]>
+		    </if>	
+		    
+		    <if test="map.partNo != null and map.partNo != ''">
+				<![CDATA[  
+	      			AND C.PART_NO  LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+	  			]]>
+		    </if>	
+		
+			 <if test="map.endFlag != null and map.endFlag != ''">
+				<![CDATA[  
+	      			AND A2.END_FLAG = #{map.endFlag}
+	  			]]>
+		    </if>       
+    </select>
+</mapper>

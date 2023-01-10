@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.bom.bom000.BomMasterMapper">
+	<select id="bomListAll" resultType="bomMasterVO" parameterType="hashMap" statementType="PREPARED">   
+    /* com.ppm.mes.domain.bom.bom000.BomMasterMapper.bomListAll */ 
+    SELECT
+    		B.ITEM_CD 		AS parentItemCd
+     	, 	A.ITEM_NM 		AS parentItemNm
+     	, 	A.ITEM_TYPE 	AS itemType
+     	, 	A1.ITEM_MAIN_NM AS itemMainNm
+     	, 	A2.ITEM_SUB_NM  AS itemSubNm
+    	, 	A.SPEC 			AS parentSpec
+	    , 	codename('UNIT', A.UNIT) parentUnitNm
+       	/* 상세 정보 */
+     	, 	C.ITEM_CD		AS itemCd
+     	, 	D.ITEM_NM		AS itemNm
+     	, 	C.BOM_SEQ		AS bomSeq
+     	, 	D.SPEC			AS spec
+     	, 	codename('UNIT', D.UNIT) AS unitNm
+     	, 	D.BOM_UNIT 		AS bomUnit
+     	, 	C.BOM_QTY 		AS bomQty
+     	, 	C.LOSS_PER		AS lossPer
+     	, 	C.LOSS_QTY 		AS lossQty
+     	, 	C.REQ_QTY 		AS reqQty
+     	, 	C.ROUT_CD 		AS routCd
+     	, 	C.USE_YN 		AS useYn
+    FROM TB_MES_ITEM000 A
+     
+    INNER JOIN tb_mes_bom000 B
+		ON A.COMPANY = B.COMPANY
+		AND A.ITEM_CD = B.ITEM_CD
+	
+	LEFT OUTER JOIN TB_MES_ITEM100 A1
+   		ON A.COMPANY = A1.COMPANY
+   		AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+	
+	LEFT OUTER JOIN TB_MES_ITEM150 A2
+   		ON A.COMPANY = A2.COMPANY
+   		AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+   		AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+ 	
+ 	INNER JOIN tb_mes_bom100 C
+		ON B.COMPANY = C.COMPANY
+		AND B.ITEM_CD = C.PARENT_ITEM_CD
+		AND B.REVISION_NO = C.REVISION_NO
+		AND B.REVISION_NO = (SELECT MAX(REVISION_NO) FROM tb_mes_bom000 T WHERE T.COMPANY= A.COMPANY AND T.ITEM_CD= A.ITEM_CD  )
+
+	INNER JOIN tb_mes_ITEM000 D
+		ON C.COMPANY = D.COMPANY
+		AND C.ITEM_CD = D.ITEM_CD
+     	
+    WHERE 1=1
+     	<if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+    </select>
+
+    <select id="bomMasterList" resultType="bomMasterVO" parameterType="hashMap" statementType="PREPARED">   
+    /* com.ppm.mes.domain.bom.bom000.BomMasterMapper.bomMasterList */ 
+    SELECT 	 A.COMPANY company,
+	 		 A.ITEM_CD itemCd,
+	 		 A.ITEM_NM itemNm,
+	 		 B.REVISION_NO revisionNo,
+	 		 B.LAST_YN lastYn, 
+	 		 A.PART_NO partNo,
+	 		 A.ITEM_TYPE itemType,
+	 		 
+			 A.ITEM_MAIN_CD 	itemMainCd,
+			 A1.ITEM_MAIN_NM 	itemMainNm,
+			 A.ITEM_SUB_CD 		itemSubCd,
+			 A2.ITEM_SUB_NM 	itemSubNm,
+	 		 
+	 		 A.SUPPORT_TYPE supportType,
+	 		 A.SPEC spec, 		 		
+	 		 A.UNIT unit,
+	 		 A.BOM_UNIT bomUnit,
+	 		 A.BOM_TRANS bomTrans, 		 		
+	 		 A.YIELD_UNIT yieldUnit,
+	 		 A.YIELD_TRANS yieldTrans,
+	 		 A.PD_UNIT pdUnit,
+	 		 A.PD_TRANS pdTrans,
+	 		 A.SL_UNIT slUnit,
+	 		 A.SL_TRANS slTrans, 		 		
+	 		 A.SA_AMT saAmt,
+	 		 A.PC_AMT pcAmt,
+	 		 A.STD_COST stdCost,
+	 		 A.REAL_COST realCost,
+	 		 A.BARCODE barcode,
+	 		 A.QC_WAY qcWay,
+	 		 A.SAFETY_QTY safetyQty,
+	 		 A.LOW_PURCHASE_QTY lowPurchaseQty,
+	 		 A.CUST_CD custCd,
+	 		 A.LOT_YN lotYn,
+	 		 A.LOT_QTY lotQty,
+	 		 A.BARCODE_QTY barcodeQty,
+	 		 A.WH_CD whCd,
+	 		 A.LEAD_TIME leadTime,
+	 		 A.SET_YN setYn,
+	 		 A.THICKNESS thickness,
+	 		 A.HORIZONTAL horizontal,
+	 		 A.VERTICAL vertical,
+	 		 A.LOSS loss,
+	 		 A.USE_YN useYn,
+	 		 A.REMARK remark,
+	 		 A.STOCK_YN stockYn,
+	 		 A.QC_GROUP_CD qcGroupCd,
+	 		 (SELECT COUNT(1) FROM TB_MES_BOM100 Z WHERE Z.COMPANY = B.COMPANY AND Z.PARENT_ITEM_CD = B.ITEM_CD AND Z.REVISION_NO = B.REVISION_NO) bomCnt
+		FROM TB_MES_ITEM000 A 
+		LEFT OUTER JOIN TB_MES_BOM000 B
+			ON A.COMPANY = B.COMPANY
+			AND A.ITEM_CD = B.ITEM_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+			
+		WHERE 1=1		
+		
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND A.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>	    
+
+		<if test="map.useYn != null and map.useYn eq 'Y'.toString()">
+      			AND B.ITEM_CD IS NOT NULL
+		</if>
+		
+		<if test="map.useYn != null and map.useYn eq 'N'.toString()">
+				AND B.ITEM_CD IS NULL
+		</if>
+  		
+		 <if test="map.lastYn != null and map.lastYn != ''">
+			<![CDATA[  
+				AND (B.LAST_YN = #{map.lastYn} OR B.ITEM_CD IS NULL)
+  			]]>
+  		</if>
+  		
+		 <if test="map.revisionNo != null and map.revisionNo != ''">
+			<![CDATA[  
+				AND B.REVISION_NO = #{map.revisionNo}
+  			]]>
+  		</if>
+  		
+	    ORDER BY A.ITEM_CD, B.REVISION_NO DESC
+    </select>
+    
+    <!-- BOM상세 -->
+    <select id="bomDetailList" resultType="bomDetailVO" parameterType="hashMap" statementType="PREPARED">   
+    	/* com.ppm.mes.domain.bom.bom000.BomMasterMapper.bomDetailList */ 
+   		SELECT T1.COMPANY company,
+    		   T1.BOM_SEQ bomSeq,
+               T1.ITEM_CD itemCd,
+               T2.ITEM_NM itemNm,
+               T2.PART_NO partNo,
+               T2.ITEM_TYPE itemType,
+               T2.SPEC spec,               
+               T2.PART_NO partNo,               
+	           T2.SA_AMT saAmt,
+               T2.PC_AMT pcAmt,
+               T2.SAFETY_QTY safetyQty,
+               T1.PARENT_ITEM_CD parentItemCd,
+               T1.ROUT_CD routCd,
+               T2.UNIT unit,
+               T2.BOM_UNIT bomUnit,
+               T2.BOM_TRANS bomTrans,
+               T1.BOM_QTY bomQty,
+               T1.LOSS_PER lossPer,
+               T1.LOSS_QTY lossQty,
+               T1.REQ_QTY reqQty,
+               T1.USE_YN useYn,
+               T1.REMARK remark
+        FROM   TB_MES_BOM100 T1
+        
+        INNER JOIN TB_MES_ITEM000 T2
+	        ON T1.COMPANY = T2.COMPANY
+	        AND T1.ITEM_CD = T2.ITEM_CD
+	        
+        INNER JOIN TB_MES_BOM000 T3
+	        ON T1.COMPANY = T3.COMPANY
+	        AND T1.PARENT_ITEM_CD = T3.ITEM_CD
+	        AND T1.REVISION_NO = T3.REVISION_NO
+	        
+        WHERE  1 = 1
+        
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   T3.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND T3.ITEM_CD = #{map.itemCd}  
+  			]]>
+	    </if>
+  		
+		 <if test="map.revisionNo != null and map.revisionNo != ''">
+			<![CDATA[  
+				AND T3.REVISION_NO = #{map.revisionNo}
+  			]]>
+  		</if>
+	    
+		 <if test="map.lastYn != null and map.lastYn != ''">
+			<![CDATA[  
+				AND T3.LAST_YN = #{map.lastYn}
+  			]]>
+  		</if>
+  		
+    </select>
+    
+    
+    <!-- BOM정전개 -->
+    <select id="forwardBomList" resultType="bomDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    	/* com.ppm.mes.domain.bom.bom000.BomMasterMapper.forwardBomList */ 
+		WITH RECURSIVE CTE AS 
+		( 
+			SELECT 
+		  		   COMPANY,
+        		   ITEM_CD,
+        		   REVISION_NO,
+			       ITEM_CD PARENT_ITEM_CD, 
+			       '      ' ROUT_CD,
+			       0 BOM_QTY,
+			       0 LOSS_PER,
+			       0 LOSS_QTY,
+			       0 REQ_QTY,
+			       'Y'  USE_YN,
+				    0 AS BOM_LV 
+			 from TB_MES_BOM000 
+			 WHERE ITEM_CD = #{map.itemCd}  
+			 AND LAST_YN = 'Y'
+			 
+			 UNION ALL
+			 
+			 SELECT  
+	     			P.COMPANY,
+        			P.ITEM_CD,
+        			P.REVISION_NO,
+			 		P.PARENT_ITEM_CD, 
+		            P.ROUT_CD,
+		            P.BOM_QTY,
+		            P.LOSS_PER,
+		            P.LOSS_QTY,
+		            P.REQ_QTY,
+		            P.USE_YN ,
+					1+BOM_LV as BOM_LV 
+			 FROM TB_MES_BOM100 P
+			 INNER JOIN CTE 
+				 ON P.COMPANY = CTE.COMPANY
+				 AND P.PARENT_ITEM_CD = CTE.ITEM_CD
+				 AND P.REVISION_NO = CTE.REVISION_NO
+		) 		  
+		  
+		  
+	     SELECT
+			IT.COMPANY company,
+	        0 bomLv,
+	        IT.ITEM_CD itemCd,
+	        IT.ITEM_NM itemNm,
+	        IT.PART_NO partNo,
+	        '      ' routCd,
+	        0 bomQty,
+	        0 lossPer,
+	        0 lossQty,
+	        0 reqQty,
+	        'Y' useYn,
+	        IT.spec spec,
+	        IT.unit unit,
+		    IT.bom_unit bomUnit,
+	        IT.SA_AMT saAmt,
+	        IT.PC_AMT pcAmt,
+	        IT.SAFETY_QTY safetyQty,
+	        IT.ITEM_TYPE itemType,
+	        NULL parentItemCd     
+	    FROM
+	        TB_MES_ITEM000 IT     
+	    WHERE ITEM_CD =  #{map.itemCd} 
+	    
+	    UNION ALL
+	    
+	    SELECT   
+		  		 IT.COMPANY company,
+	    		 BOM_LV bomLv,
+		         T.ITEM_CD itemCd,
+		         IT.ITEM_NM itemNm,
+	        	 IT.PART_NO partNo,
+	        	 
+                 IT.ITEM_TYPE itemType,            
+			     IT.ITEM_MAIN_CD 	itemMainCd,
+			     IT1.ITEM_MAIN_NM 	itemMainNm,
+			     IT.ITEM_SUB_CD 		itemSubCd,
+			     IT2.ITEM_SUB_NM 	itemSubNm,
+			   
+		         T.ROUT_CD routCd,
+	             T.BOM_QTY bomQty,
+	             T.LOSS_PER lossPer,
+	             T.LOSS_QTY lossQty,
+	             T.REQ_QTY reqQty,
+		         T.USE_YN useYn,
+		         IT.SPEC spec,
+		         IT.UNIT unit,
+		         IT.BOM_UNIT bomUnit,
+		         IT.SA_AMT saAmt,
+		         IT.PC_AMT pcAmt,
+		         IT.SAFETY_QTY safetyQty,
+		         IT.ITEM_TYPE itemType,
+		         PARENT_ITEM_CD parentItemCd
+		FROM     (
+	  					SELECT * FROM CTE WHERE BOM_LV != 0
+		         )
+		         T
+		         JOIN TB_MES_ITEM000 IT
+		         	ON  T.ITEM_CD = IT.ITEM_CD  
+				
+				 LEFT OUTER JOIN TB_MES_ITEM100 IT1
+					ON IT.COMPANY = IT1.COMPANY 
+					AND IT.ITEM_MAIN_CD = IT1.ITEM_MAIN_CD
+					
+				 LEFT OUTER JOIN TB_MES_ITEM150 IT2
+					ON IT.COMPANY = IT2.COMPANY 
+					AND IT.ITEM_MAIN_CD = IT2.ITEM_MAIN_CD
+					AND IT.ITEM_SUB_CD = IT2.ITEM_SUB_CD
+					
+		ORDER BY bomLv
+    </select>
+    
+    <!-- BOM정전개2 -->
+    <select id="forwardBomList2" resultType="bomDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    	/* com.ppm.mes.domain.bom.bom000.BomMasterMapper.forwardBomList2 */ 
+	  WITH RECURSIVE CTE AS      (      
+	
+			SELECT
+				   COMPANY,
+				   ITEM_CD,
+				   REVISION_NO,
+			       ITEM_CD PARENT_ITEM_CD, 
+			       '      ' ROUT_CD,
+			       0 BOM_QTY,
+			       0 LOSS_PER,
+			       0 LOSS_QTY,
+			       0 REQ_QTY,
+		       	   'Y'  USE_YN,
+			       0 AS BOM_LV,
+				   CONCAT('>' , ITEM_CD) PATH_ORDER
+		    FROM TB_MES_BOM000       
+		    WHERE 1=1
+			    AND ITEM_CD = #{map.itemCd}
+			    AND LAST_YN = 'Y'            
+		    
+			 UNION ALL            
+			 
+			SELECT
+		         	P.COMPANY,
+		        	P.ITEM_CD,
+		        	P.REVISION_NO,
+					P.PARENT_ITEM_CD, 
+			      	P.ROUT_CD,
+			      	P.BOM_QTY,
+			      	P.LOSS_PER,
+			      	P.LOSS_QTY,
+			      	P.REQ_QTY,
+			      	P.USE_YN ,
+					1+BOM_LV as BOM_LV ,	  
+				  	CONCAT(CTE.PATH_ORDER,'>' , P.ITEM_CD) PATH_ORDER         
+		    FROM
+		        TB_MES_BOM100 P      
+		    INNER JOIN
+		        CTE       
+		            ON P.COMPANY = CTE.COMPANY      
+		            AND P.PARENT_ITEM_CD = CTE.ITEM_CD      
+		            AND P.REVISION_NO = CTE.REVISION_NO     )
+			 
+			 SELECT	 
+			        IT.COMPANY company,
+					CONCAT('└─',REPEAT('─',BOM_LV * 2),T.ITEM_CD) path ,
+					PATH_ORDER pathOrder,
+			        BOM_LV bomLv,
+			        T.ITEM_CD itemCd,
+			        IT.ITEM_NM itemNm,
+			        IT.PART_NO partNo,
+			        
+	                IT.ITEM_TYPE itemType,            
+				    IT.ITEM_MAIN_CD 	itemMainCd,
+				    IT1.ITEM_MAIN_NM 	itemMainNm,
+				    IT.ITEM_SUB_CD 		itemSubCd,
+				    IT2.ITEM_SUB_NM 	itemSubNm,		     
+			     
+			        T.ROUT_CD routCd,
+			        T.BOM_QTY bomQty,
+			        T.LOSS_PER lossPer,
+			        T.LOSS_QTY lossQty,
+			        T.REQ_QTY reqQty,
+			        T.USE_YN useYn,
+			        IT.SPEC spec,
+			        IT.UNIT unit,
+			        IT.BOM_UNIT bomUnit,
+			        IT.SA_AMT saAmt,
+			        IT.PC_AMT pcAmt,
+			        IT.SAFETY_QTY safetyQty,
+			        IT.ITEM_TYPE itemType
+			FROM CTE T
+			INNER JOIN TB_MES_ITEM000 IT
+				ON	T.COMPANY = IT.COMPANY
+				AND T.ITEM_CD = IT.ITEM_CD		
+				
+			LEFT OUTER JOIN TB_MES_ITEM100 IT1
+				ON IT.COMPANY = IT1.COMPANY 
+				AND IT.ITEM_MAIN_CD = IT1.ITEM_MAIN_CD
+				
+			LEFT OUTER JOIN TB_MES_ITEM150 IT2
+				ON IT.COMPANY = IT2.COMPANY 
+				AND IT.ITEM_MAIN_CD = IT2.ITEM_MAIN_CD
+				AND IT.ITEM_SUB_CD = IT2.ITEM_SUB_CD         
+			WHERE 1=1
+				
+	 	<if test="map.oneLvYn != null and map.oneLvYn eq 'Y'.toString()">
+			<![CDATA[  
+				AND BOM_LV IN (  0, 1 )	
+  			]]>
+  		</if>
+	  		
+		ORDER BY PATH_ORDER			
+  
+    </select>
+    <!-- BOM역전개 -->
+    <select id="backwardBomList" resultType="bomDetailVO" parameterType="hashMap" statementType="PREPARED">   
+ 		/* com.ppm.mes.domain.bom.bom000.BomMasterMapper.backwardBomList */
+	 	WITH RECURSIVE BOM_TB                          
+	 	AS (SELECT
+	        Z1.COMPANY,
+	        Z1.ITEM_CD,
+	        Z1.REVISION_NO,
+	        Z1.PARENT_ITEM_CD,
+	        0 AS BOM_LV,
+			  CONCAT('>' , PARENT_ITEM_CD) PATH_ORDER
+	    FROM TB_MES_BOM100 Z1   
+	    INNER JOIN TB_MES_BOM000 Z2
+		    ON Z1.COMPANY = Z2.COMPANY
+		    AND Z1.PARENT_ITEM_CD = Z2.ITEM_CD
+		    AND Z1.REVISION_NO = Z2.REVISION_NO   	    
+		 WHERE 1=1
+		 AND Z1.ITEM_CD = #{map.itemCd}
+		 AND Z2.LAST_YN = 'Y'	   
+		                    
+	    UNION ALL
+		SELECT
+	        A.COMPANY,
+	        A.ITEM_CD,
+	        A.REVISION_NO,
+	        A.PARENT_ITEM_CD,
+	        1+BOM_LV AS BOM_LV,
+			  CONCAT(B.PATH_ORDER,'>' , A.PARENT_ITEM_CD) PATH_ORDER                    
+	    FROM TB_MES_BOM100 A                          
+	    INNER JOIN BOM_TB B                            
+		    ON A.COMPANY = B.COMPANY                            
+		    AND A.ITEM_CD = B.PARENT_ITEM_CD                            
+		    AND A.REVISION_NO = B.REVISION_NO )    
+	            
+		SELECT 
+			  A.COMPANY company,
+			  CONCAT('└─',REPEAT('─',BOM_LV * 2),A.PARENT_ITEM_CD) path ,
+			  A.PATH_ORDER pathOrder,
+	          A.BOM_LV bomLv,
+	          A.PARENT_ITEM_CD itemCd,
+	          A.ITEM_CD parentItemCd,
+	          C.ITEM_NM itemNm,
+	          
+              C.ITEM_TYPE itemType,            
+		      C.ITEM_MAIN_CD 	itemMainCd,
+		      C1.ITEM_MAIN_NM 	itemMainNm,
+		      C.ITEM_SUB_CD 		itemSubCd,
+		      C2.ITEM_SUB_NM 	itemSubNm,		
+				    
+	          C.PART_NO partNo,
+	          C.SPEC spec,
+	          C.UNIT unit,
+	          C.BOM_UNIT bomUnit,
+	          C.SA_AMT saAmt,
+	          C.PC_AMT pcAmt,
+	          C.SAFETY_QTY safetyQty,
+	          B.ROUT_CD routCd,
+	          B.BOM_QTY bomQty,
+	          B.LOSS_PER lossPer,
+	          B.LOSS_QTY lossQty,
+	          B.REQ_QTY reqQty,
+	          B.USE_YN useYn     
+		
+		FROM BOM_TB A
+		INNER JOIN TB_MES_BOM100 B
+			ON A.ITEM_CD = B.ITEM_CD
+			AND A.PARENT_ITEM_CD = B.PARENT_ITEM_CD
+		
+		INNER JOIN TB_MES_ITEM000 C
+			ON A.PARENT_ITEM_CD = C.ITEM_CD			
+				
+		LEFT OUTER JOIN TB_MES_ITEM100 C1
+			ON C.COMPANY = C1.COMPANY 
+			AND C.ITEM_MAIN_CD = C1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 C2
+			ON C.COMPANY = C2.COMPANY 
+			AND C.ITEM_MAIN_CD = C2.ITEM_MAIN_CD
+			AND C.ITEM_SUB_CD = C2.ITEM_SUB_CD         
+				
+		WHERE 1=1
+		
+	 	<if test="map.oneLvYn != null and map.oneLvYn eq 'Y'.toString()">
+			<![CDATA[  
+				AND A.BOM_LV IN (  0, 1 )	
+  			]]>
+  		</if>
+	  		
+	  	ORDER BY PATH_ORDER			
+				
+    </select>    
+    
+    
+    <!-- BOM>라우팅연계 -->
+    <select id="bomRoutingDetailList" resultType="bomDetailVO" parameterType="hashMap" statementType="PREPARED">   
+    /* com.ppm.mes.domain.bom.bom000.BomMasterMapper.bomRoutingDetailList */
+	WITH RECURSIVE CTE AS      
+	(           
+		SELECT
+	        A.COMPANY,
+	        A.ITEM_CD,
+	        B.REVISION_NO,
+	        B.ITEM_CD PARENT_ITEM_CD,
+	        '      ' USE_ROUT_CD,
+	        0 BOM_QTY,
+	        0 LOSS_PER,
+	        0 LOSS_QTY,
+	        0 REQ_QTY,
+	        'Y'  USE_YN,
+	        0 AS BOM_LV,
+	        CONCAT('>' ,B.ITEM_CD) PATH_ORDER
+	    FROM TB_MES_ITEM000 A
+	      LEFT OUTER JOIN  TB_MES_BOM000 B     
+	      	ON A.COMPANY = B.COMPANY
+	      	AND A.ITEM_CD = B.ITEM_CD    
+	         AND B.LAST_YN = 'Y'        
+	    WHERE
+	        1=1         
+	        AND A.ITEM_CD = #{map.itemCd}  
+	                              
+	    UNION ALL                       
+	    
+	    SELECT
+	        P.COMPANY,
+	        P.ITEM_CD,
+	        P.REVISION_NO,
+	        P.PARENT_ITEM_CD,
+	        P.ROUT_CD USE_ROUT_CD,
+	        P.BOM_QTY,
+	        P.LOSS_PER,
+	        P.LOSS_QTY,
+	        P.REQ_QTY,
+	        P.USE_YN ,
+	        1+BOM_LV as BOM_LV ,
+	        CONCAT(CTE.PATH_ORDER,'>' ,P.ITEM_CD) PATH_ORDER
+	    FROM
+	        TB_MES_BOM100 P               
+	    INNER JOIN
+	        CTE                        
+	            ON P.COMPANY = CTE.COMPANY                       
+	            AND P.PARENT_ITEM_CD = CTE.ITEM_CD                       
+	            AND P.REVISION_NO = CTE.REVISION_NO    
+			)           
+			SELECT
+	            IT.COMPANY company,
+	        	IT.ITEM_TYPE itemType,
+	            CONCAT('└─', REPEAT('─', BOM_LV * 2), T.ITEM_CD) path ,
+	            PATH_ORDER pathOrder,
+	            BOM_LV bomLv,
+	            T.ITEM_CD itemCd,
+	            IT.ITEM_NM itemNm,
+	            IT.PART_NO partNo,
+	            T.USE_ROUT_CD useRoutCd,
+				B1.ROUTING_CD routingCd,
+				B4.ROUTING_NM routingNm,
+				B2.ROUT_SEQ routSeq,
+            	B2.LAST_FLAG lastFlag,
+				B3.ROUT_CD routCd,      
+            	B3.WH_CD whCd,
+		        B3.EQUIP_USE_YN equipUseYn,
+	            T.BOM_QTY bomQty,
+	            T.LOSS_PER lossPer,
+	            T.LOSS_QTY lossQty,
+	            T.REQ_QTY reqQty,
+	            T.USE_YN useYn,
+	            IT.SPEC spec,
+	            IT.UNIT unit,
+	            IT.BOM_UNIT bomUnit,
+	            IT.SA_AMT saAmt,
+	            IT.PC_AMT pcAmt,
+	            IT.SAFETY_QTY safetyQty,
+	            IT.ITEM_TYPE itemType
+	    FROM
+	        CTE T     
+	    INNER JOIN
+	        TB_MES_ITEM000 IT     
+	            ON     T.COMPANY = IT.COMPANY     
+	            AND T.ITEM_CD = IT.ITEM_CD     	             					
+			INNER JOIN TB_MES_RT120 B1
+				ON IT.COMPANY = B1.COMPANY
+				AND IT.ITEM_CD = B1.ITEM_CD
+			INNER JOIN TB_MES_RT110 B2
+				ON B1.COMPANY = B2.COMPANY
+				AND B1.ROUTING_CD = B2.ROUTING_CD
+			INNER JOIN TB_MES_RT000 B3
+				ON B2.COMPANY = B3.COMPANY
+				AND B2.ROUT_CD = B3.ROUT_CD         
+		    INNER JOIN
+		        TB_MES_RT100 B4     
+		            ON B1.COMPANY = B4.COMPANY     
+		            AND B1.ROUTING_CD = B4.ROUTING_CD   
+					              
+	    WHERE 1=1                    
+	    ORDER BY PATH_ORDER,ROUT_SEQ
+    </select>
+</mapper>

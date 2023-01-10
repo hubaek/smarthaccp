@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.haccp.code.detail.HaccpCodeDetailMapper">
+ 	<!-- 기초 데이터 셋업/기초코드/공정/설비 -->
+    <select id="getAllByCodeMap" resultType="haccpCodeDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    	/* com.ppm.mes.domain.haccp.code.detail.HaccpCodeDetailMapper.getAllByCodeMap */
+      
+	    SELECT MAIN_CODE mainCode,
+		 	SUB_CODE subCode,
+	       SUB_NAME subName
+		FROM TB_CCP_CD100
+			UNION 
+		SELECT 'WAREHOUSE_CODE' as mainCode,  
+			WH_CODE subuCode,
+			WH_NAME subName
+		FROM TB_MES_WH000
+			UNION 
+		SELECT 'COMPANY' as mainCode,
+			COMPANY subuCode,
+			COMPANY_NAME subName
+		FROM TB_MES_CP000
+			UNION 
+		SELECT 'ROUT' as mainCode,
+			ROUT_CODE subCode,
+			ROUT_NAME subName
+		FROM TB_MES_RT000
+			UNION 
+		SELECT 'EQUIP' as mainCode,
+			EQUIP_CODE subuCode,
+			EQUIP_NAME subName
+		FROM TB_MES_EQ000
+    </select>
+    
+    <select id="getHaccpDetailList" resultType="haccpCodeDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    		/* com.ppm.mes.domain.haccp.code.detail.HaccpCodeDetailMapper.getHaccpDetailList */  
+			SELECT
+				COMPANY company,
+				MAIN_CODE mainCode,
+				SUB_CODE subCode,
+				SUB_NAME subName,
+				SUB_NAME_EN subNameEn,
+				SUB_NAME_ZH subNameZh,
+				SORT sort,
+				DATA1 data1,
+				DATA2 data2,
+				DATA3 data3,
+				DATA4 data4,
+				DATA5 data5,
+				REMARK remark,
+				USE_YN useYn,
+				DATE_FORMAT(A.CREATED_AT, '%Y-%m-%d') 	AS createdDtm,
+				CREATED_BY createdBy
+				<!-- ,(SELECT  FILE_NM
+				   FROM  TB_MES_FILE000 F 
+				  WHERE  F.TARGET_TYPE='DOC000'
+				    AND  F.TARGET_ID = A.DATA1 ) fileNm	 -->
+			FROM TB_CCP_CD100 A
+			WHERE 1=1			
+			
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subCode != null and map.subCode != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subName != null and map.subName != ''">
+			<![CDATA[  
+      			AND   A.SUB_NAME = #{map.subName}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE != #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>	
+	    			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND (
+      				A.DATA1 = #{map.data1}
+      				OR A.SUB_NAME = #{map.data1}
+      				OR A.CREATED_BY = #{map.data1}
+      				)
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.dataAllOr != null and map.dataAllOr != ''">
+			<![CDATA[  
+      			AND   (A.DATA1 = #{map.dataAllOr} OR A.DATA2 = #{map.dataAllOr} OR A.DATA3 = #{map.dataAllOr})
+  			]]>
+	    </if>	
+	    
+		 
+	    ORDER BY SORT ASC	
+    </select>
+    
+    <select id="getBasicDetailLangList" resultType="basicCodeDetailVO" parameterType="hashMap" statementType="PREPARED">
+    		/* com.ppm.mes.domain.haccp.code.detail.HaccpCodeDetailMapper.getBasicDetailLangList */    
+			SELECT
+				COMPANY company,
+				MAIN_CODE mainCode,
+				SUB_CODE subCode,
+				<![CDATA[  
+	                CASE WHEN #{map.lang} = 'ko' THEN SUB_NAME
+	                     WHEN #{map.lang} = 'en' THEN SUB_NAME_EN
+	                     WHEN #{map.lang} = 'zh' THEN SUB_NAME_ZH
+	    	 		END subName,
+	  			]]>
+				SORT sort,
+				DATA1 data1,
+				DATA2 data2,
+				DATA3 data3,
+				DATA4 data4,
+				DATA5 data5,
+				REMARK remark,
+				USE_YN useYn	
+			FROM TB_CCP_CD100 A
+			WHERE 1=1			
+			
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+		 <if test="map.subCode != null and map.subCode != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subName != null and map.subName != ''">
+			<![CDATA[  
+      			AND   A.SUB_NAME = #{map.subName}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE != #{map.exceptValue}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.includeValue}
+  			]]>
+	    </if>		
+			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND   A.DATA1 = #{map.data1}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>		
+	    
+	    ORDER BY SORT ASC
+    </select>
+    
+    <select id="getHaccpGroupItem" resultType="qcItemVO" parameterType="hashMap" statementType="PREPARED">    
+    			/* com.ppm.mes.domain.haccp.code.detail.HaccpCodeDetailMapper.getHaccpGroupItem */    
+			SELECT
+		        A.COMPANY company,
+		        A.EQUIP_CD qcGroupCd,
+		        C.SUB_CODE qcCd,
+		        C.SUB_NAME qcNm,
+		        C.USE_YN useYn,
+		        C.REMARK remark    
+		    FROM
+		        TB_MES_EQ000 A     
+		    INNER JOIN
+		        TB_MES_QC110 B     
+		            ON     A.COMPANY    = B.COMPANY     
+		            AND    A.EQUIP_CD = B.QC_GROUP_CD     
+		    INNER JOIN
+		        TB_CCP_CD100 C     
+		            ON     B.COMPANY = C.COMPANY     
+		            AND    B.QC_CD = C.SUB_CODE     
+		            AND    C.MAIN_CODE = 'CCP_FAC'    
+		    WHERE
+		        1 = 1
+			
+			 <if test="map.equipCd != null and map.equipCd != ''">
+				<![CDATA[  
+	      			AND A.EQUIP_CD = #{map.equipCd}
+	  			]]>
+		    </if>      
+    </select>   
+    
+</mapper>

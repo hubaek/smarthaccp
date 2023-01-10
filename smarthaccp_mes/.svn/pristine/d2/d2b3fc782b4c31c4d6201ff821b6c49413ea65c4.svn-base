@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.all.raw.HaccpAllRawMapper">
+	<select id="getRawList" resultType ="HaccpAllRawVO" parameterType="hashMap" statementType="PREPARED">
+	/*com.ppm.mes.domain.haccp.all.raw.HaccpAllRawMapper.getRawList*/
+		SELECT
+			INSPECTION_DATE 	inspectionDate	,
+			SEQ					seq				,
+			INSPECTION_TIME		inspectionTime	,
+			ITEM_NM				itemNm			,
+			ITEM_NO				itemNo			,
+			CORE_TEMP			coreTemp		,
+			INSPECTION_RESULT	inspectionResult,
+			CAR_CLEAN			carClean		,
+			EXPRIATION_DT		expriationDt	,
+			REMARK				remark						
+		FROM TB_CCP_ALL200 A
+		WHERE 1=1
+		
+		<if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>		
+	</select>
+</mapper>

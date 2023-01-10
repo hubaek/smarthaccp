@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ppm.mes.domain.bod.bod100.BoardManageMapper">
+    <select id="getBoardList" resultType="boardManageVO" parameterType="hashMap" statementType="PREPARED">    
+    	/* com.ppm.mes.domain.bod.bod100.BoardManageMapper.getBoardList */
+	    SELECT A.COMPANY     company,
+	    	   A.BOARD_TYPE     boardType,
+	           A.BOARD_CD     boardCd,
+	           A.BOARD_TITLE     boardTitle,
+	           A.BOARD_TEXT       boardText,
+	           A.REG_DT       regDt,
+	           A.USER_CD      userCd,
+	           B.USER_NM      userNm,
+	           A.MAIL_YN      mailYn,
+	           A.TEMP_FILE_CD tempFileCd,
+	           A.VIEW_CNT viewCnt,
+	           A.USE_YN useYn,
+	           A.UPDATED_AT updatedAt,
+	           A.UPDATED_BY updatedBy
+	      FROM TB_MES_BOD100 A
+	      INNER JOIN TB_MES_USER000 B 
+	      ON A.USER_CD = B.USER_CD
+		WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND A.USER_CD = #{map.userCd}
+  			]]>
+	    </if>
+	    
+	    <if test="map.boardCd != null and map.boardCd != ''">  
+			<![CDATA[  
+				AND A.BOARD_CD = #{map.boardCd}
+  			]]>
+	    </if>
+	    
+	    <if test="map.boardType != null and map.boardType != ''">  
+			<![CDATA[  
+				AND A.BOARD_TYPE = #{map.boardType}
+  			]]>
+	    </if>	    
+	    
+	    <if test="map.userNm != null and map.userNm != ''">  
+			<![CDATA[  
+	      		AND B.USER_NM  LIKE CONCAT('%',#{map.userNm},'%')
+  			]]>
+	    </if>	    
+	    
+	    <if test="map.boardTitle != null and map.boardTitle != ''">  
+			<![CDATA[  
+				AND A.BOARD_TITLE  LIKE CONCAT('%',#{map.boardTitle},'%')
+  			]]>
+	    </if>	    
+	    
+	    <if test="map.boardText != null and map.boardText != ''">  
+			<![CDATA[  
+				AND A.BOARD_TEXT  LIKE CONCAT('%',#{map.boardText},'%')
+  			]]>
+	    </if>	    
+	    
+	    <if test="map.searchText != null and map.searchText != ''">  
+			<![CDATA[  
+				AND ( A.BOARD_TITLE  LIKE CONCAT('%',#{map.boardTitle},'%') OR A.BOARD_TEXT  LIKE CONCAT('%',#{map.boardText},'%') )
+  			]]>
+	    </if>	    
+	    
+	    ORDER BY A.BOARD_CD DESC
+    </select>
+    
+    <!-- 자료실(품목, 회사) 관련 SQL처리 -->
+    <!-- 1.자료실(품목) -->
+    <select id="selectBoardTypeItem" resultType="hashMap" parameterType="hashMap" statementType="PREPARED">
+    	with boardinfo as(     
+			select
+		        a.COMPANY as company,
+		        a.SEQ as seq,
+		        date_format(a.CREATED_AT,'%Y-%m-%d') as regDt,
+		        a.CREATED_BY as createdBy,
+		        date_format(a.UPDATED_AT,'%Y-%m-%d') as uptDt,
+		        a.UPDATED_BY as updatedBy, 
+		        a.ITEM_CD as itemCd,
+		        (select ITEM_NM from tb_mes_item000 b where b.ITEM_CD = a.ITEM_CD) as itemNm,
+		        a.DATA_NM as dataNm,
+		        a.MADE_BY as madeBy,
+		        a.BOARD_DESC as boardText,
+        		a.FILE_TARGET_ID as fileTargetId       
+		    from tb_mes_boarditem a     
+		)      
+		select company
+		      ,seq
+		      ,regDt
+		      ,createdBy
+		      ,uptDt
+		      ,updatedBy
+		      ,itemCd
+		      ,itemNm
+		      ,dataNm
+		      ,madeBy
+		      ,boardText
+		      ,fileTargetId       
+		 from boardinfo
+		 where 1=1
+   		<if test="company != null and company != ''">  
+				AND company = #{company}
+	    </if>
+	    <if test="seq != null and seq != ''">  
+				AND seq = #{seq}
+	    </if>
+	    <if test="itemCd != null and itemCd != ''">  
+				AND itemCd = #{itemCd}
+	    </if>
+	    <if test="itemNm != null and itemNm != ''">  
+				AND itemNm like '%'||#{itemNm}||'%'
+	    </if>
+	    <if test="dataNm != null and dataNm != ''">  
+				AND dataNm like '%'||#{dataNm}||'%'
+	    </if>
+	    <if test="madeBy != null and madeBy != ''">  
+				AND madeBy like '%'||#{madeBy}||'%'
+	    </if>
+    </select>
+
+    <insert id="insertBoardNoticeItem" parameterType="hashMap" statementType="PREPARED">
+    	insert into tb_mes_boarditem(
+			 COMPANY
+			,SEQ
+			,ITEM_CD
+			,DATA_NM
+			,MADE_BY
+			,CREATED_AT
+			,CREATED_BY
+			,BOARD_DESC
+			,FILE_TARGET_ID
+		)values(
+			 #{company}
+			,(select ifnull(max(A.SEQ),0) + 1 as seq from tb_mes_boarditem A)
+			,#{itemCd}
+			,#{dataNm}
+			,#{madeBy}
+			,sysdate()
+			,#{userCd}
+			,#{boardText}
+			,#{fileTargetId}
+		)
+    </insert>
+    
+    <update id="updateBoardNoticeItem" parameterType="hashMap" statementType="PREPARED">
+    	update tb_mes_boarditem
+		   set ITEM_CD = #{itemCd}
+		       ,DATA_NM = #{dataNm}
+		       ,MADE_BY = #{madeBy}
+		       ,UPDATED_AT = sysdate()
+		       ,UPDATED_BY = #{userCd}
+		       ,BOARD_DESC = #{boardText}
+		       ,FILE_TARGET_ID = #{fileTargetId}
+		 where COMPANY = #{company}
+		   and SEQ = #{seq}
+    </update>
+    
+    <delete id="deleteBoardNoticeItem" parameterType="hashMap" statementType="PREPARED">
+    	delete 
+    	  from tb_mes_boarditem
+		 where COMPANY = #{company}
+		   and SEQ = #{seq}
+    </delete>
+    
+    <!-- 2.자료실(회사) -->
+    <select id="selectBoardTypeComp" resultType="hashMap" parameterType="hashMap" statementType="PREPARED">
+    	with boardinfo as(     
+			select
+		        a.COMPANY as company,
+		        a.SEQ as seq,
+		        date_format(a.CREATED_AT,'%Y-%m-%d') as regDt,
+		        a.CREATED_BY as createdBy,
+		        date_format(a.UPDATED_AT,'%Y-%m-%d') as uptDt,
+		        a.UPDATED_BY as updatedBy,
+		        date_format(a.EXPIRY_DATE,'%Y-%m-%d') as expiryDate,
+		        a.DATA_NM as dataNm,
+		        a.TYPE1 as type1,
+        		a.TYPE2 as type2,
+		        a.BOARD_DESC as boardText,
+        		a.FILE_TARGET_ID as fileTargetId 
+		    from tb_mes_boardbusi a
+		)      
+		select company
+		      ,seq
+		      ,regDt
+		      ,createdBy
+		      ,uptDt
+		      ,updatedBy
+			  ,expiryDate
+		      ,dataNm
+		      ,type1
+      		  ,type2
+		      ,boardText
+		      ,fileTargetId       
+		  from boardinfo
+		 where 1=1
+		 <if test="company != null and company != ''">  
+		   and company = #{company}
+	     </if>
+	     <if test="seq != null and seq != ''">  
+		   and seq = #{seq}
+	     </if>
+	     <if test="type1 != null and type1 != ''">  
+		   and type1 like '%'||#{type1}||'%'
+	     </if>
+	     <if test="type2 != null and type2 != ''">  
+		   and type2 like '%'||#{type2}||'%'
+	     </if>
+	     <if test="dataNm != null and dataNm != ''">  
+		   and dataNm like '%'||#{dataNm}||'%'
+	     </if>
+    </select>
+    
+    <insert id="insertBoardNoticeComp" parameterType="hashMap" statementType="PREPARED">
+    	insert into tb_mes_boardbusi(
+			 COMPANY
+			,SEQ
+			,TYPE1
+			,TYPE2
+			,DATA_NM
+			,EXPIRY_DATE
+			,CREATED_AT
+			,CREATED_BY
+			,BOARD_DESC
+			,FILE_TARGET_ID
+		)values(
+			 #{company}
+			,(select ifnull(max(A.SEQ),0) + 1 as seq from tb_mes_boardbusi A)
+			,#{type1}
+			,#{type2}
+			,#{dataNm}
+			,replace(#{expiryDate},'-','')
+			,sysdate()
+			,#{userCd}
+			,#{boardText}
+			,#{fileTargetId}
+		)
+    </insert>
+    
+    <update id="updateBoardNoticeComp" parameterType="hashMap" statementType="PREPARED">
+    	update tb_mes_boardbusi
+		   set  TYPE1 = #{type1}
+			   ,TYPE2 = #{type2}
+		       ,DATA_NM = #{dataNm}
+		       ,EXPIRY_DATE = replace(#{expiryDate},'-','')
+		       ,UPDATED_AT = sysdate()
+		       ,UPDATED_BY = #{userCd}
+		       ,BOARD_DESC = #{boardText}
+		       ,FILE_TARGET_ID = #{fileTargetId}
+		 where COMPANY = #{company}
+		   and SEQ = #{seq}
+    </update>
+    
+    <delete id="deleteBoardNoticeComp" parameterType="hashMap" statementType="PREPARED">
+    	delete 
+    	  from tb_mes_boardbusi
+		 where COMPANY = #{company}
+		   and SEQ = #{seq}
+    </delete>
+    
+    <delete id="deleteBoardNoticeFileInfo" parameterType="hashMap" statementType="PREPARED">
+    	delete 
+    	  from tb_mes_file000 
+		 where 1=1
+		   and TARGET_ID = #{fileTargetId}
+    </delete>
+</mapper>

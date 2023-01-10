@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.appr.appr000.ApprovalMapper">
+	<select id="getApprovalList" resultType="approvalVO" parameterType="hashMap" statementType="PREPARED">   
+	    /* com.ppm.mes.domain.appr.appr000.ApprovalMapper.getApprovalList */ 
+	    
+	    SELECT
+	    		 A.APPROVAL_ID                                  AS approvalId
+	    	   , A.DOCUMENT_CLASSIFY_CD 						AS documentClassifyCd
+	    	   , codename('STATUS', A.APPROVAL_STATE_CD) 		AS approvalStateCd
+	    	   , CONCAT(substr(C.REPORT_DATE, 1, 4), '-', substr(C.REPORT_DATE, 5, 2), '-', substr(C.REPORT_DATE, 7, 2))  AS reportDtm
+	    	   , P.PROG_NM              						AS documentTitle
+	    	   , A.DRAFTER_ID 									AS drafterId
+	    	   , A.DRAFTER_COMMENT 								AS drafterComment
+	    	   , DATE_FORMAT(A.DRAFT_DTM, '%Y-%m-%d %H:%i:%s') AS draftDtm
+	    	   , A.APPROVER_ID 									AS approverId
+	    	   , A.APPROVER_COMMENT 							AS approverComment
+	    	   , DATE_FORMAT(A.APPROVAL_DTM, '%Y-%m-%d %H:%i:%s') AS approvalDtm
+	    	   , M.MENU_CD										AS menuCd
+	    	   /* TB_DAILY_RPT010 테이블 항목 삭제하지 말 것 (필수): 결재관리에서 승인 및 반려시 리포터항목 저장시 필요 */
+               , C.COMPANY										AS company
+               , C.TEMPLATE_ID									AS templateId
+               , C.START_DATE									AS startDate
+               , C.REPORT_DATE									AS reportDate
+               , C.M_SEQ										AS mSeq
+               , C.STATUS										AS status
+               , C.WRITER										AS writer
+               , C.APPROVER										AS approver
+               , C.REMARK1										AS remark1
+               , C.REMARK2										AS remark2 
+               , C.M_ITEM001									AS mItem001 
+               , C.M_ITEM002									AS mItem002
+               , C.M_ITEM003									AS mItem003 
+               , C.M_ITEM004									AS mItem004
+               , C.M_ITEM005									AS mItem005
+               , C.M_ITEM006									AS mItem006
+               , C.M_ITEM007									AS mItem007
+               , C.M_ITEM008									AS mItem008
+               , C.M_ITEM009									AS mItem009
+               , C.M_ITEM010									AS mItem010
+               , C.M_ITEM011									AS mItem011
+               , C.M_ITEM012									AS mItem012
+               , C.M_ITEM013									AS mItem013
+               , C.M_ITEM014									AS mItem014
+               , C.M_ITEM015									AS mItem015
+               , C.M_ITEM016									AS mItem016
+               , C.M_ITEM017									AS mItem017
+               , C.M_ITEM018									AS mItem018
+               , C.M_ITEM019									AS mItem019
+               , C.M_ITEM020									AS mItem020
+               , C.M_ITEM021									AS mItem021
+               , C.M_ITEM022									AS mItem022
+               , C.M_ITEM023									AS mItem023
+               , C.M_ITEM024									AS mItem024
+               , C.M_ITEM025									AS mItem025
+	    FROM TH_APPROVAL A
+	    LEFT JOIN TB_DAILY_RPT010 C ON A.COMPANY = C.COMPANY AND A.APPROVAL_ID = C.APPROVAL_ID AND A.DOCUMENT_CLASSIFY_CD = C.TEMPLATE_ID
+	    LEFT JOIN TB_MES_PGM000 P ON A.DOCUMENT_CLASSIFY_CD = P.PROG_CD
+	    LEFT JOIN TB_MES_MENU000 M ON A.DOCUMENT_CLASSIFY_CD = M.PROG_CD    
+	    WHERE 1=1
+	     	<if test="map.fromDate != null and map.fromDate != ''">
+				<![CDATA[  
+	      			AND   C.REPORT_DATE >= replace(#{map.fromDate}, '-', '')
+	  			]]>
+		    </if>
+			
+			 <if test="map.toDate != null and map.toDate != ''">
+				<![CDATA[  
+	      			AND   C.REPORT_DATE <= replace(#{map.toDate}, '-', '')
+	  			]]>
+		    </if>
+	     	<if test="map.writer != null and map.writer != ''">
+				<![CDATA[  
+	      			AND	
+	      			    (
+		      			   P.PROG_NM LIKE UPPER(CONCAT('%',#{map.writer},'%'))
+		      			OR A.DRAFTER_ID LIKE UPPER(CONCAT('%',#{map.writer},'%'))
+		      			OR A.APPROVER_ID LIKE UPPER(CONCAT('%',#{map.writer},'%'))
+	      				)
+	  			]]>
+		    </if>
+		    <if test="map.approvalStateCd != null and map.approvalStateCd != ''">
+				<![CDATA[  
+	      			AND A.APPROVAL_STATE_CD = #{map.approvalStateCd}
+	  			]]>
+		    </if>
+    </select>
+
+  
+</mapper>

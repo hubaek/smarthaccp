@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.haccp.code.detail.HaccpProcessDetailMapper">
+ 	<!-- 기초 데이터 셋업/기초코드/공정/설비 -->
+    
+    <select id="getHaccpProcessCodeDetailList" resultType="haccpProcessCodeDetailVO" parameterType="hashMap" statementType="PREPARED">
+			/* com.ppm.mes.domain.haccp.code.detail.HaccpProcessDetailMapper.getHaccpProcessCodeDetailList */  
+			SELECT
+				COMPANY company,
+				MAIN_CODE mainCode,
+				SUB_CODE subCode,
+				SUB_NAME checkItem,
+				SUB_NAME_EN subNameEn,
+				SUB_NAME_ZH subNameZh,
+				SORT sort,
+				DATA1 process,
+				DATA2 checkStd,
+				DATA3 cycle,
+				DATA4 data4,
+				DATA5 data5,
+				REMARK remark,
+				USE_YN useYn	
+			FROM TB_CCP_CD100 A
+			WHERE 1=1			
+			
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subCode != null and map.subCode != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subName != null and map.subName != ''">
+			<![CDATA[  
+      			AND   A.SUB_NAME = #{map.subName}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE != #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>	
+	    			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND   A.DATA1 = #{map.data1}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.dataAllOr != null and map.dataAllOr != ''">
+			<![CDATA[  
+      			AND   (A.DATA1 = #{map.dataAllOr} OR A.DATA2 = #{map.dataAllOr} OR A.DATA3 = #{map.dataAllOr})
+  			]]>
+	    </if>	
+	    
+		 
+	    ORDER BY SORT ASC	
+    </select>
+    
+    <select id="getHaccpProcessDetailList" resultType="haccpProcessDetailVO" parameterType="hashMap" statementType="PREPARED">   
+    		/* com.ppm.mes.domain.haccp.code.detail.HaccpProcessDetailMapper.getHaccpProcessDetailList */  
+		  SELECT
+				COMPANY company,
+				MAIN_CODE mainCode,
+				SUB_CODE subCode,
+				INSPECTION_DATE inspectionDate ,
+				CHECK_ITEM checkItem ,
+				PROCESS process,
+				CHECK_STD  checkStd,
+				CYCLE cycle,
+				RESULT1 result1,
+				RESULT2 result2,
+				REMARK remark
+					
+			 FROM TB_CCP_PRC100 A
+		   WHERE 1 = 1			
+      		 AND A.COMPANY = #{map.company}
+			 AND A.MAIN_CODE = #{map.mainCode}
+  			 AND A.INSPECTION_DATE = #{map.inspectionDate}
+
+    </select>
+       
+    
+</mapper>

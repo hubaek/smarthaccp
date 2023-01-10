@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.scheduler.SchedulerMapper">
+	<select id="getlastsensingdata" resultType="hashMap" parameterType="hashMap" statementType="PREPARED">   
+    	select a.measure_dtm           as dtm, 
+			   a.auto_collect_id       as ccpId, 
+			   a.attribute_1_value     as value, 
+			   b.PRCSSLMT_MIN          as lmtmin, 
+			   b.PRCSSLMT_MAX          as lmtmax,
+			   ifnull(b.lmtchktime,0)  as lmtchktime,
+		       ifnull(b.testchktime,0) as testchktime 
+		  from th_sensing_data a
+		  inner join tb_mes_lmt000 b on a.auto_collect_id = b.PRCSSLMT_ID 
+		 where a.auto_collect_id = #{ccpId}
+		 order by a.measure_dtm desc
+		 limit 1
+	</select>
+	
+	<update id="updatetime" parameterType="hashMap">	
+    	update tb_mes_lmt000
+    	   set
+    	   <if test='site.equals("etc")'>
+    	       testchktime = ifnull(testchktime,0) + 1
+    	   </if> 
+    	   <if test='site.equals("server")'>
+    	       lmtchktime = ifnull(lmtchktime,0) + 1
+    	   </if>
+    	 where prcsslmt_id = #{ccpId}
+    </update>
+    
+    <update id="cleartime" parameterType="hashMap">	
+    	update tb_mes_lmt000
+    	   set <if test='site.equals("etc")'>
+	    	       testchktime = 0
+	    	   </if> 
+	    	   <if test='site.equals("server")'>
+	    	       lmtchktime = 0
+	    	   </if>
+    	 where prcsslmt_id = #{ccpId}
+    </update>
+	
+	<select id="getUserPhoneList" resultType="userVO" parameterType="hashMap" statementType="PREPARED">   
+    /*com.ppm.mes.domain.scheduler.SchedulerMapper.getUserPhoneList*/  
+	    SELECT 
+	        A.HP_NO	hpNo,
+	        A.EMAIL	email	
+	    FROM 
+	    	TB_MES_USER000 A
+		WHERE
+			1=1
+		AND 
+			MAIL_AGREE = 'Y'	
+	</select>
+	
+	<update id="metalSms">
+		UPDATE 
+			TB_GET_MET
+		SET
+		 	SEND_SMS = 'Y'
+		WHERE
+			SEND_SMS = 'N'
+		AND
+			STATUS = '30'
+		AND 
+			DATE_FORMAT(DTM, '%Y%m%d') = #{time}
+		ORDER BY
+			DTM DESC LIMIT 1
+	</update>
+	
+	<update id="tempSms" parameterType="hashMap">
+		UPDATE 
+			TB_GET_TEMP
+		SET
+		 	SEND_SMS = 'Y'
+		WHERE
+			SEND_SMS = 'N'
+		AND
+			PLC_IP = #{plcIp}
+		AND 
+			DATE_FORMAT(DTM, '%Y%m%d') = #{time}
+		ORDER BY
+			DTM DESC LIMIT 1
+	</update>
+</mapper>

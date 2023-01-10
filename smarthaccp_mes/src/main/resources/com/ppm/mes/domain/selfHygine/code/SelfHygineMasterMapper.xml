@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.selfHygine.code.SelfHygineMasterMapper"> 
+	
+    <!-- 현재 미사용
+    /*com.ppm.mes.domain.selfHygine.code.SelfHygineMasterMapper.getMasterList */
+    <select id="getMasterList" resultType="SelfHygineMasterVO" parameterType="hashMap" statementType="PREPARED">    
+		SELECT A.COMPANY company,
+			   A.INSPECTION_DATE inspectionDate,
+		       A.WRITER writer,
+		       A.APPROVER approver,
+		       A.STATUS status
+		FROM   TB_CCP_CLN000 A
+        WHERE  1 = 1	    
+    </select>
+    
+    <select id="deleteAll" resultType="SelfHygineMasterVO" parameterType="hashMap" statementType="PREPARED">    
+		DELETE FROM TB_CCP_CLN000 
+		WHERE 
+		<![CDATA[  
+      			AND   COMPANY = #{map.company}
+		]]>
+		<![CDATA[  
+      			AND   INSPECTION_DATE = #{map.inspectionDate}
+		]]>
+	    
+    </select>
+     -->
+</mapper>

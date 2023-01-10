@@ -1,0 +1,25 @@
+{
+  "title": "SMART HACCP :: MES Application Framework",
+  "copyrights": "SMART HACCP :: MES Application Framework 2020",
+  "logo": {
+    "header": "/assets/images/common/header-logo.png",
+    "login": "/assets/images/common/header-logo_big.png",
+    "logo": "logo.png"
+  },
+  "background": {
+    "login": "/assets/images/common/login-bg-not.jpg",
+    "background": "/assets/images/common/login_background.png"
+  },
+  "layout": {
+    "leftSideMenu": "visible"
+  },
+  "sessionCookie": "d08370cd-59db-4e70-ae08-4e02d189511e",
+  "extendedCss": [
+    "/assets/css/ppmboot.css"
+  ],
+  "extendedCssforIE9": [
+    "/assets/css/ppmboot-01.css",
+    "/assets/css/ppmboot-02.css",
+    "/assets/css/ppmboot-03.css"
+  ]
+}  

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.st.st050.StockDetailMapper">
+    <insert id ="insertIncomingData" parameterType="hashMap">
+    /* com.ppm.mes.domain.st.st050.StockDetailMapper.insertIncomingData */
+    		INSERT INTO tb_mes_st050 
+    			(
+    				COMPANY, 
+    				INOUT_DT, 
+    				INOUT_SEQ, 
+    				CREATED_AT, 
+    				CREATED_BY, 
+    				UPDATED_AT, 
+    				UPDATED_BY, 
+    				INOUT_TYPE,
+    				INOUT_TYPE_DETAIL, 
+    				ITEM_CD, 
+    				REF_STOCK_CD, 
+    				REMARK, 
+    				STOCK_CD, 
+    				ITEM_QTY, 
+    				IN_QTY, 
+    				LAST_FLAG, 
+    				OUT_QTY, 
+    				PREV_STOCK_QTY, 
+    				STOCK_QTY, 
+    				USE_QTY, 
+    				OUT_YN, 
+    				BARCODE
+				) 
+			VALUES 
+				(
+					#{company},
+					#{inoutDt},
+					#{inoutSeq},
+					#{createdAt},
+					#{userCd},
+					#{createdAt},
+					#{userCd},
+					#{inoutType},
+					#{inoutTypeDetail},
+					#{itemCd},
+					#{refStockCd},
+					NULL,
+					#{stockCd},
+					#{itemQty},
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					#{barcode}
+				)
+	
+	</insert>
+    <select id="getNewInoutSeq" resultType="int">
+    /* com.ppm.mes.domain.st.st050.StockDetailMapper.getNewInoutSeq */
+    	SELECT 
+    		IFNULL(MAX(INOUT_SEQ) +1, 1) as nInoutSeq
+		FROM
+			TB_MES_ST050 
+    </select>
+    <!-- 연동 테스트용 -->
+    <select id="testQuery" resultType="map">
+    /* com.ppm.mes.domain.st.st050.StockDetailMapper.testQuery */
+    	select  #{company},
+				#{inoutDt},
+				#{inoutSeq},
+				#{createdAt},
+				#{userCd},
+				#{createdAt},
+				#{userCd},
+				#{inoutType}
+				#{inoutTypeDetail},
+				#{itemCd},
+				#{refStockCd},
+				#{stockCd},
+				#{itemQty},
+				#{barcode}
+    </select>
+</mapper>

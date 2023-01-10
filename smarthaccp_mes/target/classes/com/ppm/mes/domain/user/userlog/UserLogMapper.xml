@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.user.userlog.UserLogMapper">
+    <select id="getSendLogData" resultType="hashMap" parameterType="hashMap" statementType="PREPARED">   
+    /*com.ppm.mes.domain.user.userlog.UserLogMapper.getSendLogData*/  
+	    select date_format(now(),'%Y-%m-%d %H:%i:%s') as logDt,
+			   '접속' as useSe,
+			   UPDATED_BY as sysUser,
+		       HOST_NAME as conectIp,
+		       0 as dataUsgqty
+		  from tb_mes_userlog
+		 where date_format(UPDATED_AT,'%Y%m%d') = date_format(now(),'%Y-%m-%d %H:%i:%s')<!-- 당일 데이터만 전송가능 -->
+		 <!-- where date_format(UPDATED_AT,'%Y%m%d') = '20220919' --> <!-- 테스트 -->
+    </select>
+    
+    <insert id="saveResult" parameterType="hashMap">
+    	<selectKey resultType="int" keyProperty="seq" order="BEFORE">
+	        select ifnull(max(seq),0)+1 as seq from tb_mes_sendlog_result_tb    
+	    </selectKey> 
+
+          INSERT INTO tb_mes_sendlog_result_tb(
+          	  seq,
+          	  send_result
+          ) VALUES(
+          	  #{seq}, 
+          	  #{result}
+          )
+    </insert>
+    
+    <select id="getSendLogHis" resultType="hashMap" parameterType="hashMap" statementType="PREPARED">   
+    /*com.ppm.mes.domain.user.userlog.UserLogMapper.getSendLogHis*/  
+	    select seq,
+			   send_result 			
+		  from tb_mes_sendlog_result_tb
+		 order by seq
+    </select>
+    
+    <update id="execQuery" parameterType="hashMap">
+		${execQuery}
+    </update>       
+</mapper>

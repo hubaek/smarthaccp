@@ -1,0 +1,77 @@
+@charset 'utf-8';
+.check_print {
+	float:left;
+	font-family:Dotum, '�뗭�';
+	font-size:11px;
+	line-height:140%;
+	vertical-align:top;
+	padding-top:3px;
+	padding-right:10px;
+}
+.check_print input[type=checkbox] {
+	font-size:11px;
+}
+*span.check_print {
+	padding-top:0;
+}
+*span.check_print input[type=checkbox] {
+	border:0;
+}
+.programfield_left {
+	text-align: left;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+.programfield_right {
+	text-align: right;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+.programfield_center {
+	text-align: center;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+#middleEditorContents td, 
+#middleEditorContents pre {
+	color:#000;
+	font-family:Gulim, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	margin:8px;
+}
+#middleEditorContents p {
+	margin:2px;
+	padding:2px;
+}
+#printPartition {
+	display:none;
+	font-family:Gulim, Arial, Helvetica, sans-serif;
+	color:#000;
+}
+#printPartition td, 
+#printPartition pre {
+	font-size:12px;
+	margin:8px;
+}
+#printPartition p {
+	margin:2px;
+	padding:2px;
+}
+
+@media print {
+	.non_printable {
+		display:none;
+	}
+	#printPartition {
+		display:block;
+	}
+	#contentsFrame {
+		display:none;
+	}
+	.boldline {
+		letter-spacing: -1px;
+	}
+	#eword_orderline th {
+		letter-spacing: 0px;
+	}
+}

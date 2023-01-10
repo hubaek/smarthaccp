@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.eq.manu.ManuEquipMapper"> 
+    <select id="getEquipList" resultType="manuEquipVO" parameterType="hashMap" statementType="PREPARED">   
+    	/* com.ppm.mes.domain.eq.manu.detail.ManuDetailEquipMapper.getEquipList */  
+		SELECT 
+			  COMPANY 	    company
+			, EQUIP_CODE    equipCode
+			, MANAGE_NO     manageNo
+			, EQUIP_NAME    equipName
+			, MODEL_NAME    modelName
+			, BUY_TO 	    buyTo 
+			, DATE_FORMAT(BUY_DT,'%Y-%m-%d') 	    buyDt 
+			, DATE_FORMAT(INST_DT,'%Y-%m-%d') 	    instDt
+			, STND 	  	    stnd
+			, OPER_VOLT     operVolt
+			, PUR_POSE      purPose
+			, MANAGER_M     managerM
+			, MANAGER_D     managerD
+			, PEOD_IN_ITEM  peodInItem
+			, CLEAN_DISIN   cleanDisin
+		  FROM TB_CCP_EQ000
+		 WHERE  1 = 1
+		 <if test="map.equipName != null and map.equipName != '' ">
+		 	<![CDATA[  
+      			AND EQUIP_NAME LIKE UPPER(CONCAT('%',#{map.equipName},'%'))
+  			]]>
+		 </if>
+		
+		<if test="map.manageNo != null and map.manageNo != '' ">
+		 	<![CDATA[  
+      			AND MANAGE_NO LIKE UPPER(CONCAT('%',#{map.manageNo},'%'))
+  			]]>
+		</if>
+		
+		<if test="map.modelName != null and map.modelName != '' ">
+		 	<![CDATA[  
+      			AND MODEL_NAME LIKE UPPER(CONCAT('%',#{map.modelName},'%'))
+  			]]>
+		</if>
+		
+		<if test="map.strDt != null and map.strDt != '' ">
+		 	<![CDATA[  
+      			AND DATE_FORMAT(BUY_DT,'%Y%m%d') >= DATE_FORMAT(#{map.strDt},'%Y%m%d')
+  			]]>
+		</if>
+		
+		<if test="map.endDt != null and map.endDt != '' ">
+		 	<![CDATA[  
+      			AND DATE_FORMAT(BUY_DT,'%Y%m%d') <= DATE_FORMAT(#{map.endDt},'%Y%m%d')
+  			]]>
+		</if>
+		
+		ORDER BY BUY_DT ASC 
+			    
+    </select>
+</mapper>

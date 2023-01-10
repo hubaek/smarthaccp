@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.clean.detail.HaccpCleanDetailMapper">
+	
+	<select id="getHaccpCleanDetailList" resultType ="haccpCleanDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.clean.detail.HaccpCleanDetailMapper.getHaccpCleanDetailList1 */
+	
+		SELECT 
+		         PLC_IP			plcIp
+		       , STAT			stat
+		       , W1				w1		       
+		       , DATE_FORMAT(DTM,  '%Y-%m-%d %H:%i:%s')			dtm      
+		FROM TB_GET_WASH
+		WHERE 1=1	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY DTM	    
+	</select>
+	
+	
+	<select id="getHaccpDetailList" resultType ="haccpCleanDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.clean.detail.HaccpCleanDetailMapper.getHaccpDetailList */
+	
+		SELECT 
+		         PLC_IP				plcIp
+		       , STAT				stat
+		       , W1					w1
+		       , DTM				dtm
+		       , INSPECTION_DATE 	inspectionDate		
+		       , RESULT				result
+		       , REMARK				remark       
+		FROM TB_CCP_CLEAN100
+		WHERE 1=1	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY DTM	    
+	</select>
+	
+</mapper>

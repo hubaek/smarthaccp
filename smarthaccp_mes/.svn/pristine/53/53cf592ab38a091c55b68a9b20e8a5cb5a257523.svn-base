@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+        
+<mapper namespace="com.ppm.mes.domain.snsr.SnsrMasterMapper">
+
+			<select id="getSensorList" resultType="snsrMaster" parameterType="hashMap" statementType="PREPARED">
+				/*com.ppm.mes.domain.snsr.SnsrMasterMapper.getSensorList */
+					SELECT 
+						    COMPANY        company      
+						  , SNSR_ID        snsrId      
+						  , ROUT_CD        routCd     
+						  , SNSR_CD        snsrCd      
+						  , SNSR_NM        snsrNm      
+						  , SNSR_MDL_NM    snsrMdlNm  
+						  , SNSR_MNF       snsrMnf     
+						  , SNSR_USG       snsrUsg     
+						  , SNSR_PRD_DT    snsrPrdDt  
+						  , SNSR_INS_DT    snsrInsDt  
+						  , SNSR_DATA_FRM  snsrDataFrm
+						  , REMARK         remark 
+					 FROM TB_CCP_SNSR000
+					WHERE 1 = 1
+					<if test="map.snsrId != null and map.snsrId != '' ">
+					 <![CDATA[  
+					  AND SNSR_ID  = #{map.snsrId}
+					 ]]>
+					</if>
+					
+					<if test="map.routCd != null and map.routCd != '' ">
+					 <![CDATA[  
+					  AND ROUT_CD  = #{map.routCd}
+					 ]]>
+					</if>
+					
+					<if test="map.snsrCd != null and map.snsrCd != '' ">
+					 <![CDATA[  
+					  AND SNSR_CD  = LIKE UPPER(CONCAT('%',#{map.snsrCd},'%'))
+					 ]]>
+					</if>
+					
+					<if test="map.snsrMdlNm != null and map.snsrMdlNm != '' ">
+					 <![CDATA[  
+					  AND SNSR_NM  = LIKE UPPER(CONCAT('%',#{map.snsrMdlNm},'%'))
+					 ]]>
+					</if>
+					
+					<if test="map.snsrNm != null and map.snsrNm != '' ">
+					 <![CDATA[  
+					  AND SNSR_MDL_NM  = LIKE UPPER(CONCAT('%',#{map.snsrNm},'%'))
+					 ]]>
+					</if> 	 
+					
+					<if test="map.snsrPrdStrdt != null and map.snsrPrdStrdt != '' ">
+			 		<![CDATA[  
+	      			  AND DATE_FORMAT(SNSR_PRD_DT,'%Y%m%d') >= DATE_FORMAT(#{map.snsrPrdStrdt},'%Y%m%d')
+	  				]]>
+				</if>
+				
+				<if test="map.snsrPrdEnddt != null and map.snsrPrdEnddt != '' ">
+				 	<![CDATA[  
+		      		 AND DATE_FORMAT(SNSR_PRD_DT,'%Y%m%d') <= DATE_FORMAT(#{map.snsrPrdEnddt},'%Y%m%d')
+		  			]]>
+				</if>
+				
+				<if test="map.snsrInsStrdt != null and map.snsrInsStrdt != '' ">
+			 		<![CDATA[  
+	      			 AND DATE_FORMAT(SNSR_INS_DT,'%Y%m%d') >= DATE_FORMAT(#{map.snsrInsStrdt},'%Y%m%d')
+	  				]]>
+				</if>
+				
+				<if test="map.snsrInsEndDt != null and map.snsrInsEndDt != '' ">
+				 	<![CDATA[  
+		      		 AND DATE_FORMAT(SNSR_INS_DT,'%Y%m%d') <= DATE_FORMAT(#{map.snsrInsEndDt},'%Y%m%d')
+		  			]]>
+				</if> 	 	  	  
+			</select>
+</mapper>

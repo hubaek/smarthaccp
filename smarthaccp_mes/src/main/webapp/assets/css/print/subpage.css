@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+/* 레이아웃- 버튼 및 검색 영역 */
+#sub .toparea { overflow:hidden; clear:both; background:url('board_view_bg.gif') repeat-x left top; height:29px; border-bottom:1px solid #D4D4D4; border-top:1px solid #D4D4D4;}
+#sub .toparea img {vertical-align:middle;}
+#sub .toparea .leftarea { text-align:left; float:left; display:inline; margin-top:4px; padding-left:7px}/* 버튼 및 검색 영역 - 좌측영역 */
+#sub .toparea .leftarea .input {border-right:none;}
+#sub .toparea .rightarea {float:right; display:inline; margin-top:4px; padding-right:5px; text-align:right;}/* 버튼 및 검색 영역 - 우측영역 */
+#sub .toparea .btn {}/* 버튼 설정 */
+#sub .toparea .btn img {vertical-align:middle; margin:0px; padding-bottom:2px}
+#sub .toparea .btn a    {float:left; line-height:140%; border:1px solid #F5F5F5; border-left:1px dotted #C9C9C9; color:#444444; font-size:11px; text-decoration:none; padding:1px 10px 2px 10px;}
+#sub .toparea .btn a:hover {background:#FFFFFF; border:1px solid #CFCFCF; color:#444444; padding:1px 10px 2px 10px;}
+
+/* 레이아웃- 버튼 및 검색 영역2 */
+#sub .btmarea {clear:both;position:fixed; _position:absolute; z-index:100; left:0; bottom:0;_bottom:-1px; width:100%; background:url('board_view_bg.gif') repeat-x left top; height:29px; border-bottom:1px solid #D4D4D4; border-top:1px solid #D4D4D4;overflow:hidden;}
+#sub .btmarea img {vertical-align:middle;}
+#sub .btmarea .leftarea { text-align:left; float:left; display:inline; margin-top:4px; padding-left:7px}/* 버튼 및 검색 영역 - 좌측영역 */
+#sub .btmarea .leftarea .input {border-right:none;}
+#sub .btmarea .rightarea {float:right; display:inline; margin-top:4px; padding-right:5px; text-align:right;}/* 버튼 및 검색 영역 - 우측영역 */
+#sub .btmarea .btn {}/* 버튼 설정 */
+#sub .btmarea .btn img {vertical-align:middle; margin:0px; padding-bottom:2px}
+#sub .btmarea .btn a    {float:left; line-height:140%; border:1px solid #F5F5F5; border-left:1px dotted #C9C9C9; color:#444444; font-size:11px; text-decoration:none; padding:1px 10px 2px 10px;}
+#sub .btmarea .btn a:hover {background:#FFFFFF; border:1px solid #CFCFCF; color:#444444; padding:1px 10px 2px 10px;}

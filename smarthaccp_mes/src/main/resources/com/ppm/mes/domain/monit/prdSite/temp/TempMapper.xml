@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.monit.prdSite.temp.TempMapper">
+	<select id="getTempList" resultType="TempVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.temp.tempMapper.getTempList*/
+		with lastsensingdata as ( 
+			select auto_collect_id, max(measure_dtm) as measure_dtm 	
+			  from TH_SENSING_DATA
+			 where auto_collect_id not like 'MET%' <!-- 금속검출기는 제외 -->
+			 group by auto_collect_id
+		), blanktonull as (
+			select a.auto_collect_id, c.PRCSSLMT_NM as lmtnm, a.measure_dtm as dtm,
+				   CAST((case when b.attribute_1_value = '' then null else b.attribute_1_value end) AS DECIMAL(10,1)) as attribute_1_value,
+				   (case when b.attribute_2_value = '' then null else b.attribute_2_value end) as attribute_2_value,
+				   (case when b.attribute_3_value = '' then null else b.attribute_3_value end) as attribute_3_value,
+				   (case when b.attribute_4_value = '' then null else b.attribute_4_value end) as attribute_4_value,
+				   (case when b.attribute_5_value = '' then null else b.attribute_5_value end) as attribute_5_value,
+				   CAST((case when c.PRCSSLMT_MIN = '' then null else c.PRCSSLMT_MIN end) AS signed) as prcsslmt_min,
+				   CAST((case when c.PRCSSLMT_MAX = '' then null else c.PRCSSLMT_MAX end) AS signed) as prcsslmt_max
+			  from lastsensingdata a
+			  left outer join TH_SENSING_DATA b on a.auto_collect_id = b.auto_collect_id and a.measure_dtm = b.measure_dtm
+			  left outer join tb_mes_lmt000 c on a.auto_collect_id = c.PRCSSLMT_ID
+			 where c.PRCSSLMT_NM is not null  <!-- 한계기준이 등록되지 않은 item은 조회되지 않는다 (한계기준 입력 필수)-->    
+		), warnChk as (
+			select *, 
+			       case
+				   when (prcsslmt_min is not null and prcsslmt_max is not null) then (case when (attribute_1_value is null or prcsslmt_min <![CDATA[<]]> attribute_1_value and attribute_1_value <![CDATA[<]]> prcsslmt_max) then 'N' else 'Y' end)
+				   when (prcsslmt_min is null and prcsslmt_max is not null) then (case when (attribute_1_value is null or attribute_1_value <![CDATA[<]]> prcsslmt_max) then 'N' else 'Y' end) 
+				   when (prcsslmt_min is not null and prcsslmt_max is null) then (case when (attribute_1_value is null or prcsslmt_min <![CDATA[<]]> attribute_1_value) then 'N' else 'Y' end) 
+				   else 'N' end as warnYn
+		  	  from blanktonull
+		)
+		select auto_collect_id as plcIp,
+			   lmtnm,
+			   dtm,	
+			   attribute_1_value as value1, <!-- temp -->
+		       attribute_2_value as value2, 
+		       attribute_3_value as value3, <!-- jesang -->
+		       attribute_4_value as value4, <!-- door -->
+		       attribute_5_value as value5,	<!-- heatState -->
+			   prcsslmt_min as min,         <!-- 한계기준 최솟값 -->
+			   prcsslmt_max as max,         <!-- 한계기준 최댓값 -->
+			   warnYn 				        <!-- 경고 alarm 여부(Y,N) -->
+		  from warnChk 
+	</select>
+
+	
+	<select id="getMetalDetect" resultType="TempVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.temp.tempMapper.getMetalDetectDate*/
+		with testdetect as (
+			SELECT A.auto_collect_id as plcid,
+				   MAX(A.measure_dtm) AS testDetectMaxDtm,
+				   count(CASE WHEN MEASURE_DTM like concat(DATE_FORMAT(NOW(),'%Y-%m-%d'),'%') THEN 1 END) as testDetectCount
+		      FROM th_sensing_data A
+		     WHERE A.auto_collect_id like 'MET%'
+		       AND A.ATTRIBUTE_2_VALUE != 'SPECIMEN_CD_1000'
+		       AND A.ATTRIBUTE_2_VALUE != 'SPECIMEN_CD_000'
+		       AND A.ATTRIBUTE_2_VALUE != 'SPECIMEN_CD_999'
+		     group by A.auto_collect_id  
+		)
+		select a.plcid,
+			   (select PRCSSLMT_NM from tb_mes_lmt000 where prcsslmt_id = a.plcid) as lmtnm,	
+			   a.testDetectMaxDtm,
+			   max(B.MEASURE_DTM) AS detectMaxDtm,
+			   a.testDetectCount,
+	   		   count(CASE WHEN b.MEASURE_DTM like concat(DATE_FORMAT(NOW(),'%Y-%m-%d'),'%') THEN 1 END) as DetectCount
+		  from testdetect a
+		  left outer join th_sensing_data b on a.plcid = b.auto_collect_id 
+		 where b.attribute_2_value = 'SPECIMEN_CD_1000'
+		 group by a.plcid
+	</select>
+	
+	<select id="MonitoringType" resultType="String" parameterType="Map" statementType="PREPARED">
+		<!-- type -->
+		select distinct auto_collect_id 
+  		  from th_sensing_data
+	</select>
+
+	<select id="MonitoringXYLine" resultType="Map" parameterType="Map" statementType="PREPARED">
+		<!-- 그래프 data -->
+		select a.auto_collect_id,
+		       date_format(a.measure_dtm,'%H:%i:%s') as measure_dtm,
+		       a.attribute_1_value as value,
+		       (select max(attribute_1_value) from th_sensing_data where auto_collect_id = a.auto_collect_id group by auto_collect_id) as max_val
+		  from th_sensing_data a  
+		 where date_format(a.measure_dtm,'%Y%m%d') = #{DATE}   
+		 order by a.auto_collect_id, a.measure_dtm
+	</select>
+	
+</mapper>

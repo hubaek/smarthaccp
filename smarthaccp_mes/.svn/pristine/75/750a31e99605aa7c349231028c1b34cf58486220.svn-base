@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.item.item000.ItemMasterMapper"> 
+
+    <!-- 품목마스터 -->
+    <select id="getList" resultType="itemMasterVO" parameterType="hashMap" statementType="PREPARED">    
+ 	/* com.ppm.mes.domain.item.item000.ItemMasterMapper.getList */	
+ 		
+ 		 SELECT 
+ 		 		A.SA_PRICE saPrice,
+ 		 		A.PC_PRICE pcPrice,
+ 		 		A.COMPANY company,
+ 		 		A.ITEM_CD itemCd,
+ 		 		A.ITEM_NM itemNm,
+ 		 		A.PART_NO partNo,
+ 		 		A.ITEM_TYPE itemType,
+ 		 		
+			    A.ITEM_MAIN_CD 	itemMainCd,
+			    A1.ITEM_MAIN_NM 	itemMainNm,
+			    A.ITEM_SUB_CD 		itemSubCd,
+			    A2.ITEM_SUB_NM 	itemSubNm,
+		 		 
+ 		 		A.SUPPORT_TYPE supportType,
+ 		 		A.SPEC spec, 		 		
+ 		 		A.UNIT unit,
+ 		 		A.BOM_UNIT bomUnit,
+ 		 		A.BOM_TRANS bomTrans, 		 		
+ 		 		A.YIELD_UNIT yieldUnit,
+ 		 		A.YIELD_TRANS yieldTrans,
+ 		 		A.PD_UNIT pdUnit,
+ 		 		A.PD_TRANS pdTrans,
+ 		 		A.SL_UNIT slUnit,
+ 		 		A.SL_TRANS slTrans,
+ 		 		<if test="map.saCustCd != null and map.saCustCd != ''">
+        			A3.UNIT_PRICE saAmt,
+ 		 		</if>
+ 		 		<if test="map.saCustCd == null or map.saCustCd == ''">
+        			A.SA_AMT saAmt,
+ 		 		</if>
+ 		 		A.PC_AMT pcAmt,
+ 		 		A.STD_COST stdCost,
+ 		 		A.REAL_COST realCost,
+ 		 		A.BARCODE barcode,
+ 		 		A.QC_WAY qcWay,
+ 		 		A.SAFETY_QTY safetyQty,
+ 		 		A.LOW_PURCHASE_QTY lowPurchaseQty,
+ 		 		A.CUST_CD custCd,
+ 		 		B.CUST_NM custNm,
+ 		 		A.LOT_YN lotYn,
+ 		 		A.LOT_QTY lotQty,
+ 		 		A.BARCODE_QTY barcodeQty,
+ 		 		A.WH_CD whCd,
+ 		 		A.LEAD_TIME leadTime,
+ 		 		A.SET_YN setYn,
+ 		 		A.THICKNESS thickness,
+ 		 		A.HORIZONTAL horizontal,
+ 		 		A.VERTICAL vertical,
+ 		 		A.LOSS loss,
+ 		 		A.USE_YN useYn,
+ 		 		A.REMARK remark,
+ 		 		A.STOCK_YN stockYn,
+ 		 		A.QC_GROUP_CD qcGroupCd,
+ 		 		IFNULL(A.AUTO_FIFO_YN,'N') autoFifoYn,
+ 		 		A.BOX_EA_QTY boxEa,
+ 		 		A.EXPIRATION_DATE expirationDate
+ 		 		
+ 		 FROM TB_MES_ITEM000 A 
+ 		 LEFT OUTER JOIN TB_MES_CUST000 B 		 
+            ON A.COMPANY=B.COMPANY 
+            AND A.CUST_CD=B.CUST_CD 
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+		<if test="map.saCustCd != null and map.saCustCd != ''">
+		LEFT OUTER JOIN TB_MES_PR200 A3 on A.COMPANY = A3.COMPANY
+    							       and A.ITEM_CD = A3.ITEM_CD
+    							       and A3.CUST_CD = #{map.saCustCd}
+		</if>	
+		WHERE 1=1		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>	
+	    <!-- 20.11.11 kjm 품목정보 검사방법 추가 -->	
+	    <if test="map.qcWay != null and map.qcWay != ''">
+			<![CDATA[  
+      			AND   A.QC_WAY = #{map.qcWay}
+  			]]>
+	    </if>	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD = #{map.custCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemCdCheck != null and map.itemCdCheck != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD = #{map.itemCdCheck}
+  			]]>
+	    </if>	        
+	    
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND A.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+  		
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+  		
+	    ORDER BY 
+			A.ITEM_TYPE
+    </select>
+    
+    
+     <!-- POP품목조회 -->
+    <select id="getPopList" resultType="itemMasterVO" parameterType="hashMap" statementType="PREPARED">    
+ 	/* com.ppm.mes.domain.item.item000.ItemMasterMapper.getPopList */	
+ 		
+ 		 SELECT A.COMPANY company,
+ 		 		A.ITEM_CD itemCd,
+ 		 		A.ITEM_NM itemNm,
+ 		 		A.PART_NO partNo,
+ 		 		A.ITEM_TYPE itemType,
+ 		 		
+ 		 		<!--  pop 입출고시 사용할 컬럼 추가 (재고코드), 재고수량  -->
+ 		 		IFNULL(C.STOCK_CD, 'N')stockCd,
+ 		 		<!--  C.STOCK_QTY  stockQty, -->
+ 		 		IFNULL(C.STOCK_QTY,'0') stockQty,
+ 		 		<!-- POP 품목조회시 창고코드 추가 -->
+ 		 		IFNULL(C.WH_CD, 'N') whCd,
+ 		 		D.WLOT_NO wlotNo,
+ 		 		
+			    A.ITEM_MAIN_CD 	itemMainCd,
+			    A1.ITEM_MAIN_NM 	itemMainNm,
+			    A.ITEM_SUB_CD 		itemSubCd,
+			    A2.ITEM_SUB_NM 	itemSubNm,
+		 		 
+ 		 		A.SUPPORT_TYPE supportType,
+ 		 		A.SPEC spec, 		 		
+ 		 		A.UNIT unit,
+ 		 		A.BOM_UNIT bomUnit,
+ 		 		A.BOM_TRANS bomTrans, 		 		
+ 		 		A.YIELD_UNIT yieldUnit,
+ 		 		A.YIELD_TRANS yieldTrans,
+ 		 		A.PD_UNIT pdUnit,
+ 		 		A.PD_TRANS pdTrans,
+ 		 		A.SL_UNIT slUnit,
+ 		 		A.SL_TRANS slTrans,
+ 		 		
+ 		 		A.SA_AMT saAmt,
+ 		 		A.PC_AMT pcAmt,
+ 		 		A.STD_COST stdCost,
+ 		 		A.REAL_COST realCost,
+ 		 		A.BARCODE barcode,
+ 		 		A.QC_WAY qcWay,
+ 		 		A.SAFETY_QTY safetyQty,
+ 		 		A.LOW_PURCHASE_QTY lowPurchaseQty,
+ 		 		A.CUST_CD custCd,
+ 		 		B.CUST_NM custNm,
+ 		 		A.LOT_YN lotYn,
+ 		 		A.LOT_QTY lotQty,
+ 		 		A.BARCODE_QTY barcodeQty,
+ 		 		A.WH_CD whCd,
+ 		 		A.LEAD_TIME leadTime,
+ 		 		A.SET_YN setYn,
+ 		 		A.THICKNESS thickness,
+ 		 		A.HORIZONTAL horizontal,
+ 		 		A.VERTICAL vertical,
+ 		 		A.LOSS loss,
+ 		 		A.USE_YN useYn,
+ 		 		A.REMARK remark,
+ 		 		A.STOCK_YN stockYn,
+ 		 		A.QC_GROUP_CD qcGroupCd,
+ 		 		IFNULL(A.AUTO_FIFO_YN,'N') autoFifoYn
+ 		 		
+ 		 FROM TB_MES_ITEM000 A 
+ 		 LEFT OUTER JOIN TB_MES_CUST000 B 		 
+            ON A.COMPANY=B.COMPANY 
+            AND A.CUST_CD=B.CUST_CD 
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+		
+		<!--  pop 입출고시 사용할 컬럼 추가를 위해 조인함(재고코드)  -->
+		LEFT OUTER join
+			TB_MES_ST000 C
+			ON A.COMPANY = C.COMPANY
+			AND A.ITEM_CD = C.ITEM_CD
+		
+		LEFT OUTER JOIN
+			TB_MES_WO100 D
+			ON A.ITEM_CD = D.ITEM_CD	
+			 
+		WHERE 1=1		
+		
+		AND A.ITEM_TYPE IN(30,40)
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD = #{map.custCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemCdCheck != null and map.itemCdCheck != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD = #{map.itemCdCheck}
+  			]]>
+	    </if>	        
+	    
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND A.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+  		
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    GROUP BY	
+			A.ITEM_CD
+  		
+	    ORDER BY A.ITEM_CD
+    </select>
+    
+    
+    <!-- 라우팅별품목 -->
+    <select id="getRoutingItemList" resultType="itemMasterVO" parameterType="hashMap" statementType="PREPARED">  
+    	/* com.ppm.mes.domain.item.item000.ItemMasterMapper.getRoutingItemList */  
+ 		 SELECT A.COMPANY company,
+ 		 		A.ITEM_CD itemCd,
+ 		 		A.ITEM_NM itemNm,
+ 		 		A.PART_NO partNo,
+ 		 		A.ITEM_TYPE itemType,
+	 		 
+				A.ITEM_MAIN_CD 	itemMainCd,
+				A1.ITEM_MAIN_NM 	itemMainNm,
+				A.ITEM_SUB_CD 		itemSubCd,
+				A2.ITEM_SUB_NM 	itemSubNm,
+			 
+ 		 		A.SUPPORT_TYPE supportType,
+ 		 		A.SPEC spec,		 		
+ 		 		
+ 		 		A.UNIT unit,
+ 		 		A.BOM_UNIT bomUnit,
+ 		 		A.BOM_TRANS bomTrans, 		 		
+ 		 		A.YIELD_UNIT yieldUnit,
+ 		 		A.YIELD_TRANS yieldTrans,
+ 		 		A.PD_UNIT pdUnit,
+ 		 		A.PD_TRANS pdTrans,
+ 		 		A.SL_UNIT slUnit,
+ 		 		A.SL_TRANS slTrans,
+ 		 		
+ 		 		A.SA_AMT saAmt,
+ 		 		A.PC_AMT pcAmt,
+ 		 		A.STD_COST stdCost,
+ 		 		A.REAL_COST realCost,
+ 		 		A.BARCODE barcode,
+ 		 		A.QC_WAY qcWay,
+ 		 		A.SAFETY_QTY safetyQty,
+ 		 		A.LOW_PURCHASE_QTY lowPurchaseQty,
+ 		 		A.CUST_CD custCd,
+ 		 		B.CUST_NM custNm,
+ 		 		A.LOT_YN lotYn,
+ 		 		A.LOT_QTY lotQty,
+ 		 		A.BARCODE_QTY barcodeQty,
+ 		 		A.WH_CD whCd,
+ 		 		A.LEAD_TIME leadTime,
+ 		 		A.SET_YN setYn,
+ 		 		A.THICKNESS thickness,
+ 		 		A.HORIZONTAL horizontal,
+ 		 		A.VERTICAL vertical,
+ 		 		A.LOSS loss,
+ 		 		A.USE_YN useYn,
+ 		 		A.REMARK remark,
+ 		 		A.STOCK_YN stockYn,
+                D.ROUTING_CD routingCd,
+                D.ROUTING_NM routingNm,
+                (SELECT EQUIP_CD FROM tb_mes_eq000 Q WHERE Q.COMPANY = A.COMPANY ORDER BY Q.EQUIP_CD LIMIT 1) equipCd,
+        		(SELECT EQUIP_NM FROM tb_mes_eq000 Q WHERE Q.COMPANY = A.COMPANY ORDER BY Q.EQUIP_CD LIMIT 1) equipNm
+ 		 FROM TB_MES_ITEM000 A 
+ 		 LEFT OUTER JOIN TB_MES_CUST000 B 		 
+            ON A.COMPANY=B.COMPANY 
+            AND A.CUST_CD=B.CUST_CD 
+ 		 LEFT OUTER JOIN TB_MES_RT120 C	 
+            ON A.COMPANY=C.COMPANY 
+            AND A.ITEM_CD=C.ITEM_CD 
+ 		 LEFT OUTER JOIN TB_MES_RT100 D 		 
+            ON C.COMPANY=D.COMPANY 
+            AND C.ROUTING_CD=D.ROUTING_CD 
+            
+		 LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		 LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+			
+		WHERE 1=1		
+		
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD = #{map.custCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND A.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    	    	    
+	    <!-- 조달구분 -->
+		 <if test="map.supportType != null and map.supportType != ''">
+			<![CDATA[  
+      			AND A.SUPPORT_TYPE = #{map.supportType}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingYn != null and map.routingYn eq 'Y'.toString()">
+		 	<![CDATA[  
+      			AND  D.ROUTING_CD IS NOT NULL
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND   D.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND (DATA1 = #{map.itemTypeGroup} OR DATA1 = 'C'))
+  			]]>
+  		</if>
+  		
+	    ORDER BY A.ITEM_CD
+    </select>
+    
+    
+    
+    <!-- 공정별품목 -->
+    <select id="getRoutItemList" resultType="itemMasterVO" parameterType="hashMap" statementType="PREPARED">   
+    	/* com.ppm.mes.domain.item.item000.ItemMasterMapper.getRoutItemList */ 
+		 SELECT A.COMPANY company,
+		       A.ITEM_CD itemCd,
+		       A.ITEM_NM itemNm,
+		       A.PART_NO partNo,
+		       A.ITEM_TYPE itemType,
+
+			   A.ITEM_MAIN_CD 	itemMainCd,
+			   A1.ITEM_MAIN_NM 	itemMainNm,
+			   A.ITEM_SUB_CD 		itemSubCd,
+			   A2.ITEM_SUB_NM 	itemSubNm, 
+
+		       A.SUPPORT_TYPE supportType,
+		       A.SPEC spec,
+		       A.UNIT unit,
+		       A.BOM_UNIT bomUnit,
+		       A.BOM_TRANS bomTrans,
+		       A.YIELD_UNIT yieldUnit,
+		       A.YIELD_TRANS yieldTrans,
+		       A.PD_UNIT pdUnit,
+		       A.PD_TRANS pdTrans,
+		       A.SL_UNIT slUnit,
+		       A.SL_TRANS slTrans,
+		       A.SA_AMT saAmt,
+		       A.PC_AMT pcAmt,
+		       A.STD_COST stdCost,
+		       A.REAL_COST realCost,
+		       A.BARCODE barcode,
+		       A.QC_WAY qcWay,
+		       A.SAFETY_QTY safetyQty,
+		       A.LOW_PURCHASE_QTY lowPurchaseQty,
+		       A.CUST_CD custCd,
+		       B.CUST_NM custNm,
+		       A.LOT_YN lotYn,
+		       A.LOT_QTY lotQty,
+		       A.BARCODE_QTY barcodeQty,
+		       F.WH_CD whCd,
+		       A.LEAD_TIME leadTime,
+		       A.SET_YN setYn,
+		       A.THICKNESS thickness,
+		       A.HORIZONTAL horizontal,
+		       A.VERTICAL vertical,
+		       A.LOSS loss,
+		       A.USE_YN useYn,
+		       A.REMARK remark,
+		       A.STOCK_YN stockYn,
+		       D.ROUTING_CD routingCd,
+		       D.ROUTING_NM routingNm,
+		       F.ROUT_CD routCd,
+		       F.ROUT_NM routNm,
+               F.ROUT_TYPE routType,
+               F.EQUIP_USE_YN equipUseYn,
+               F.QC_YN qcYn,
+               E.ROUT_SEQ routSeq,
+               E.LAST_FLAG lastFlag
+		FROM   TB_MES_ITEM000 A
+         LEFT OUTER JOIN TB_MES_CUST000 B
+	       ON     A.COMPANY  =B.COMPANY
+	       AND    A.CUST_CD=B.CUST_CD
+         INNER JOIN TB_MES_RT120 C
+	       ON     A.COMPANY  =C.COMPANY
+	       AND    A.ITEM_CD=C.ITEM_CD
+         INNER JOIN TB_MES_RT100 D
+	       ON     C.COMPANY     =D.COMPANY
+	       AND    C.ROUTING_CD=D.ROUTING_CD
+         INNER JOIN TB_MES_RT110 E
+	       ON     D.COMPANY     =E.COMPANY
+	       AND    D.ROUTING_CD=E.ROUTING_CD
+         INNER JOIN TB_MES_RT000 F
+	       ON     E.COMPANY  =F.COMPANY
+	       AND    E.ROUT_CD=F.ROUT_CD
+            
+		 LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		 LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+			
+		WHERE  1                 =1
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD = #{map.custCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    	    
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND A.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingYn != null and map.routingYn eq 'Y'.toString()">
+		 	<![CDATA[  
+      			AND  D.ROUTING_CD IS NOT NULL
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND   D.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND (DATA1 = #{map.itemTypeGroup} OR DATA1 = 'C'))
+  			]]>
+  		</if>
+  		
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND   E.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+  		
+	    ORDER BY A.ITEM_CD
+    </select>
+</mapper>

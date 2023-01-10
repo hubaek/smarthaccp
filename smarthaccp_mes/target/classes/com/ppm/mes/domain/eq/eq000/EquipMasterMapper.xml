@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.eq.eq000.EquipMasterMapper"> 
+    <select id="getEquipList" resultType="equipMasterVO" parameterType="hashMap" statementType="PREPARED">
+    /*com.ppm.mes.domain.eq.eq000.EquipMasterMapper.getEquipList */    
+		SELECT A.COMPANY company,
+		       A.EQUIP_CD equipCd,
+		       A.EQUIP_NM equipNm,
+		       A.EQUIP_TYPE equipType,
+		       A.EQUIP_SPEC equipSpec,
+		       A.EQUIP_MAKER equipMaker,
+		       A.MODEL_NM modelNm,
+		       A.CUST_CD custCd,
+		       B.CUST_NM custNm,
+		       A.PURCHASE_DT purchaseDt,
+		       A.PC_AMT pcAmt,
+		       A.OPTION1 option1,
+		       A.OPTION2 option2,
+		       A.OPTION3 option3,
+		       A.OPTION4 option4,		       
+		       A.PLC_YN plcYn,
+		       A.PLC_IP plcIp,
+		       A.PLC_PORT plcPort,		       
+		       A.REMARK remark,
+		       A.USE_YN useYn,
+	           A.UPDATED_AT updatedAt,
+	           A.UPDATED_BY updatedBy
+		FROM   TB_MES_EQ000 A
+        LEFT OUTER JOIN TB_MES_CUST000 B
+	        ON     A.COMPANY   = B.COMPANY
+	        AND    A.CUST_CD = B.CUST_CD
+		WHERE  1 = 1
+
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.equipCd != null and map.equipCd != ''">
+			<![CDATA[  
+      			AND A.EQUIP_CD LIKE UPPER(CONCAT('%',#{map.equipCd},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.equipNm != null and map.equipNm != ''">
+			<![CDATA[  
+      			AND A.EQUIP_NM LIKE UPPER(CONCAT('%',#{map.equipNm},'%'))
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.equipType != null and map.equipType != ''">
+			<![CDATA[  
+      			AND   A.EQUIP_TYPE = #{map.equipType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.equipType != null and map.equipType != ''">
+			<![CDATA[  
+      			AND   A.EQUIP_TYPE = #{map.equipType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.plcYn != null and map.plcYn != ''">
+			<![CDATA[  
+      			AND   A.PLC_YN = #{map.plcYn}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>	    
+    </select>
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ppm.mes.domain.sa.sa320.OrderTempMapper">
+
+    <insert id="insertTempExcel" parameterType="OrderTemp" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertTempExcel */
+		INSERT INTO TB_MES_SA300T
+			( COMPANY             , SLIP_CD       , ROW_NUM      , SA_ORDER_TYPE    , CUST_CD
+            , USER_CD             , SA_ORDER_DT   , SA_DELIVERY_DT   , ORDER_NO         , SURTAX_YN        , REF_SLIP_CD
+            , ITEM_QTY            , END_QTY       , ITEM_CD          , UNIT_AMT         , SUPPLY_AMT       , TOTAL_AMT
+            , SURTAX
+			)
+		VALUES
+			('1000'               , #{slipCd}     , #{rowNum}       , #{saOrderType}    , #{custCd}
+			, #{userCd}           , #{saOrderDt}  , #{saDeliveryDt}  , #{orderNo}        , #{surtaxYn}     , #{refSlipCd}
+			, #{itemQty}          , #{endQty}     , #{itemCd}        , #{unitAmt}        , #{supplyAmt}    , #{totalAmt}
+			, #{surtaxAmt})
+    </insert>
+    
+    <!-- 
+    <insert id="insertTempExcel_BAK" parameterType="OrderTemp" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertTempExcel */
+		INSERT INTO TB_MES_SA300T
+			( COMPANY             , SLIP_CD       , ROW_NUM      , SA_ORDER_TYPE    , CUST_CD
+            , USER_CD             , SA_ORDER_DT   , SA_DELIVERY_DT   , ORDER_NO         , SURTAX_YN        , REF_SLIP_CD
+            , ITEM_QTY            , END_QTY       , ITEM_CD          , UNIT_AMT         , SUPPLY_AMT       , TOTAL_AMT
+            , SURTAX              , INVOICE_NUMBER, INVOICE_CNT	 , ADDRESSEE			, CONTACT_ADDRESS1 , CONTACT_ADDRESS2
+            , POSTCODE			  , ADDRESS		  , MSG				, SHIPPING_CHARGE
+			)
+		VALUES
+			('1000'               , #{slipCd}     , #{rowNum}       , #{saOrderType}    , #{custCd}
+			, #{userCd}           , #{saOrderDt}  , #{saDeliveryDt}  , #{orderNo}        , #{surtaxYn}     , #{refSlipCd}
+			, #{itemQty}          , #{endQty}     , #{itemCd}        , #{unitAmt}        , #{supplyAmt}    , #{totalAmt}
+			, #{surtaxAmt}        , #{invoiceNumber}, #{invoiceCnt}, #{addressee}		 , #{contactAddress1}, #{contactAddress2}
+			, #{postcode}		  , #{address}	  , #{msg}			, #{shippingCharge})
+    </insert>
+    -->
+    
+    <delete id="deleteTempTable" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.deleteTempTable */
+		DELETE FROM TB_MES_SA300T
+    </delete>
+	
+	<insert id="insertSa300Insert" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertSa300Insert */
+		INSERT INTO TB_MES_SA300
+		       (COMPANY,SLIP_CD,CREATED_AT,CREATED_BY,UPDATED_AT,UPDATED_BY,CUST_CD,ORDER_NO,SA_DELIVERY_DT,SA_ORDER_DT,SA_ORDER_TYPE,SLIP_DT,SURTAX_YN,USER_CD)
+		SELECT COMPANY, SLIP_CD,NOW(),USER_CD,NOW(),USER_CD,CUST_CD,ORDER_NO,DATE_FORMAT(SA_DELIVERY_DT,'%Y-%m-%d'),DATE_FORMAT(SA_ORDER_DT,'%Y-%m-%d'),SA_ORDER_TYPE,DATE_FORMAT(NOW(),'%Y-%m-%d'),SURTAX_YN,USER_CD
+		  FROM TB_MES_SA300T
+		 GROUP BY COMPANY,SLIP_CD,SA_ORDER_TYPE,CUST_CD,USER_CD,SA_ORDER_DT,SA_DELIVERY_DT,ORDER_NO,SURTAX_YN
+	</insert>
+	<!-- 
+	<insert id="insertSa300Insert_BAK" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertSa300Insert */
+		INSERT INTO TB_MES_SA300
+		       (COMPANY,SLIP_CD,CREATED_AT,CREATED_BY,UPDATED_AT,UPDATED_BY,CUST_CD,ORDER_NO,SA_DELIVERY_DT,SA_ORDER_DT,SA_ORDER_TYPE,SLIP_DT,SURTAX_YN,USER_CD, ADDRESSEE, CONTACT_ADDRESS1, CONTACT_ADDRESS2, POSTCODE, ADDRESS, MSG, SHIPPING_CHARGE)
+		SELECT COMPANY, SLIP_CD,NOW(),USER_CD,NOW(),USER_CD,CUST_CD,ORDER_NO,DATE_FORMAT(SA_DELIVERY_DT,'%Y-%m-%d'),DATE_FORMAT(SA_ORDER_DT,'%Y-%m-%d'),SA_ORDER_TYPE,DATE_FORMAT(NOW(),'%Y-%m-%d'),SURTAX_YN,USER_CD,ADDRESSEE, CONTACT_ADDRESS1, CONTACT_ADDRESS2, POSTCODE, ADDRESS, MSG, SHIPPING_CHARGE
+		  FROM TB_MES_SA300T
+		 GROUP BY COMPANY,SLIP_CD,SA_ORDER_TYPE,CUST_CD,USER_CD,SA_ORDER_DT,SA_DELIVERY_DT,ORDER_NO,SURTAX_YN
+	</insert>
+	-->
+	
+	<insert id="insertSa310Insert" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertSa310Insert */
+		INSERT INTO TB_MES_SA310
+		       (COMPANY,SLIP_CD,SLIP_SEQ,CREATED_AT,CREATED_BY,UPDATED_AT,UPDATED_BY,END_QTY,ITEM_CD,ITEM_QTY,REF_SLIP_CD,SUPPLY_AMT,SURTAX,TOTAL_AMT,UNIT_AMT)
+		SELECT COMPANY, SLIP_CD, RANK() OVER(PARTITION BY SLIP_CD ORDER BY ROW_NUM) RNK, NOW(),USER_CD,NOW(),USER_CD, END_QTY,ITEM_CD,ITEM_QTY,REF_SLIP_CD,SUPPLY_AMT,SURTAX_AMT,TOTAL_AMT,UNIT_AMT
+		  FROM TB_MES_SA300T
+		 GROUP BY COMPANY, SLIP_CD, USER_CD,USER_CD, END_QTY,ITEM_CD,ITEM_QTY,REF_SLIP_CD,SUPPLY_AMT,SURTAX,TOTAL_AMT,UNIT_AMT 
+	</insert>
+	
+	<insert id="insertSa320Insert" statementType="PREPARED">
+		/*com.ppm.mes.domain.sa.sa320.OrderTempMapper.insertSa320Insert */
+		INSERT INTO TB_MES_SA320
+		       (COMPANY, SLIP_CD, SLIP_SEQ, INVOICE_NUMBER, INVOICE_CNT)
+		SELECT A.COMPANY, A.SLIP_CD, A.SLIP_SEQ, B.INVOICE_NUMBER, B.INVOICE_CNT
+		  FROM TB_MES_SA310  A,
+		       TB_MES_SA300T B
+		 WHERE A.COMPANY   = B.COMPANY
+		   AND A.SLIP_CD   = B.SLIP_CD 
+		   AND A.ITEM_CD   = B.ITEM_CD
+	</insert>
+	
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.material.Detail.MaterialsDetailMapper"> 
+    
+    	<select id="getMaterialsDetailList" resultType="materialsDetailVO" parameterType="hashMap" statementType="PREPARED">
+    		 /* com.ppm.mes.domain.material.Detail.MaterialsDetailMapper.getMaterialsDetailList */     
+	          SELECT 
+		          	COMPANY         company
+				  , IN_DATE         inDate
+				  , IN_SEQ          inSeq
+				  , ITEM_TYPE       itemType
+				  , PRDC_NAME       prdcName
+				  , RCVN_QNTT       rcvnQntt
+				  , PCK_STT         pckStt
+				  , DSP_ITM         dspItm
+				  , SPCF_STT        spcfStt
+				  , VHC_HYG         vhcHyg
+				  , PLT_STT         pltStt
+				  , RPR_STT         rprStt
+				  , MNFC_DT         mnfcDt
+				  , LOT             lot
+				  , CHECKED 		 checked
+				  , PST_INF_STT	 pstInfStt
+				  , JDGM_PR 		 jdgmPr
+			   FROM TB_CCP_MAT200
+			  WHERE  1 = 1
+			    AND  COMPANY = #{map.company}
+			    AND  IN_DATE = #{map.inDate}		
+			    
+    	</select>
+    	  
+    	 
+    	  
+    	   
+</mapper>

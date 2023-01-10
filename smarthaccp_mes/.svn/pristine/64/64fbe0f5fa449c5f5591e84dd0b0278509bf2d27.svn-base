@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.haccp.metal.detail.HaccpMetalDetailMapper">
+ 	<select id="getHaccpMetalDetailList" resultType ="HaccpMetalDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.metal.detail.HaccpMetalDetailMapper.getHaccpMetalDetailList */
+	
+		SELECT DISTINCT
+			B.COMPANY company,
+			IFNULL(B.ITEM_NM, '원료육(소고기)') 	AS itemNm,
+			IFNULL(DATE_FORMAT(B.DTM, "%Y-%m-%d %T"), DATE_FORMAT(A.DTM, "%Y-%m-%d %T")) AS DTM,
+			IFNULL(B.STATUS, A.STATUS) AS status,
+			B.RESULT 							AS result,
+			B.REMARK remark
+		FROM TB_GET_MET A
+		LEFT OUTER JOIN TB_CCP_MET100 B
+		ON A.DTM = B.DTM
+		WHERE 1=1			
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   B.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    <if test="map.em != null and map.em != ''">
+		<![CDATA[  
+     			AND ifnull(B.EM,'NM') = #{map.em}
+ 			]]>
+    	</if>
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(A.DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+	     /* 시편 시작,종료 상태 제외 : 김남우 요청 (21.06.24) 
+	     AND      A.STATUS IN( SELECT CD.SUB_CD
+					 		   FROM TB_MES_CD100 CD
+					 		   WHERE CD.MAIN_CD ='METAL_TYPE'
+					 		   AND CD.DATA1 = 'I')*/
+		AND A.STATUS IN('30', '40', '50', '60', '70', '80')
+		ORDER BY A.DTM    
+	</select>
+	
+	<select id="getMetalDetailList" resultType ="HaccpMetalDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.metal.detail.HaccpMetalDetailMapper.getMetalDetailList */
+	
+		SELECT 
+			COMPANY 									AS company,
+			IFNULL(ITEM_NM, '') 						AS itemNm,
+			IFNULL(DATE_FORMAT(DTM, "%Y-%m-%d %T"),'')	AS DTM,
+			IFNULL(STATUS,'') 							AS status,
+			RESULT 										AS result,
+			REMARK 										AS remark
+		FROM TB_CCP_MET100
+		WHERE 
+			1=1			
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if> 
+		ORDER BY INSPECTION_DATE	    
+	</select>
+	
+	<select id="getMetal" resultType ="HaccpMetalDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.metal.detail.HaccpMetalDetailMapper.getMetal */
+	
+		SELECT 
+			B.COMPANY company,
+			IFNULL(B.ITEM_NM, '원료육(소고기)') 	AS itemNm,
+			IFNULL(DATE_FORMAT(B.DTM, "%Y-%m-%d %T"),
+        	DATE_FORMAT(A.DTM, "%Y-%m-%d %T")) AS DTM,
+			IFNULL(B.STATUS, A.STATUS) AS status,
+			 B.RESULT 							AS result,
+			B.REMARK remark
+		FROM TB_GET_MET A
+		LEFT OUTER JOIN TB_CCP_MET100 B
+		ON A.DTM = B.DTM
+		WHERE 
+			1=1			
+		AND
+			DATE_FORMAT(A.DTM, "%Y%m%d") = #{time}
+		ORDER BY A.DTM	    
+	</select>
+ 	
+ 	<insert id="putCheckMetal">
+	insert 
+    into
+        TB_CCP_MET100
+        (COMPANY, INSPECTION_DATE, INSPECTION_SEQ, ITEM_NM,CREATED_AT, CREATED_BY, UPDATED_AT, UPDATED_BY, STATUS, RESULT, DTM) 
+    values
+        (#{company},#{INSPECTION_DATE},#{INSPECTION_SEQ},#{itemNm},#{CREATED_AT},#{CREATED_BY},#{UPDATED_AT},#{UPDATED_BY},#{status},#{result},#{dtm})
+	
+	</insert>
+ </mapper>

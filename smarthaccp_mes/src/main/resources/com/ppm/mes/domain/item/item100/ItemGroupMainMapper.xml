@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.item.item100.ItemGroupMainMapper">
+    <select id="getItemMainList" resultType="itemGroupMainVO" parameterType="hashMap" statementType="PREPARED">   
+    		/* com.ppm.mes.domain.item.item100.ItemGroupMainMapper.getItemMainList */  
+	    SELECT 
+			A.COMPANY 			company,
+			A.ITEM_MAIN_CD 	itemMainCd,
+			A.ITEM_MAIN_NM 	itemMainNm,
+			A.SORT 			    sort,
+			A.REMARK 			remark,
+			A.USE_YN 			useYn
+		FROM TB_MES_ITEM100 A
+		WHERE 1=1		 
+		 
+		<if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemMainCd != null and map.itemMainCd != ''">  
+			<![CDATA[  
+				AND A.ITEM_MAIN_CD LIKE UPPER(CONCAT('%',#{map.itemMainCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemMainNm != null and map.itemMainNm != ''">  
+			<![CDATA[  
+				AND A.ITEM_MAIN_NM LIKE UPPER(CONCAT('%',#{map.itemMainNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.useYn != null and map.useYn != ''">  
+			<![CDATA[  
+				AND A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+		
+	    ORDER BY A.SORT
+    </select>    
+    
+    
+    <select id="getItemSubList" resultType="itemGroupMainVO" parameterType="hashMap" statementType="PREPARED">
+    	/* com.ppm.mes.domain.item.item100.ItemGroupMainMapper.getItemSubList */      
+		SELECT 
+			A.COMPANY 			company,
+			A.ITEM_MAIN_CD 	itemMainCd,
+			A.ITEM_MAIN_NM 	itemMainNm,
+			B.ITEM_SUB_CD 		itemSubCd,
+			B.ITEM_SUB_NM 		itemSubNm,
+			B.SORT 				sort,
+			B.REMARK 			remark,
+			B.USE_YN 			useYn
+		    
+		FROM TB_MES_ITEM100 A
+		INNER JOIN TB_MES_ITEM150 B
+			ON A.COMPANY = B.COMPANY
+			AND A.ITEM_MAIN_CD = B.ITEM_MAIN_CD
+		WHERE 1=1		 
+		 
+		<if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemMainCd != null and map.itemMainCd != ''">  
+			<![CDATA[  
+				AND A.ITEM_MAIN_CD LIKE UPPER(CONCAT('%',#{map.itemMainCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemMainNm != null and map.itemMainNm != ''">  
+			<![CDATA[  
+				AND A.ITEM_MAIN_NM LIKE UPPER(CONCAT('%',#{map.itemMainNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemSubCd != null and map.itemSubCd != ''">  
+			<![CDATA[  
+				AND B.ITEM_SUB_CD LIKE UPPER(CONCAT('%',#{map.itemSubCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemSubNm != null and map.itemSubNm != ''">  
+			<![CDATA[  
+				AND B.ITEM_SUB_NM LIKE UPPER(CONCAT('%',#{map.itemSubNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.useYn != null and map.useYn != ''">  
+			<![CDATA[  
+				AND B.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+		
+	    ORDER BY A.SORT, B.SORT
+    </select>    
+</mapper>

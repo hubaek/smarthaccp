@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.tank.master.HaccpTankMasterMapper">
+
+	 <select id="getMasterList" resultType="HaccpTankMasterVO" parameterType="hashMap" statementType="PREPARED">    
+    /* com.ppm.mes.domain.haccp.tank.master.HaccpTankMasterMapper.getMasterList */
+		
+		SELECT A.COMPANY 			company,
+			   A.INSPECTION_DATE 	inspectionDate,
+			   A.PLC_IP				plcIp,
+		       A.WRITER 			writer,
+		       A.APPROVER 			approver,
+		       A.STATUS 			status,
+		       codename('STATUS', A.STATUS) 			statusNm,
+		       A.REMARK1 			remark1,
+		       A.REMARK2 			remark2
+		FROM   TB_CCP_TANK000 A
+        WHERE  1 = 1	    
+        
+        <if test="map.plcIp != null and map.plcIp != ''">
+		<![CDATA[  
+     			 AND A.PLC_IP = #{map.plcIp}
+ 			]]>
+    	</if>        
+        <if test="map.inspectionDate != null and map.inspectionDate != ''">
+		<![CDATA[  
+     			AND   A.INSPECTION_DATE = #{map.inspectionDate}
+ 			]]>
+    	</if>
+        <if test="map.fromDate != null and map.fromDate != ''">
+		<![CDATA[  
+     			AND   A.INSPECTION_DATE >= #{map.fromDate}
+ 			]]>
+    	</if>
+	
+	 	<if test="map.toDate != null and map.toDate != ''">
+		<![CDATA[  
+     			AND   A.INSPECTION_DATE <= #{map.toDate}
+ 			]]>
+    	</if>
+    	<if test="map.writer != null and map.writer != ''">
+    	<![CDATA[  
+     			AND   A.WRITER LIKE UPPER(CONCAT('%',#{map.writer},'%'))
+ 			]]>
+    	</if>
+    	<if test="map.approver != null and map.approver != ''">
+    	<![CDATA[  
+     			AND   A.APPROVER LIKE UPPER(CONCAT('%',#{map.approver},'%'))
+ 			]]>
+    	</if>
+    	<if test="map.status != null and map.status != ''">
+    	<![CDATA[  
+     			AND   A.STATUS = #{map.status}
+ 			]]>
+    	</if>
+    	ORDER BY A.INSPECTION_DATE DESC
+    </select>
+    
+
+</mapper>

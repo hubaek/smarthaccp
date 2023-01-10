@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.haccp.in.detail.HaccpInDetailMapper">
+
+<delete id="detailDel" parameterType="HaccpInDetail" >
+/* com.ppm.mes.domain.haccp.in.detail.HaccpInDetailMapper.detailDel */
+   		DELETE FROM tb_ccp_in100
+   		WHERE 
+   			COMPANY 			= #{company} 
+   		AND 
+   			INSPECTION_MONTH 	= #{inspectionMonth}
+</delete>
+
+<delete id="deDel" parameterType="HaccpInDetailVo" >
+/* com.ppm.mes.domain.haccp.in.detail.HaccpInDetailMapper.deDel */
+   		DELETE FROM tb_ccp_in100
+   		WHERE 
+   			INSPECTION_MONTH 	= #{inspectionMonth}
+   		AND 
+   			INSPECTION_DATE 	= #{inspectionDate}
+   		AND 
+   			SEQ 				= #{seq}
+</delete>
+</mapper>

@@ -1,0 +1,218 @@
+@charset "UTF-8";
+/* -------------------------------------------------------
+:  V2.0
+ /  /      css
+: 2010.06.18 커뮤니티 뷰페이지 가로스크롤 추가
+--------------------------------------------------------- */
+
+/*   */
+.bgcolor   {background-color:#FAFAFA;}
+.bgcolor2 {background-color:#F4F9FC;}
+.table_layout {table-layout:fixed;}
+.table_layout div {overflow:hidden; text-overflow:ellipsis; width:100%; font-size:12px;}/* 091203 */
+.table_layout td.bdr_none {border-right:none;}
+
+#contents {overflow:auto;}
+
+/* table sort */
+
+.table thead th {overflow-x:hidden; background:url('/Src/Img/Renewal/table_title_bg.gif') repeat-x left top; font-weight:normal; font-family:Gulim, "굴림"; line-height:150%; height:30px; font-size:12px; color:#555555;}
+.table tbody th {overflow-x:hidden;height:24px; border-bottom:1px solid #EFEFEF; font-size:12px; font-family:"돋움", Dotum; color:#777777; padding:1px; line-height:140%; background-color:#F1F1F1; border-bottom:1px solid #E0E0E0}
+.table tbody td {overflow-x:hidden;height:24px; border-bottom:1px solid #EFEFEF; font-size:12px; font-family:"돋움", Dotum; color:#777777; padding:1px; line-height:140%;}
+.table .notice {padding:1px; color:#5B90C4; background:#F4F9FC; line-height:160%; font-size:12px; font-family:"돋움", Dotum; text-align:left;}/* 091203 */
+
+.table .bdr_top {border-top:1px solid D3D3D1;}/* 091109*/
+
+/* 091109 하단 수정 */
+.table2 thead th {overflow-x:hidden;background:#FAFAFA; font-weight:bold; font-family:Gulim, "굴림"; font-size:12px; color:#868686; line-height:150%; padding:2px; border-bottom:1px solid #E4E4E4; border-top:1px solid #D8D8D8}
+.table2 tbody th {overflow-x:hidden;background:#FAFAFA;  font-weight:bold; font-family:Gulim, "굴림"; font-size:12px; color:#868686; line-height:150%; padding:2px; border-bottom:1px solid #EEEEEE;}
+.table2 thead td {overflow-x:hidden;height:22px; font-size:11px; font-family:"돋움", Dotum; color:#868686; line-height:150%; border-bottom:1px solid #E4E4E4; border-top:1px solid #D8D8D8; border-right:1px solid #E4E4E4; padding-right:10px; padding-left:10px;}
+.table2 tbody td {overflow-x:hidden;height:22px; font-size:11px; font-family:"돋움", Dotum; color:#868686; line-height:150%; border-bottom:1px solid #EEEEEE; border-right:1px solid #E4E4E4; padding-right:7px; padding-left:7px;}
+.table2 td.bdr_none {border-right:none;}
+
+/* 테이블 정렬 추가 2010.07.01*/
+
+table.tablesorter thead tr .header {background-image: url('/Src/Img/Renewal/arr_topbottom5.gif');background-repeat: no-repeat;background-position: center right;cursor: pointer;}
+table.tablesorter thead tr .headerSortUp {background-image: url('/Src/Img/Renewal/arr_top5.gif') !important;}
+table.tablesorter thead tr .headerSortDown {background-image: url('/Src/Img/Renewal/arr_bottom5.gif') !important;}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {background-color: #d3e6fd;}
+
+/* 091116 월간한줄 */
+.table6 thead td {height:20px; font-size:11px; font-family:"돋움", Dotum; color:#868686; text-align:center; line-height:150%; border-bottom:1px solid #E4E4E4; border-top:1px solid #D8D8D8; border-right:1px solid #E4E4E4; margin:0;}
+.table6 tbody td {height:22px; font-size:11px; font-family:"돋움", Dotum; color:#868686; text-align:center; line-height:150%; border-bottom:1px solid #EEEEEE; border-right:1px solid #E4E4E4; margin:0;}
+.table6 .bdr_left {border-left:1px solid #E4E4E4;}
+
+.table3 thead th {background:#FAFAFA; font-weight:bold; font-family:Gulim, "굴림"; font-size:12px; color:#868686; line-height:150%; padding:2px; border-right:1px solid #E4E4E4; border-bottom:1px solid #EEEEEE; border-top:1px solid #D8D8D8;}
+.table3 tbody td {height:100px; font-size:11px; font-family:"돋움", Dotum; color:#868686;line-height:150%;border-bottom:1px solid #E4E4E4; border-right:1px solid #E4E4E4; padding-top:3px;}
+.table3 tbody td div {margin-bottom:1px; vertical-align:top; position:relative; font-size:11px; font-family:"돋움", Dotum; padding-top:1px; padding-bottom:1px; line-height:11px;}
+.table3 .bdr_none {border-right:none;}
+.schedule_num {position:relative; padding:0 3px; font-size:11px; line-height:15px; background:#EAEAEA; font-family:"돋움", Dotum;}
+
+.table5 tbody td {overflow-x:hidden;font-size:11px; font-family:"돋움", Dotum; color:#868686; line-height:150%; padding:1px 7px;}
+
+.table7 thead th {background:#FAFAFA; font-weight:bold; font-family:Gulim, "굴림"; font-size:12px; color:#868686; line-height:220%; padding:0px 5px; border-bottom:1px solid #E4E4E4; border-top:1px solid #D8D8D8;border-right:1px solid #E4E4E4;}
+.table7 tbody th {background:#FAFAFA;  font-weight:bold; font-family:Gulim, "굴림"; font-size:12px; color:#868686; line-height:150%; padding:0px 5px; border-bottom:1px solid #EEEEEE;}
+.table7 thead td {font-size:11px; width:70px;font-family:"돋움", Dotum; color:#868686; line-height:150%; border-bottom:1px solid #E4E4E4; border-top:1px solid #D8D8D8; border-right:1px solid #E4E4E4; padding:0px 5px;}
+.table7 tbody td {font-size:11px; font-family:"돋움", Dotum; color:#868686; line-height:150%; border-bottom:1px solid #EEEEEE; border-right:1px solid #E4E4E4;padding:0px 5px;}
+.table7 td.bdr_none {border-right:none;}
+
+.tb_blue thead th {font-family:"돋움", Dotum; font-size:11px; background:#F4F9FF; font-weight:bold; color:#5A7CA6; text-align:center; padding:5px 7px; border-right:1px solid #DAE5F2;border-bottom:1px solid #DAE5F2; border-top:1px solid #DAE5F2;}
+.tb_blue thead td {font-family:"돋움", Dotum; font-size:11px; background:#F4F9FF; font-weight:bold; color:#5A7CA6; text-align:center; padding:5px 7px; border-right:1px solid #DAE5F2;border-bottom:1px solid #DAE5F2}
+.tb_blue tbody th {font-family:"돋움", Dotum; font-size:11px; text-align:center; padding:5px 7px; font-weight:normal; border-bottom:1px solid #DAE5F2;border-right:1px solid #DAE5F2;border-top:1px solid #DAE5F2;}
+.tb_blue tbody td {font-family:"돋움", Dotum; font-size:11px; text-align:center; padding:5px 7px; border-bottom:1px solid #DAE5F2;border-right:1px solid #DAE5F2;}
+.bdr_left {border-left:1px solid #DAE5F2;}
+
+/* _ */
+.table_view * {  font-family: inherit; font-style: inherit; line-height:140%; }
+.table_view .view_box {border-bottom:1px solid #E4E4E4; float:left; width:100%}/* 091204 */
+.table_view .view_title {font-family:"돋움", Dotum; font-size:12px; color:#333333; font-weight:bold; padding:5px 0 5px 10px;  line-height:180%; float:left;}/* 091204 */
+.table_view .view_info {font-family:"돋움", Dotum; font-size:11px; color:#999999; padding:10px 10px 2px 0; line-height:130%; float:right;}/* 091204 */
+.table_view .view_con {clear:both; padding:15px; font-family:"돋움", Dotum; font-size:12px; color:#777777; word-break:break-all;padding-bottom:30px;}/* 091204 */
+.table_view thead th {background:#EFEFEF; font-weight:normal; font-family:"돋움", Dotum; font-size:11px; line-height:150%; padding:5px; border-bottom:1px solid #E4E4E4; border-top:1px solid #E4E4E4}
+.table_view thead td {height:20px; background:#FFFFFF; font-size:11px; font-family:"돋움", Dotum; line-height:150%; border-bottom:1px solid #E4E4E4; border-top:1px solid #E4E4E4; padding-left:10px;}
+.table_view tbody th {background:#EFEFEF; font-weight:normal; font-family:"돋움", Dotum; font-size:11px; line-height:150%; padding:5px; border-bottom:1px solid #E4E4E4;}
+.table_view tbody td {height:20px; background:#FFFFFF; font-size:11px; font-family:"돋움", Dotum; line-height:150%; border-bottom:1px solid #E4E4E4;  padding:px; padding-left:10px;}
+.table_view .reply {font-family:"돋움", Dotum; font-size:11px; float:left}
+.table_view .date_info {font-family:"돋움", Dotum; font-size:11px; color:#989898; float:right; padding-right:10px; line-height:160%; text-align:right;}
+.table_view .bdr-top-no {border-top:none;}
+.table_view .bdr-top-yes {border-top:1px solid #E4E4E4;}
+
+.intable tbody td {border:none; border-bottom:1px solid #E4E4E4;}
+
+.precon  {background:url('/Src/Img/Renewal/bullet_precon.gif') no-repeat left 0; padding-left:13px;}
+.nextcon {background:url('/Src/Img/Renewal/bullet_nextcon.gif') no-repeat left 2px;  padding-left:13px;}
+
+/* _ */
+.table_view .write_editor {padding:5px;}
+.table_view .write_con {padding:0 5px 5px 10px; font-family:"돋움", Dotum; font-size:12px; color:#777777; line-height:160%}
+
+/* 하단 넘버링 */
+.paging {width:100%;}
+.paging .number {float:left; width:100%;text-align:center; margin-top:15px; margin-bottom:30px;padding-top:3px;padding-bottom:3px;}
+.paging .number img {vertical-align:middle;}
+.paging .number img .link {padding-bottom:2px;}
+.paging .number a {background-color:#FFFFFF; font-family:verdana; font-size:12px; padding:0px 1px 1px 4px; border:1px solid #DCDCDC; line-height:150%; text-decoration:none; color:#444444; margin-right:4px;}/* 배경색 추가 091112*/
+.paging .number a:hover {padding:0px 1px 1px 3px; border:1px solid #FF6600; text-decoration:none; line-height:150%; color:#FF6600; font-weight:bold; margin-right:4px;}
+.paging .page {float:right; text-align:center; width:11%; position:relative; display:inline; margin-top:15px; margin-bottom:15px;}
+
+
+/* 도움말 */
+#help_btm {left:2px; bottom:0; width:100%; position:absolute; margin-bottom:-1px; z-index:4;}
+#help_btm {z-index:5; position:fixed; bottom:0; left:0; right:0; width:99.9%; min-width:50%; padding:0; margin:0;}
+#help_btm .help_box  {position:fixed; border:2px solid #606060; border-bottom:none; background:#F0F0F0; padding:10px; font-size:11px; line-height:120%;}
+
+
+/* 버튼 */
+.btn_page {
+}
+.btn_page a{
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn_contents_bg.gif') no-repeat  scroll left 0;
+	color:#666666;
+	cursor:pointer	;
+	display:block;
+	float:left;
+	font-family:"돋움", Dotum;
+ 	font-size:11px;
+	font-weight:normal;
+	height:20px;
+	line-height:normal;
+	text-decoration:none;
+	padding-left:6px;
+	margin-right:3px;
+	overflow:hidden;
+}
+.btn_page a:hover {
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn_contents_bg.gif') no-repeat  scroll left -20;
+	color:#666666;
+	cursor:pointer	;
+	display:block;
+	float:left;
+	font-family:"돋움", Dotum;
+ 	font-size:11px;
+	font-weight:normal;
+	height:20px;
+	line-height:normal;
+	text-decoration:none;
+	padding-left:6px;
+	margin-right:3px;
+	overflow:hidden;
+}
+.btn_page a span {
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn_contents_bg.gif') no-repeat scroll right 0;
+	display:block;
+	float:left;
+	height:20px;
+	line-height:180%;/* 091109 수정 */
+	overflow:hidden;
+	padding-right:6px;
+}
+
+
+.btn_page2 {}
+.btn_page2 a, .btn_page2 p {
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn2_contents_bg.gif') no-repeat  scroll left 0;
+	color:#666666;
+	display:block;
+	float:left;
+	font-family:"돋움", Dotum;
+ 	font-size:11px;
+	height:40px;
+	line-height:normal;
+	text-decoration:none;
+	padding-left:10px;
+	margin-right:3px;
+	overflow:hidden;
+}
+.btn_page2 a {
+	cursor:pointer	;
+}
+.btn_page2 a:hover {
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn2_contents_bg.gif') no-repeat scroll left -40px;
+}
+
+
+.btn_page2 a span , .btn_page2 span{
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn2_contents_bg.gif') no-repeat scroll right 0;
+	display:block;
+	float:left;
+	height:40px;
+	line-height:300%;/* 091119 수정*/
+	overflow:hidden;
+	padding-right:10px;
+}
+
+.btn_page2 a:hover span {
+	position:relative;
+	background: transparent url('/Src/Img/Renewal/btn2_contents_bg.gif') no-repeat scroll right -40px;
+	color:#5B90C4;
+}
+
+/* 게시판 내부 상태 버튼 */
+.btn_blue  {line-height:160%; color:#6281B4; font-size:11px; background:#E5EAF3; padding:1px 3px; border:1px solid #7D97C1}
+.btn_red   {line-height:160%; color:#9B5656; font-size:11px; background:#F0E6E6; padding:1px 3px; border:1px solid #B78888}
+.btn_gray {line-height:160%; color:#8B8B8B; font-size:11px; background:#ECECEC; padding:1px 3px; border:1px solid #A6A6A6}
+.btn_green {line-height:160%; color:#139210; font-size:11px; background:#EDF7ED; padding:1px 3px; border:1px solid #139210}
+
+.icon_blue {background:#3090e3;border:1px solid #297fc9;color:#FFFFFF !important;padding:1px;font-style:Dotum;font-size:11px;font-weight:normal;}
+.icon_gray {background:#686868;border:1px solid #5d5d5d;color:#FFFFFF !important;padding:1px;font-style:Dotum;font-size:11px;font-weight:normal;}
+.icon_pink {background:#E36696;border:1px solid #D84F83;color:#FFFFFF !important;padding:1px;font-style:Dotum;font-size:11px;font-weight:normal;}
+.icon_purple {background:#9669EE;border:1px solid #8D58EA;color:#FFFFFF !important;padding:1px;font-style:Dotum;font-size:11px;font-weight:normal;}
+
+
+
+/* 20100324 */
+.no-bdr table {clear:both; margin:0 auto 3px auto;}
+.no-bdr thead th {border:0; padding:0; margin:0;}
+.no-bdr thead td {border:0; padding:0; margin:0;}
+.no-bdr tbody th {border:0; padding:0; margin:0;}
+.no-bdr tbody td {border:0; padding:0; margin:0;}
+.no-bdr img {margin:0;}
+.no-bdr-bottom {border-bottom:0px;}
+
+.cmt_cnt {font-family:Dotum, "돋움"; color:#6095cb; font-size:11px;}/*100527*/

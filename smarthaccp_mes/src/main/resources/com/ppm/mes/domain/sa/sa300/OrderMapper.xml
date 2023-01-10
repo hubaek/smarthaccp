@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.sa.sa300.OrderMapper">
+ 
+    <select id="header" resultType="orderVO" parameterType="hashMap" statementType="PREPARED">   
+    	/*com.ppm.mes.domain.sa.sa300.OrderMapper.header*/
+     
+	   	SELECT A.COMPANY company,
+		       A.SA_ORDER_TYPE saOrderType,
+		       A.SLIP_CD slipCd,
+		       A.ORDER_NO orderNo,
+		       A.SLIP_DT slipDt,		       
+		       A.SA_ORDER_DT saOrderDt,
+		       A.SA_DELIVERY_DT saDeliveryDt,    
+		       D.CUST_CD custCd,
+		       D.CUST_NM custNm,
+		       A.USER_CD userCd,
+			   E.USER_NM userNm,
+		       A.SURTAX_YN surtaxYn,
+		       A.REMARK remark,
+	           (SELECT COUNT(DISTINCT Z.ITEM_CD) FROM TB_MES_SA310 Z WHERE Z.COMPANY = A.COMPANY AND  Z.SLIP_CD = A.SLIP_CD) sumItemQty,
+				(SELECT SUM(Z.UNIT_AMT) FROM TB_MES_SA310 Z WHERE Z.COMPANY = A.COMPANY AND  Z.SLIP_CD = A.SLIP_CD) sumUnitPrice,
+				(SELECT SUM(Z.SUPPLY_AMT) FROM TB_MES_SA310 Z WHERE Z.COMPANY = A.COMPANY AND  Z.SLIP_CD = A.SLIP_CD) sumSupplyPrice,
+				(SELECT SUM(Z.SURTAX_AMT) FROM TB_MES_SA310 Z WHERE Z.COMPANY = A.COMPANY AND  Z.SLIP_CD = A.SLIP_CD) sumSurtax,
+				(SELECT SUM(Z.TOTAL_AMT) FROM TB_MES_SA310 Z WHERE Z.COMPANY = A.COMPANY AND  Z.SLIP_CD = A.SLIP_CD) sumTotalPrice, 
+	           A.UPDATED_AT updatedAt,
+	           A.UPDATED_BY updatedBy,
+	           A.ADDRESSEE addressee,
+	           A.CONTACT_ADDRESS1 contactAddress1,
+	           A.CONTACT_ADDRESS2 contactAddress2,
+	           A.POSTCODE postcode,
+	           A.ADDRESS address,
+	           A.MSG msg,
+	           A.SHIPPING_CHARGE shippingCharge
+			FROM TB_MES_SA300 A 
+	            LEFT JOIN TB_MES_CUST000 D
+	            ON A.COMPANY = D.COMPANY 
+            AND A.CUST_CD = D.CUST_CD 
+	            LEFT OUTER JOIN TB_MES_USER000 E
+				ON A.USER_CD = E.USER_CD 
+            WHERE 1=1
+		
+	    
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.saOrderType != null and map.saOrderType != ''">
+			<![CDATA[  
+      			AND   A.SA_ORDER_TYPE = #{map.saOrderType}
+  			]]>
+	    </if>
+			    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD LIKE UPPER(CONCAT('%',#{map.custCd},'%'))
+  			]]>
+	    </if>
+	    		
+		 <if test="map.userCd != null and map.userCd != ''">
+			<![CDATA[  
+      			AND A.USER_CD LIKE UPPER(CONCAT('%',#{map.userCd},'%'))
+  			]]>
+	    </if>
+	    
+		
+		 <if test="map.fromDate != null and map.fromDate != ''">
+			<![CDATA[  
+      			AND   A.SLIP_DT >= #{map.fromDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.toDate != null and map.toDate != ''">
+			<![CDATA[  
+      			AND   A.SLIP_DT <= #{map.toDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.slipCd != null and map.slipCd != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD = #{map.slipCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.saOrderDt != null and map.saOrderDt != ''">
+			<![CDATA[  
+      			AND A.SA_ORDER_DT = #{map.saOrderDt}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.saDeliveryDt != null and map.saDeliveryDt != ''">
+			<![CDATA[  
+      			AND A.SA_DELIVERY_DT = #{map.saDeliveryDt}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.orderNo != null and map.orderNo != ''">
+			<![CDATA[  
+      			AND   A.ORDER_NO LIKE UPPER(CONCAT('%',#{map.orderNo},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT SLIP_CD FROM TB_MES_SA310 WHERE ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%')))
+  			]]>
+	    </if>
+	    
+		 <if test="map.currencyCd != null and map.currencyCd != ''">
+			<![CDATA[  
+      			AND A.CURRENCY_CD = #{map.currencyCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custNm != null and map.custNm != ''">
+			<![CDATA[  
+	      		AND   D.CUST_NM LIKE UPPER(CONCAT('%',#{map.custNm},'%'))
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.userNm != null and map.userNm != ''">
+			<![CDATA[  
+      			AND E.USER_NM LIKE UPPER(CONCAT('%',#{map.userNm},'%'))
+  			]]>
+	    </if>    	
+		
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT SLIP_CD FROM TB_MES_SA310 WHERE ITEM_CD IN ( SELECT ITEM_CD FROM TB_MES_ITEM000 WHERE ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))))
+  			]]>
+	    </if>
+	    
+		 <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT SLIP_CD FROM TB_MES_SA310 WHERE ITEM_CD IN ( SELECT ITEM_CD FROM TB_MES_ITEM000 WHERE PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))))
+  			]]>
+	    </if>
+	    
+	    
+	    
+	 	<if test="map.remainYn != null and map.remainYn eq 'Y'.toString()">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT Z1.SLIP_CD
+      									FROM TB_MES_SA310 Z1 
+      									WHERE ( Z1.ITEM_QTY - IFNULL(Z1.END_QTY,0) - ifnull((SELECT SUM(Z.ITEM_QTY) 
+      																	FROM TB_MES_SA410 Z
+      																	INNER JOIN TB_MES_SA400 Z2 
+      																	ON Z.COMPANY = Z2.COMPANY
+      																	AND Z.SLIP_CD = Z2.SLIP_CD
+      																	WHERE 1=1 
+      																	AND Z.COMPANY = Z1.COMPANY 
+      																	AND Z.REF_SLIP_CD = Z1.SLIP_CD 
+      																	AND Z.REF_SLIP_SEQ = Z1.SLIP_SEQ
+      																	AND Z.ITEM_CD = Z1.ITEM_CD),0) ) > 0)
+  			]]>
+	    </if>
+	    
+	 	<if test="map.remainYn2 != null and map.remainYn2 eq 'Y'.toString()">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT Z1.SLIP_CD
+      									FROM TB_MES_SA310 Z1 
+      									WHERE ( Z1.ITEM_QTY - IFNULL(Z1.END_QTY,0) - ifnull((SELECT SUM(Z.ITEM_QTY) 
+      																	FROM TB_MES_ST200 Z
+      																	WHERE 1=1 
+      																	AND Z.COMPANY = Z1.COMPANY 
+      																	AND Z.REF_SLIP_CD = Z1.SLIP_CD 
+      																	AND Z.ITEM_CD = Z1.ITEM_CD),0) ) > 0)
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.UPDATED_AT DESC
+    </select>
+    
+    <select id="itemDetail" resultType="orderVO" parameterType="hashMap" statementType="PREPARED">    
+    /*com.ppm.mes.domain.sa.sa300.OrderMapper.itemDetail*/
+    	SELECT 
+    	   C.COMPANY company,
+    	   C.SA_ORDER_TYPE saOrderType,
+    	   C.SLIP_CD slipCd,
+		   C.ORDER_NO orderNo,
+	       C.SLIP_DT slipDt,
+	       C.SA_ORDER_DT saOrderDt,
+		   C.SA_DELIVERY_DT saDeliveryDt,
+	       F.CUST_CD custCd,
+	       F.CUST_NM custNm,	       
+	       C.USER_CD userCd,
+	       G.USER_NM userNm,
+	       C.SURTAX_YN surtaxYn,
+	       A.SLIP_SEQ slipSeq,
+	       A.ITEM_CD itemCd,
+	       D.ITEM_NM	itemNm,
+	       D.PART_NO partNo,
+	       D.SPEC spec,
+           D.UNIT unit,
+	       A.ITEM_QTY itemQty,
+	       A.UNIT_AMT unitAmt,
+	       A.SUPPLY_AMT supplyAmt,
+	       A.SURTAX_AMT surtaxAmt,
+	       A.TOTAL_AMT totalAmt,
+	       C.REMARK remark,
+	       A.ITEM_REMARK itemRemark,
+	       A.END_REMARK endRemark,
+	       IFNULL(A.END_QTY,0) endQty,
+	       
+	       <!-- 판매대비 -->
+	       (CASE WHEN A.ITEM_QTY - IFNULL(A.END_QTY,0) - IFNULL((SELECT SUM(ITEM_QTY) FROM TB_MES_SA410 Z INNER JOIN TB_MES_SA400 Z2 ON Z.COMPANY = Z2.COMPANY AND Z.SLIP_CD = Z2.SLIP_CD WHERE 1=1 AND Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) > 0 THEN 'Y' ELSE 'N' END) remainYn,
+           IFNULL((SELECT SUM(ITEM_QTY) FROM TB_MES_SA410 Z INNER JOIN TB_MES_SA400 Z2 ON Z.COMPANY = Z2.COMPANY AND Z.SLIP_CD = Z2.SLIP_CD WHERE 1=1 AND Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) useQty,
+           A.ITEM_QTY - IFNULL(A.END_QTY,0) - ifnull((SELECT SUM(ITEM_QTY) FROM TB_MES_SA410 Z INNER JOIN TB_MES_SA400 Z2 ON Z.COMPANY = Z2.COMPANY AND Z.SLIP_CD = Z2.SLIP_CD WHERE 1=1 AND Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) remainQty,
+     
+     		<!-- 출하대비 -->
+     	   (CASE WHEN A.ITEM_QTY - IFNULL(A.END_QTY,0) - IFNULL((SELECT SUM(ITEM_QTY) FROM TB_MES_ST200 Z WHERE Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) > 0 THEN 'Y' ELSE 'N' END) remainYn2,
+       	   IFNULL((SELECT SUM(ITEM_QTY) FROM TB_MES_ST200 Z WHERE Z.COMPANY = A.COMPANY  AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) useQty2,
+           A.ITEM_QTY - IFNULL(A.END_QTY,0) - ifnull((SELECT SUM(ITEM_QTY) FROM TB_MES_ST200 Z WHERE Z.COMPANY = A.COMPANY AND  Z.REF_SLIP_CD = A.SLIP_CD AND Z.REF_SLIP_SEQ = A.SLIP_SEQ AND Z.ITEM_CD = A.ITEM_CD),0) remainQty2,
+
+		   CASE WHEN A.ITEM_QTY - IFNULL(A.END_QTY,0) - IFNULL((SELECT SUM(ITEM_QTY) FROM TB_MES_ST200 Z WHERE Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.ITEM_CD = A.ITEM_CD),0) > 0 THEN DATEDIFF(NOW(), IFNULL(C.SA_DELIVERY_DT, C.SLIP_DT)) ELSE DATEDIFF((SELECT MAX(Z.OUT_DT) FROM TB_MES_ST200 Z WHERE Z.COMPANY = A.COMPANY AND Z.REF_SLIP_CD = A.SLIP_CD AND Z.ITEM_CD = A.ITEM_CD), IFNULL(C.SA_DELIVERY_DT, C.SLIP_DT)) END diffDt, 
+	       
+	       A.REF_SLIP_CD refSlipCd,
+	       A.REF_SLIP_SEQ refSlipSeq
+		FROM TB_MES_SA310 A 
+		INNER JOIN TB_MES_SA300 C
+			ON A.COMPANY = C.COMPANY
+			AND A.SLIP_CD = C.SLIP_CD 
+   		INNER JOIN TB_MES_ITEM000 D
+	   		ON A.COMPANY = D.COMPANY
+			AND A.ITEM_CD = D.ITEM_CD 
+        LEFT JOIN TB_MES_CUST000 F
+	        ON C.COMPANY = F.COMPANY
+	        AND C.CUST_CD = F.CUST_CD 
+		LEFT OUTER JOIN TB_MES_USER000 G
+			ON C.USER_CD = G.USER_CD 
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 D1
+			ON D.COMPANY = D1.COMPANY 
+			AND D.ITEM_MAIN_CD = D1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 D2
+			ON D.COMPANY = D2.COMPANY 
+			AND D.ITEM_MAIN_CD = D2.ITEM_MAIN_CD
+			AND D.ITEM_SUB_CD = D2.ITEM_SUB_CD
+			
+	    WHERE 1=1
+        
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   C.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+		    
+		 <if test="map.saOrderType != null and map.saOrderType != ''">
+			<![CDATA[  
+      			AND   C.SA_ORDER_TYPE = #{map.saOrderType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   C.CUST_CD LIKE UPPER(CONCAT('%',#{map.custCd},'%'))
+  			]]>
+	    </if>
+	    		
+		 <if test="map.userCd != null and map.userCd != ''">
+			<![CDATA[  
+      			AND C.USER_CD LIKE UPPER(CONCAT('%',#{map.userCd},'%'))
+  			]]>
+	    </if>
+	    
+	    	    
+	    <if test="map.fromDate != null and map.fromDate != ''">
+	    	<choose>
+	    		<when test="map.searchType != null and map.searchType eq 'D'.toString()">
+	    			<![CDATA[  
+		      			AND   C.SA_DELIVERY_DT >= #{map.fromDate}
+		  			]]>
+	    		</when>
+	    		<when test="map.searchType != null and map.searchType eq 'S'.toString()">
+	    			<![CDATA[  
+		      			AND   C.SA_ORDER_DT >= #{map.fromDate}
+		  			]]>
+	    		</when>
+	    		<otherwise>
+	    			<![CDATA[  
+		      			AND   C.SA_DELIVERY_DT >= #{map.fromDate}
+		  			]]>
+	    		</otherwise>
+	    	</choose>
+	    </if>
+	    
+	    <if test="map.toDate != null and map.toDate != ''">
+	    	<choose>
+	    		<when test="map.searchType != null and map.searchType eq 'D'.toString()">
+	    			<![CDATA[  
+		      			AND   C.SA_DELIVERY_DT <= #{map.toDate}
+		  			]]>
+	    		</when>
+	    		<when test="map.searchType != null and map.searchType eq 'S'.toString()">
+	    			<![CDATA[  
+		      			AND   C.SA_ORDER_DT <= #{map.toDate}
+		  			]]>
+	    		</when>
+	    		<otherwise>
+	    			<![CDATA[  
+		      			AND   C.SA_DELIVERY_DT <= #{map.toDate}
+		  			]]>
+	    		</otherwise>
+	    	</choose>
+	    </if>
+		 
+		 <if test="map.fromOrderDt != null and map.fromOrderDt != ''">
+			<![CDATA[  
+      			AND   C.SA_ORDER_DT >= #{map.fromOrderDt}
+  			]]>
+	    </if>
+	    
+		 <if test="map.toOrderDt != null and map.toOrderDt != ''">
+			<![CDATA[  
+      			AND   C.SA_ORDER_DT <= #{map.toOrderDt}
+  			]]>
+	    </if>
+		 
+		 <if test="map.slipCd != null and map.slipCd != ''">
+			<![CDATA[  
+      			AND C.SLIP_CD = #{map.slipCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.orderNo != null and map.orderNo != ''">
+			<![CDATA[  
+      			AND   C.ORDER_NO LIKE UPPER(CONCAT('%',#{map.orderNo},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.userNm != null and map.userNm != ''">
+			<![CDATA[  
+      			AND G.USER_NM LIKE UPPER(CONCAT('%',#{map.userNm},'%'))
+  			]]>
+	    </if>    
+	    
+		 <if test="map.custNm != null and map.custNm != ''">
+			<![CDATA[  
+      			AND F.CUST_NM LIKE UPPER(CONCAT('%',#{map.custNm},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND D.ITEM_NM  LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   D.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   D.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   D.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+	    
+		 <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND D.PART_NO  LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND D.SPEC  LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+	    <!-- 견적코드 -->
+		 <if test="map.refSlipCd != null and map.refSlipCd != ''">
+			<![CDATA[  
+      			AND A.REF_SLIP_CD = #{map.refSlipCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.refSlipSeq != null and map.refSlipSeq != ''">
+			<![CDATA[  
+      			AND A.REF_SLIP_SEQ = #{map.refSlipSeq}
+  			]]>
+	    </if>	    
+	    
+	    
+	   	<!-- 마감여부 Y 미결 N 마감 수주대비 판매 -->
+		 <if test="map.remainYn != null and map.remainYn != ''">		 	
+			<![CDATA[  
+      			AND ( A.ITEM_QTY - IFNULL(A.END_QTY,0) - ifnull((SELECT SUM(ITEM_QTY) 
+      										FROM TB_MES_SA410 Z 
+      										INNER JOIN TB_MES_SA400 Z2 
+      										ON Z.COMPANY = Z2.COMPANY 
+      										AND Z.SLIP_CD = Z2.SLIP_CD 
+      										WHERE 1=1 
+      										AND  Z.COMPANY = A.COMPANY 
+      										AND  Z.REF_SLIP_CD = A.SLIP_CD 
+                							AND Z.REF_SLIP_SEQ = A.SLIP_SEQ 
+      										AND Z.ITEM_CD = A.ITEM_CD),0) )
+  			]]>
+      										
+	 		<if test="map.remainYn != null and map.remainYn eq 'Y'.toString()">
+				<![CDATA[  
+		 		 	> 0
+	  			]]>
+	 		</if>
+	 		
+	 		<if test="map.remainYn != null and map.remainYn eq 'N'.toString()">
+	 			<![CDATA[  
+	 				<= 0
+	  			]]>
+	 		</if>
+	    </if>
+	    
+	    
+	    
+	   	<!-- 마감여부 Y 미결 N 마감 수주대비 출하 -->
+		 <if test="map.remainYn2 != null and map.remainYn2 != ''">		 	
+			<![CDATA[       
+     
+      			AND ( A.ITEM_QTY - IFNULL(A.END_QTY,0) - ifnull((SELECT SUM(ITEM_QTY) 
+      										FROM TB_MES_ST200 Z 
+      										WHERE 1=1
+      										AND Z.COMPANY = A.COMPANY 
+      										AND Z.REF_SLIP_CD = A.SLIP_CD
+      										AND Z.REF_SLIP_SEQ = A.SLIP_SEQ 
+      										AND Z.ITEM_CD = A.ITEM_CD ),0) )
+  			]]>
+      										
+	 		<if test="map.remainYn2 != null and map.remainYn2 eq 'Y'.toString()">
+				<![CDATA[  
+		 		 	> 0
+	  			]]>
+	 		</if>
+	 		
+	 		<if test="map.remainYn2 != null and map.remainYn2 eq 'N'.toString()">
+	 			<![CDATA[  
+	 				<= 0
+	  			]]>
+	 		</if>
+	    </if>
+	    
+	    <!-- 마감등록/취소 대상 -->	    	    
+	 	<if test="map.endYn != null and map.endYn eq 'Y'.toString()">
+			<![CDATA[  
+      			AND (( A.ITEM_QTY - IFNULL(A.END_QTY,0) - ifnull((SELECT SUM(ITEM_QTY) 
+      										FROM TB_MES_ST200 Z 
+      										WHERE 1=1
+      										AND Z.COMPANY = A.COMPANY 
+      										AND Z.REF_SLIP_CD = A.SLIP_CD 
+                							AND Z.REF_SLIP_SEQ = A.SLIP_SEQ 
+      										AND Z.ITEM_CD = A.ITEM_CD),0) ) > 0
+     			OR A.END_QTY != 0 )
+  			]]>
+	    </if>
+	    
+	    <choose>
+    		<when test="map.searchType != null and map.searchType eq 'D'.toString()">
+    			<![CDATA[  
+	      			ORDER BY C.SA_DELIVERY_DT DESC, C.SLIP_CD DESC,A.SLIP_SEQ  
+	  			]]>
+    		</when>
+    		<when test="map.searchType != null and map.searchType eq 'S'.toString()">
+    			<![CDATA[  
+	      			ORDER BY C.SA_ORDER_DT DESC, C.SLIP_CD DESC,A.SLIP_SEQ  
+	  			]]>
+    		</when>
+    		<otherwise>
+    			<![CDATA[  
+	      			ORDER BY C.SLIP_CD DESC, A.SLIP_SEQ  
+	  			]]>
+    		</otherwise>
+    	</choose>
+	      
+    </select>
+    
+        <select id="excelDataDownLoad" resultType="orderVO" parameterType="hashMap" statementType="PREPARED">
+		/* com.ppm.mes.domain.sa.sa300.OrderMapper.excelDataDownLoad */
+		
+		  SELECT A.companyNm
+		       , A.companyTel
+		       , A.companyAddress
+		       , A.custNm
+		       , A.custTel
+		       , A.custAddress
+		       , CONCAT(MAX(A.itemNm), ' 외', count(1)-1, '개') as itemNm
+		       , count(1) as itemQty
+			FROM  (
+			SELECT 	 CP.COMPANY_NM                     							   companyNm,         /* 보내는사람 */
+			         CP.TEL                   									   companyTel,        /* 전화번호1 */
+			         CONCAT(IFNULL(CP.ADDRESS1, ''), ' ', IFNULL(CP.ADDRESS2, '')) companyAddress,    /* 주소 */
+			         SA.ADDRESSEE                        						   custNm,            /* 받는사람 */
+			         IFNULL(SA.CONTACT_ADDRESS1, SA.CONTACT_ADDRESS2)   		   custTel,           /* 전화번호1 */
+			         CONCAT('(우편번호)', SA.POSTCODE, ' ',  SA.ADDRESS)  		   custAddress,       /* 주소 */
+				     SD.ITEM_CD                        							   itemCd,            /* 품목코드 */
+			         IT.ITEM_NM                        							   itemNm             /* 품명 */
+			FROM TB_MES_SA300 SA
+			INNER JOIN TB_MES_CP000 CP ON SA.COMPANY = CP.COMPANY
+			INNER JOIN TB_MES_SA310 SD ON SA.COMPANY = SD.COMPANY AND SA.SLIP_CD = SD.SLIP_CD
+			INNER JOIN TB_MES_ITEM000 IT ON SD.COMPANY = IT.COMPANY AND SD.ITEM_CD = IT.ITEM_CD
+			WHERE SA.COMPANY = #{map.company}
+			  AND SA.SLIP_CD = #{map.slipCd}
+			) A
+			GROUP BY A.companyNm,
+			        A.companyTel,
+			        A.companyAddress,
+			        A.custNm,
+			        A.custTel,
+			        A.custAddress 
+			
+		       	
+    </select>
+    
+    <select id="excelDataDownLoad_bak" resultType="orderVO" parameterType="hashMap" statementType="PREPARED">
+		/* com.ppm.mes.domain.sa.sa300.OrderMapper.excelDataDownLoad_bak */
+		  SELECT AA.COMPANY_NM                     companyNm,           /* 보내는사람 */
+		         AA.TEL                   companyTel,        /* 전화번호1 */
+		         CONCAT(AA.ADDRESS1, ' ', AA.ADDRESS1) companyAdress,     /* 주소 */
+		         C.CUST_NM                        custNm,            /* 받는사람 */
+		         C.TEL                            tel,               /* 전화번호1 */
+                 C.ADDRESS                        adress,            /* 주소 */
+ 		         D.ITEM_NM                        itemNm,            /* 품명 */
+ 		         B.ITEM_QTY                       itemQty,           /* 수량 */
+ 		         E.INVOICE_NUMBER                 invoiceNumber      /* 송장번호 */ 
+		    FROM TB_MES_SA300 A
+		    INNER JOIN TB_MES_CP000 AA ON A.COMPANY = AA.COMPANY
+		    INNER JOIN TB_MES_SA310 B ON A.COMPANY = B.COMPANY
+		       						 AND A.SLIP_CD = B.SLIP_CD
+		    INNER JOIN TB_MES_CUST000 C ON A.COMPANY = C.COMPANY 
+	                                   AND A.CUST_CD = C.CUST_CD
+		    INNER JOIN TB_MES_ITEM000 D ON B.COMPANY = D.COMPANY     
+   	                                   AND B.ITEM_CD = D.ITEM_CD
+		    LEFT OUTER JOIN TB_MES_SA320 E ON B.COMPANY = E.COMPANY
+								       	  AND B.SLIP_CD = E.SLIP_CD
+								       	  AND B.SLIP_SEQ = E.SLIP_SEQ
+		 WHERE 1=1      	
+		   AND   A.COMPANY = #{map.company}
+		   AND   A.SLIP_CD = #{map.slipCd}
+		       	
+    </select>
+    
+</mapper>

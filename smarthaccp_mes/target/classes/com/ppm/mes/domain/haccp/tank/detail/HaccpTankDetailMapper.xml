@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.tank.detail.HaccpTankDetailMapper">
+	
+	<select id="getHaccpTankDetailList" resultType ="haccpTankDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.tank.detail.HaccpTankDetailMapper.getHaccpTankDetailList */
+	
+		SELECT
+			  A.TEMP								temp
+			, DATE_FORMAT(A.DTM, "%Y-%m-%d %T")		dtm
+			, A.PLC_IP								plcIp
+		FROM TB_GET_TANK A
+		LEFT OUTER JOIN TB_CCP_TANK100 B
+		ON A.DTM = B.DTM
+		WHERE 1=1 	
+		AND A.PLC_IP = #{map.plcIp}
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   B.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(A.DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY A.DTM		    
+	</select>
+	
+	<select id="GetCharts" resultType ="haccpTankDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.tank.detail.HaccpTankDetailMapper.GetCharts */
+	SELECT IFNULL(T.DTM, '') AS dtm
+        , IFNULL(T.TEMP, '') AS temp
+        , IFNULL(T.PLC_IP, '') AS plcIp
+     FROM (SELECT A.DTM
+               ,A.TEMP
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_TANK A
+          WHERE 1 = 1
+            AND A.PLC_IP = #{map.plcIp}
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="getDetailList" resultType ="haccpTankDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 	AS itemNm
+		     , IFNULL(DTM, '')	 	AS dtm
+		     , IFNULL(TEMP, '') 	AS temp
+		     , RESULT 				AS result	
+		     , IFNULL(REMARK, '')	AS remark
+		     , IFNULL(PLC_IP,'')	AS plcIp
+		FROM TB_CCP_TANK100
+		WHERE 1=1
+		AND PLC_IP = #{map.plcIp}
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	    
+	</select>
+	
+	<select id="getHaccpDetailList" resultType ="haccpTankDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 	AS itemNm
+		     , IFNULL(DTM, '')	 	AS dtm
+		     , IFNULL(TEMP, '') 	AS temp
+		     , RESULT 				AS result	
+		     , IFNULL(REMARK, '')	AS remark
+		     , IFNULL(PLC_IP,'')	AS plcIp
+		FROM TB_CCP_TANK100
+		WHERE 1=1
+		AND PLC_IP = #{map.plcIp}
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	</select>
+	
+</mapper>

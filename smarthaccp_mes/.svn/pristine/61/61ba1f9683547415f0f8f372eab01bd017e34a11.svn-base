@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.haccp.filter.detail.HaccpFilterDetailMapper">
+	
+	<select id="getFilterDetailList" resultType ="HaccpFilterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.filter.detail.HaccpFilterDetailMapper.getHaccpFilterDetailList */
+	
+		SELECT 
+			COMPANY 									AS company,
+			INSPECTION_DATE								AS inspectionDate,
+			INSPECTION_SEQ                              AS inspectionSeq,
+			IFNULL(ITEM_NM, '') 						AS itemNm,
+			INSPECTION_TYPE								AS inspectionType,
+			INSPECTION_TIME                             AS inspectionTime,
+			RESULT1 									AS result1,
+			RESULT2 									AS result2,
+			RESULT3 									AS result3,
+			REMARK 										AS remark
+		FROM TB_CCP_FILTER100
+		WHERE 
+			1=1			
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if> 
+		ORDER BY INSPECTION_DATE	    
+	</select>
+	
+	<select id="getFilter" resultType ="HaccpFilterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.filter.detail.HaccpFilterDetailMapper.getFilter */
+	
+		SELECT 
+			COMPANY 									AS company,
+			INSPECTION_DATE								AS inspectionDate,
+			INSPECTION_SEQ                              AS inspectionSeq,
+			IFNULL(ITEM_NM, '') 						AS itemNm,
+			INSPECTION_TYPE								AS inspectionType,
+			INSPECTION_TIME                             AS inspectionTime,
+			RESULT1 									AS result1,
+			RESULT2 									AS result2,
+			RESULT3 									AS result3,
+			REMARK 										AS remark
+		FROM TB_CCP_FILTER100
+		WHERE 
+			1=1
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>    
+	</select>
+ 	
+
+ </mapper>

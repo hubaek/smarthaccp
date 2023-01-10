@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.monit.prdSite.metalDetector.MetalDetectorMapper">
+    <!-- 실링기 온도-->
+    <select id="getMetalDetectorStatus" resultType="MetalDetectorVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.metalDetector.MetalDetectorMapper.getMetalDetectorStatus*/
+			<!--  
+			SELECT 
+				CNT cnt,
+				IFNULL(MAX(DTM ),'-') dtm,
+				PLC_IP plcIp
+			FROM tb_get_met a
+			WHERE STATUS = '30'
+			and DATE(DTM) = DATE(NOW()) 
+			-->
+			
+			SELECT
+				(SELECT COUNT(*) FROM TB_GET_MET WHERE STATUS = '30' AND DATE(DTM) = DATE(NOW())) AS 'metal',
+				IFNULL((SELECT MAX(DTM) FROM TB_GET_MET WHERE STATUS = '30' AND DATE(DTM) = DATE(NOW())), '-') AS 'metalDTM',
+				(SELECT COUNT(*) FROM TB_GET_MET WHERE STATUS = '40' AND DATE(DTM) = DATE(NOW())) AS 'siphyun',
+				IFNULL((SELECT MAX(DTM) FROM TB_GET_MET WHERE STATUS = '40' AND DATE(DTM) = DATE(NOW())), '-') AS 'siphyunDTM',
+				(SELECT COUNT(*) FROM TB_GET_MET WHERE STATUS = '50' AND DATE(DTM) = DATE(NOW())) AS 'susSiphyun',
+				IFNULL((SELECT MAX(DTM) FROM TB_GET_MET WHERE STATUS = '50' AND DATE(DTM) = DATE(NOW())), '-') AS 'susSiphyunDTM'
+			   
+	</select>
+</mapper>

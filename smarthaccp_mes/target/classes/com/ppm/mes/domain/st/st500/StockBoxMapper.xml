@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.st.st500.StockBoxMapper">
+    <select id="getStockBoxList" resultType="stockBoxVO" parameterType="hashMap" statementType="PREPARED">  
+    /*com.ppm.mes.domain.st.st500.StockBoxMapper.getStockBoxList*/
+    	WITH TEMPTABLE AS (
+			SELECT STOCK_CD, max(inout_type) AS INOUT_TYPE FROM tb_mes_st050 GROUP BY stock_cd
+		)  
+		SELECT A.COMPANY company,
+			   A.STOCK_SEQ stockSeq,
+			   A.BOX_YN boxYn,
+		       B2.WLOT_NO wlotNo,
+		       A.REF_STOCK_CD refStockCd,
+		       B1.WH_CD whCd,
+		       B1.LOT_NO lotNo,
+		       B1.BARCODE refBarcode,
+		       A.STOCK_CD stockCd,
+		       B2.BARCODE barcode,
+		       A.ITEM_CD itemCd,
+		       C.ITEM_NM itemNm,
+		       C.PART_NO partNo,
+		       C.ITEM_TYPE itemType,
+		       C.UNIT unit,
+		       C.SPEC spec,
+		       A.ITEM_QTY itemQty,
+       		   TRUNCATE(B2.STOCK_QTY, 0) stockQty,
+       		   D.INOUT_TYPE inoutType
+		FROM   TB_MES_ST500 A
+        LEFT OUTER JOIN TB_MES_ST000 B1
+	       ON     A.COMPANY         = B1.COMPANY
+	       AND    A.REF_STOCK_CD = B1.STOCK_CD
+	       
+        LEFT OUTER JOIN TB_MES_ST000 B2
+	       ON     A.COMPANY    = B2.COMPANY
+	       AND    A.STOCK_CD = B2.STOCK_CD
+        
+        INNER JOIN TB_MES_ITEM000 C
+	       ON     A.COMPANY   = C.COMPANY
+	       AND    A.ITEM_CD = C.ITEM_CD
+	    LEFT OUTER JOIN temptable D
+			 ON A.STOCK_CD = D.STOCK_CD
+		WHERE 1=1
+			
+		  <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.refStockCd != null and map.refStockCd != ''">
+			<![CDATA[  
+      			AND A.REF_STOCK_CD = #{map.refStockCd}
+  			]]>
+	    </if>
+			    		
+		 <if test="map.wlotNo != null and map.wlotNo != ''">
+			<![CDATA[  
+      			AND A.WLOT_NO = #{map.wlotNo}
+  			]]>
+	    </if>
+	    	
+		 <if test="map.boxYn != null and map.boxYn != ''">
+			<![CDATA[  
+      			AND A.BOX_YN = #{map.boxYn}
+  			]]>
+	    </if>
+	    
+	    <if test="map.refBarcode!= null and map.refBarcode!=''"> 
+	    	<![CDATA[
+	    		AND B1.BARCODE = #{map.refBarcode}
+	    	]]>
+		</if>
+		
+    </select>
+</mapper>

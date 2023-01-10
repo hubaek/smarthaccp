@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.pr.pr100.PcPriceManagementMapper"> 
+	<!-- 구매단가 -->
+    <select id="getPcPriceList" resultType="pcPriceVO" parameterType="hashMap" statementType="PREPARED">    
+ 		/* com.ppm.mes.domain.pr.pr100.PcPriceManagementMapper.getPcPriceList */
+ 		SELECT B.COMPANY company,
+ 		       A.ITEM_TYPE itemType,
+ 		       A.ITEM_CD itemCd,
+		       A.ITEM_NM itemNm,
+		       A.PART_NO partNo,
+		       A.PC_PRICE  pcPrice,	
+		       B.REG_DT regDt,
+		       B.UNIT_PRICE unitPrice,
+		       B.USE_YN useYn,
+		       C.CUST_CD custCd,	 
+		       C.CUST_NM custNm,		       
+		       B.CREATED_AT createdAt,
+		       B.CREATED_BY createdBy,
+		       B.UPDATED_AT updatedAt,
+		       B.UPDATED_BY updatedBy
+		FROM   TB_MES_ITEM000 A
+		       INNER JOIN TB_MES_PR100 B
+		       ON     A.ITEM_CD = B.ITEM_CD
+		       INNER JOIN TB_MES_CUST000 C
+		       ON     B.CUST_CD = C.CUST_CD
+
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   B.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   B.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>	
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD  LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	
+    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM  LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>	
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO  LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>	
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND C.CUST_CD LIKE UPPER(CONCAT('%',#{map.custCd},'%'))
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.custNm != null and map.custNm != ''">
+			<![CDATA[  
+      			AND C.CUST_NM LIKE UPPER(CONCAT('%',#{map.custNm},'%'))
+  			]]>
+	    </if>	    
+    </select>
+</mapper>

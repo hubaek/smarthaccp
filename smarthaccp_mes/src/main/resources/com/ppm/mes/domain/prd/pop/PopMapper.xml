@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ppm.mes.domain.prd.pop.PopMapper">
+     <!--분할 바코드 갯수 조회 -->
+    <select id="getDividedBarcodeCnt" resultType="PopVO" parameterType="hashMap" statementType="PREPARED">
+    /*com.ppm.mes.domain.prd.pop.PopMapper.getDividedBarcodeCnt*/
+    SELECT
+        COUNT(*) cnt
+    FROM
+        tb_mes_st500
+    WHERE
+        ref_stock_cd =
+            (
+                SELECT
+                    stock_cd
+                FROM
+                    tb_mes_st000
+                WHERE barcode =  #{map.barcode}
+            )
+    </select>
+    
+    <!-- 작업지시 목록 조회 -->
+    <select id="getWorkOrderList" resultType="workOrderListVO" parameterType="hashMap" statementType="PREPARED">    
+	 /*com.ppm.mes.domain.prd.pop.PopMapper.getWorkOrderList */
+	 
+	 SELECT A.COMPANY company,
+    		A.ORDER_DT orderDt,
+	        A.ORDER_NO orderNo,
+	        A.ORDER_SEQ orderSeq,
+	        A.WORK_SEQ workSeq,
+              (SELECT MAX(ROUT_CD) FROM TB_MES_WO100 Z WHERE Z.WLOT_NO = A.PARENT_WLOT_NO) parentRoutCode,
+		    D2.ROUTING_CD routingCd,	
+		    D2.ROUTING_NM routingNm,
+	        D.ROUT_TYPE routType,
+	        A.ROUT_CD routCd,
+	        A.EQUIP_CD equipCd,
+	        F1.EQUIP_NM equipNm,
+	        A.REF_EQUIP_CD refEquipCd,
+	        F2.EQUIP_NM refEquipName,
+	        A.ROUT_SEQ routSeq,
+	        A.PARENT_WLOT_NO parentWlotNo,
+	        A.WLOT_NO wlotNo,
+	        A.ORDER_ST orderSt, 
+	        
+	        ifnull(A.ORDER_QTY,0) orderQty,
+	        ifnull(A.PROD_QTY,0) prodQty,
+	        ifnull(A.BAD_QTY,0) badQty,
+	        ifnull(A.PROD_QTY,0)-ifnull(A.BAD_QTY,0) goodQty,
+	        ifnull(A.PROD_QTY,0) totalProdQty,
+	        ifnull(A.PROD_QTY,0)- ifnull(A.BAD_QTY,0) totalGoodQty,
+	        ifnull(A.BAD_QTY,0) totalBadQty,
+	        
+	        A.LIQUID_A liquidA,
+	        A.LIQUID_B liquidB,
+	        
+            ifnull(F2.OPTION1,0) equipLiquidA,
+            ifnull(F2.OPTION2,0) equipLiquidB,	               
+	        
+	        A.START_DT startDt,
+	        A.START_HOUR startHour,
+	        A.START_MINUTE startMinute,
+	        A.START_SECOND startSecond,
+	        A.START_DTM startDtm,
+	       
+	        A.END_DT endDt,
+	        A.END_HOUR endHour,
+	        A.END_MINUTE endMinute,
+	        A.END_SECOND endSecond,
+	        A.END_DTM endDtm,      	 			
+	        
+	        A.ITEM_CD itemCd,
+	        C.ITEM_NM itemNm,
+	        C.PART_NO partNo,
+	        C.ITEM_TYPE itemType,
+       	    C.UNIT unit,
+       	    C.SPEC spec,
+       	    C.PART_NO partNo,
+       	    C.YIELD_UNIT yieldUnit,
+       	    ifnull(C.YIELD_TRANS, 0) yieldTrans,
+            B.STOCK_CD stockCd,
+	        B.LOT_NO lotNo,
+	        B.BARCODE barcode,
+	        E.WH_CD whCd,
+	        E.WH_NM whNm,
+	        D.EQUIP_USE_YN equipUseYn,
+               D.QC_YN qcYn,
+
+	        B.STOCK_QTY barcodeQty,
+	        
+		    (SELECT CASE WHEN COUNT(1) > 0 AND IFNULL(SUM(ITEM_QTY),0) > 0 THEN 'Y' ELSE 'N' END FROM TB_MES_WO150 Z WHERE Z.COMPANY = A.COMPANY AND Z.WLOT_NO = A.WLOT_NO AND IFNULL(DISCARD_YN,'N') = 'N') outYn, 
+		    
+	        A.LAST_FLAG lastFlag,
+        	(SELECT SUM(ITEM_QTY) FROM TB_MES_ST500 Z WHERE Z.REF_STOCK_CD = A.STOCK_CD) barcodeCount,
+        	(SELECT (CASE WHEN COUNT(1) > 0 THEN 'Y' ELSE 'N' END) FROM TB_MES_QC300 Z WHERE Z.STOCK_CD = A.STOCK_CD) routQcYn,                
+               
+	       G.NWRK_CD nwrkCd,
+	       (SELECT F.SUB_NM
+	       FROM    TB_MES_CD100 F
+	       WHERE   F.MAIN_CD = 'NWRK_CD'
+	       AND     F.SUB_CD  = G.NWRK_CD
+	       )
+	       AS nwrkNm,
+	       G.NWRK_DTM nwrkDtm,
+	       C.QC_WAY qcWay,
+	       
+		   A.SCHEDULE_DT scheduleDt,
+		   A.PLAN_DT planDt,
+		   A.PLAN_ITEM_CD planItemCd,
+	       A.SORT sort
+               
+	 FROM   TB_MES_WO100 A
+        LEFT OUTER JOIN TB_MES_ST000 B
+        	ON     A.COMPANY = B.COMPANY      
+              AND  A.STOCK_CD = B.STOCK_CD
+        INNER JOIN TB_MES_ITEM000 C
+	        ON     A.COMPANY = C.COMPANY
+	        AND     A.ITEM_CD = C.ITEM_CD
+        INNER JOIN TB_MES_RT000 D
+	        ON     A.COMPANY = D.COMPANY
+	        AND     A.ROUT_CD = D.ROUT_CD		        
+	    INNER JOIN TB_MES_RT100 D2
+	       ON     A.COMPANY = D2.COMPANY
+		    AND    A.ROUTING_CD     = D2.ROUTING_CD	
+        LEFT OUTER JOIN TB_MES_WH000 E
+	        ON     A.COMPANY = E.COMPANY
+	        AND     A.WH_CD = E.WH_CD
+        LEFT OUTER JOIN TB_MES_EQ000 F1
+	        ON     A.COMPANY = F1.COMPANY
+	        AND     A.EQUIP_CD = F1.EQUIP_CD      
+        LEFT OUTER JOIN TB_MES_EQ000 F2
+	        ON     A.COMPANY = F2.COMPANY
+	        AND     A.REF_EQUIP_CD = F2.EQUIP_CD      
+        LEFT OUTER JOIN TB_MES_WO130 G
+	        ON     A.COMPANY = G.COMPANY
+	        AND     A.WLOT_NO     = G.WLOT_NO
+	        AND    A.ORDER_ST = 'NWRK'
+            AND	   G.LAST_YN = 'Y'
+		 WHERE  1 = 1		 
+		 
+		 <!-- 사용설비권한이 Y일경우 등록된 설비+설비지정안된설비.. -->
+	 	<if test="map.equipAuthYn != null and map.equipAuthYn eq 'Y'.toString()">
+			<![CDATA[  
+		 			AND (A.EQUIP_CD IN 
+		 				( SELECT EQUIP_CD 
+		 					FROM TB_MES_SYS310 Z 
+		 					WHERE Z.COMPANY = A.COMPANY 
+		 					AND USE_YN ='Y' 
+		 					AND UPPER(Z.USER_CD) = UPPER(#{map.userCd})) OR ifnull(A.EQUIP_CD,'') = '')
+  			]]>  			
+	    </if>	    
+		 
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND A.COMPANY = #{map.company}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.wlotNo != null and map.wlotNo != ''">
+			<![CDATA[  
+      			AND A.WLOT_NO = #{map.wlotNo}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.barcode != null and map.barcode != ''">
+			<![CDATA[  
+      			AND B.BARCODE = #{map.barcode}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND D2.ROUTING_CD = #{map.routingCd}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND D.ROUT_TYPE = #{map.routType}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.orderSt != null and map.orderSt != '' and map.orderSt != 'RUNNING'">		 
+			<![CDATA[  
+      			AND A.ORDER_ST = #{map.orderSt}
+  			]]>
+  			
+			 <if test="map.equipCd != null and map.equipCd != ''">
+				<![CDATA[  
+	      			AND (A.EQUIP_CD = #{map.equipCd} OR IFNULL(A.EQUIP_CD, '') = '')
+	  			]]>
+		    </if>	    
+	    </if>
+	    
+		 <if test="map.orderSt != null and map.orderSt != '' and map.orderSt == 'RUNNING'">		 
+			<![CDATA[  
+    			AND A.ORDER_ST NOT IN ('ORDER','LOCK','END')
+  			]]>
+  			  			
+			 <if test="map.equipCd != null and map.equipCd != ''">
+				<![CDATA[  
+	      			AND (A.EQUIP_CD = #{map.equipCd})
+	  			]]>
+		    </if>	    
+	    </if>
+		    
+    	<!-- 작업지시일자 <= 오늘 -->	    		    
+	 	<if test="map.orderDtYn != null and map.orderDtYn eq 'Y'.toString()">
+			<![CDATA[  
+		 		AND ORDER_DT <= date_format(NOW(), '%Y-%m-%d')
+  			]]>
+	    </if>    
+		 
+		 
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND C.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND C.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+		ORDER BY orderNo DESC
+    </select>
+    
+        
+        <!-- 작업지시 목록 조회 생산실적모니터링용 -->
+    <select id="getWorkOrderList02" resultType="workOrderListVO" parameterType="hashMap" statementType="PREPARED">    
+	 /*com.ppm.mes.domain.prd.pop.PopMapper.getWorkOrderList02 */
+	 
+	 SELECT A.COMPANY company,
+    		A.ORDER_DT orderDt,
+	        A.ORDER_NO orderNo,
+	        A.ORDER_SEQ orderSeq,
+	        A.WORK_SEQ workSeq,
+              (SELECT MAX(ROUT_CD) FROM TB_MES_WO100 Z WHERE Z.WLOT_NO = A.PARENT_WLOT_NO) parentRoutCode,
+		    D2.ROUTING_CD routingCd,	
+		    D2.ROUTING_NM routingNm,
+	        D.ROUT_TYPE routType,
+	        A.ROUT_CD routCd,
+	        A.EQUIP_CD equipCd,
+	        F1.EQUIP_NM equipNm,
+	        A.REF_EQUIP_CD refEquipCd,
+	        F2.EQUIP_NM refEquipName,
+	        A.ROUT_SEQ routSeq,
+	        A.PARENT_WLOT_NO parentWlotNo,
+	        A.WLOT_NO wlotNo,
+	        A.ORDER_ST orderSt, 
+	        
+	        ifnull(A.ORDER_QTY,0) orderQty,
+	        ifnull(A.PROD_QTY,0) prodQty,
+	        ifnull(A.BAD_QTY,0) badQty,
+	        ifnull(A.PROD_QTY,0)-ifnull(A.BAD_QTY,0) goodQty,
+	        ifnull(A.PROD_QTY,0) totalProdQty,
+	        ifnull(A.PROD_QTY,0)- ifnull(A.BAD_QTY,0) totalGoodQty,
+	        ifnull(A.BAD_QTY,0) totalBadQty,
+	        
+	        A.LIQUID_A liquidA,
+	        A.LIQUID_B liquidB,
+	        
+            ifnull(F2.OPTION1,0) equipLiquidA,
+            ifnull(F2.OPTION2,0) equipLiquidB,	               
+	        
+	        A.START_DT startDt,
+	        A.START_HOUR startHour,
+	        A.START_MINUTE startMinute,
+	        A.START_SECOND startSecond,
+	        A.START_DTM startDtm,
+	       
+	        A.END_DT endDt,
+	        A.END_HOUR endHour,
+	        A.END_MINUTE endMinute,
+	        A.END_SECOND endSecond,
+	        A.END_DTM endDtm,      	 			
+	        
+	        A.ITEM_CD itemCd,
+	        C.ITEM_NM itemNm,
+	        C.PART_NO partNo,
+	        C.ITEM_TYPE itemType,
+       	    C.UNIT unit,
+       	    C.SPEC spec,
+       	    C.PART_NO partNo,
+       	    C.YIELD_UNIT yieldUnit,
+       	    ifnull(C.YIELD_TRANS, 0) yieldTrans,
+            B.STOCK_CD stockCd,
+	        B.LOT_NO lotNo,
+	        B.BARCODE barcode,
+	        E.WH_CD whCd,
+	        E.WH_NM whNm,
+	        D.EQUIP_USE_YN equipUseYn,
+               D.QC_YN qcYn,
+
+	        B.STOCK_QTY barcodeQty,
+	        
+		    (SELECT CASE WHEN COUNT(1) > 0 AND IFNULL(SUM(ITEM_QTY),0) > 0 THEN 'Y' ELSE 'N' END FROM TB_MES_WO150 Z WHERE Z.COMPANY = A.COMPANY AND Z.WLOT_NO = A.WLOT_NO AND IFNULL(DISCARD_YN,'N') = 'N') outYn, 
+		    
+	        A.LAST_FLAG lastFlag,
+        	(SELECT SUM(ITEM_QTY) FROM TB_MES_ST500 Z WHERE Z.REF_STOCK_CD = A.STOCK_CD) barcodeCount,
+        	(SELECT (CASE WHEN COUNT(1) > 0 THEN 'Y' ELSE 'N' END) FROM TB_MES_QC300 Z WHERE Z.STOCK_CD = A.STOCK_CD) routQcYn,                
+               
+	       G.NWRK_CD nwrkCd,
+	       (SELECT F.SUB_NM
+	       FROM    TB_MES_CD100 F
+	       WHERE   F.MAIN_CD = 'NWRK_CD'
+	       AND     F.SUB_CD  = G.NWRK_CD
+	       )
+	       AS nwrkNm,
+	       G.NWRK_DTM nwrkDtm,
+	       C.QC_WAY qcWay,
+	       
+		   A.SCHEDULE_DT scheduleDt,
+		   A.PLAN_DT planDt,
+		   A.PLAN_ITEM_CD planItemCd,
+	       A.SORT sort
+               
+	 FROM   TB_MES_WO100 A
+        LEFT OUTER JOIN TB_MES_ST000 B
+        	ON     A.COMPANY = B.COMPANY      
+              AND  A.STOCK_CD = B.STOCK_CD
+        INNER JOIN TB_MES_ITEM000 C
+	        ON     A.COMPANY = C.COMPANY
+	        AND     A.ITEM_CD = C.ITEM_CD
+        INNER JOIN TB_MES_RT000 D
+	        ON     A.COMPANY = D.COMPANY
+	        AND     A.ROUT_CD = D.ROUT_CD		        
+	    INNER JOIN TB_MES_RT100 D2
+	       ON     A.COMPANY = D2.COMPANY
+		    AND    A.ROUTING_CD     = D2.ROUTING_CD	
+        LEFT OUTER JOIN TB_MES_WH000 E
+	        ON     A.COMPANY = E.COMPANY
+	        AND     A.WH_CD = E.WH_CD
+        LEFT OUTER JOIN TB_MES_EQ000 F1
+	        ON     A.COMPANY = F1.COMPANY
+	        AND     A.EQUIP_CD = F1.EQUIP_CD      
+        LEFT OUTER JOIN TB_MES_EQ000 F2
+	        ON     A.COMPANY = F2.COMPANY
+	        AND     A.REF_EQUIP_CD = F2.EQUIP_CD      
+        LEFT OUTER JOIN TB_MES_WO130 G
+	        ON     A.COMPANY = G.COMPANY
+	        AND     A.WLOT_NO     = G.WLOT_NO
+	        AND    A.ORDER_ST = 'NWRK'
+            AND	   G.LAST_YN = 'Y'
+		 WHERE  1 = 1		 
+		 
+		 <!-- 사용설비권한이 Y일경우 등록된 설비+설비지정안된설비.. -->
+	 	<if test="map.equipAuthYn != null and map.equipAuthYn eq 'Y'.toString()">
+			<![CDATA[  
+		 			AND (A.EQUIP_CD IN 
+		 				( SELECT EQUIP_CD 
+		 					FROM TB_MES_SYS310 Z 
+		 					WHERE Z.COMPANY = A.COMPANY 
+		 					AND USE_YN ='Y' 
+		 					AND UPPER(Z.USER_CD) = UPPER(#{map.userCd})) OR ifnull(A.EQUIP_CD,'') = '')
+  			]]>  			
+	    </if>	    
+		 
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND A.COMPANY = #{map.company}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.wlotNo != null and map.wlotNo != ''">
+			<![CDATA[  
+      			AND A.WLOT_NO = #{map.wlotNo}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.barcode != null and map.barcode != ''">
+			<![CDATA[  
+      			AND B.BARCODE = #{map.barcode}
+  			]]>  			
+	    </if>	    
+	    
+		<if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND D2.ROUTING_CD = #{map.routingCd}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND D.ROUT_TYPE = #{map.routType}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.orderSt != null and map.orderSt != '' and map.orderSt != 'RUNNING'">		 
+			<![CDATA[  
+      			AND A.ORDER_ST = #{map.orderSt}
+  			]]>
+  			
+			 <if test="map.equipCd != null and map.equipCd != ''">
+				<![CDATA[  
+	      			AND (A.EQUIP_CD = #{map.equipCd} OR IFNULL(A.EQUIP_CD, '') = '')
+	  			]]>
+		    </if>	    
+	    </if>
+	    
+		 <if test="map.orderSt != null and map.orderSt != '' and map.orderSt == 'RUNNING'">		 
+			<![CDATA[  
+    			AND A.ORDER_ST NOT IN ('ORDER','LOCK','END')
+  			]]>
+  			  			
+			 <if test="map.equipCd != null and map.equipCd != ''">
+				<![CDATA[  
+	      			AND (A.EQUIP_CD = #{map.equipCd})
+	  			]]>
+		    </if>	    
+	    </if>
+		    
+    	<!-- 작업지시일자 <= 오늘 -->	    		    
+	 	<if test="map.orderDtYn != null and map.orderDtYn eq 'Y'.toString()">
+			<![CDATA[  
+		 		AND ORDER_DT <= date_format(NOW(), '%Y-%m-%d')
+  			]]>
+	    </if>    
+		 
+		 
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND C.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND C.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	   	<if test="map.fromDate != null and map.fromDate != '' ">
+			<![CDATA[  
+      			AND   A.ORDER_DT >= #{map.fromDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.toDate != null and map.toDate != '' ">
+			<![CDATA[  
+      			AND   A.ORDER_DT <= #{map.toDate}
+  			]]>
+	    </if> 
+	    
+		ORDER BY IFNULL(A.SORT, 99999) ASC,  orderNo DESC
+    </select>  
+        
+    
+    <select id="getWorkOrderManList" resultType="workManListVO" parameterType="hashMap" statementType="PREPARED">    
+	    /*com.ppm.mes.domain.prd.pop.PopMapper.getWorkOrderManList*/
+	    
+	    SELECT 
+		       A.COMPANY company,
+		       A.WLOT_NO wlotNo,
+		       A.USER_SEQ userSeq,
+		       A.USER_CD userCd,
+		       B.USER_NM userNm,
+		       
+	           A.WRK_DTM wrkDtm,
+	           DATE_FORMAT(A.WRK_DTM, '%Y-%m-%d %h:%i') wrkDtmString,
+	           A.WRKED_DTM wrkedDtm,
+	           DATE_FORMAT(A.WRKED_DTM, '%Y-%m-%d %h:%i') wrkedDtmString,
+	           
+	           PROD_QTY prodQty,
+	           A.WRK_ST wrkSt
+		FROM   TB_MES_WO110 A
+        INNER JOIN TB_MES_USER000 B
+	        ON    A.USER_CD = B.USER_CD
+	        
+        WHERE 1=1
+        AND A.COMPANY = #{map.company}
+		AND A.WLOT_NO  =  #{map.wlotNo}
+		ORDER BY A.WRK_DTM    
+		
+		
+    </select>
+        
+    <select id="getStockBomList" resultType="stockListVO" parameterType="hashMap" statementType="PREPARED">    
+	    /*com.ppm.mes.domain.prd.pop.PopMapper.getStockBomList*/
+	    	
+	SELECT T.COMPANY company,
+   	       T.ITEM_CD itemCd,
+           T.ITEM_NM itemNm,
+           T.PART_NO partNo,
+           T.ITEM_TYPE itemType,
+           T.SPEC spec,
+           T.ROUT_CD routCd,
+           T.UNIT unit,
+           T.BOM_UNIT bomUnit,
+           T.BOM_QTY bomQty,
+           T.REQ_QTY reqQty,
+   		   T.TOTAL_QTY totalQty,
+   		   T.GOOD_TOTAL_QTY goodTotalQty,
+           T.LOSS_PER lossPer,
+           T.LOSS_QTY lossQty,
+    	   T.WIP_YN wipYn,
+	 	   IFNULL(T.AUTO_FIFO_YN,'N') autoFifoYn,
+           T.USE_YN useYn
+	        
+	        FROM (
+         	 
+	    	SELECT T1.COMPANY,
+	    	       T1.ITEM_CD,
+	               T2.ITEM_NM,
+	               T2.PART_NO,
+	               T2.ITEM_TYPE,
+	               T2.SPEC,
+	               T1.ROUT_CD,
+	               T2.UNIT,
+	               T2.BOM_UNIT,
+	               T1.BOM_QTY,
+	               T1.REQ_QTY,
+        		   T1.REQ_QTY * T4.ORDER_QTY TOTAL_QTY,
+        		   T1.REQ_QTY * T4.GOOD_QTY GOOD_TOTAL_QTY,
+	               T1.LOSS_PER LOSS_PER,
+	               T1.LOSS_QTY LOSS_QTY,
+         	 	   'N' WIP_YN,
+		           T2.AUTO_FIFO_YN,
+	               T1.USE_YN
+	        FROM   TB_MES_BOM100 T1
+	        INNER JOIN TB_MES_ITEM000 T2
+			  ON T1.COMPANY = T2.COMPANY
+			  AND T1.ITEM_CD = T2.ITEM_CD
+			  
+	        INNER JOIN TB_MES_BOM000 T3	        
+			  ON T1.COMPANY = T3.COMPANY
+			  AND T1.PARENT_ITEM_CD = T3.ITEM_CD
+			  AND T1.REVISION_NO = T3.REVISION_NO
+			  AND T3.LAST_YN = 'Y'
+			  
+   			INNER JOIN TB_MES_WO100 T4
+            	ON T3.COMPANY = T4.COMPANY       
+            	AND T3.ITEM_CD = T4.ITEM_CD               
+	        WHERE  1=1
+	        
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND T4.COMPANY = #{map.company}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.wlotNo != null and map.wlotNo != ''">
+			<![CDATA[  
+      			AND T4.WLOT_NO = #{map.wlotNo}
+  			]]>  			
+	    </if>	    
+	        
+	 	<if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+        		AND	   (T1.ROUT_CD = #{map.routCd} OR IFNULL(T1.ROUT_CD , '') = '')
+  			]]>
+	    </if>	
+
+		UNION ALL
+				
+       	SELECT
+         	 A.COMPANY,
+       		 A.ITEM_CD,
+	         A.ITEM_NM,
+	         A.PART_NO,
+	         A.ITEM_TYPE,
+	         A.SPEC,
+	         E.ROUT_CD,
+	         A.UNIT,
+	         A.UNIT BOM_UNIT,
+	         1 BOM_QTY,
+	         1 REQ_QTY,
+		   	 1 * B.ORDER_QTY TOTAL_QTY,
+		   	 1 * B.GOOD_QTY GOOD_TOTAL_QTY,
+         	 0 LOSS_PER,
+         	 0 LOSS_QTY,
+         	 'Y' WIP_YN,
+         	 A.AUTO_FIFO_YN,
+         	 A.USE_YN
+         	 
+       FROM TB_MES_ITEM000 A
+       INNER JOIN TB_MES_WO100 B
+	       	ON A.COMPANY = B.COMPANY
+	       	AND A.ITEM_CD = B.ITEM_CD
+       	
+       INNER JOIN TB_MES_RT100 C
+       		ON B.COMPANY = C.COMPANY
+       		AND B.ROUTING_CD = C.ROUTING_CD	       
+		   	
+       INNER JOIN TB_MES_RT120 D
+	       	ON C.COMPANY = D.COMPANY
+	       	AND C.ROUTING_CD = D.ROUTING_CD
+			AND D.ITEM_CD = A.ITEM_CD
+       	
+		INNER JOIN TB_MES_RT110 E
+			ON D.COMPANY = E.COMPANY
+			AND D.ROUTING_CD = E.ROUTING_CD
+		
+		WHERE 1=1				
+		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND B.COMPANY = #{map.company}
+  			]]>  			
+	    </if>	    
+	    
+		 <if test="map.wlotNo != null and map.wlotNo != ''">
+			<![CDATA[  
+      			AND B.WLOT_NO = #{map.wlotNo}
+  			]]>  			
+	    </if>	 
+	    
+		 <if test="map.routSeq != null and map.routSeq != ''">
+			<![CDATA[  
+      			AND E.ROUT_SEQ = #{map.routSeq} - 1
+  			]]>  			
+	    </if>	 
+	    ) T
+	    
+	    WHERE 1=1
+	    
+	 	<if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+        		AND  T.ITEM_CD = #{map.itemCd}  
+  			]]>
+	    </if>	
+	    
+	    
+	 	<if test="map.autoFifoYn != null and map.autoFifoYn != ''">
+			<![CDATA[  
+        		AND  T.AUTO_FIFO_YN = #{map.autoFifoYn}  
+  			]]>
+	    </if>	
+	    
+    </select>
+        
+            
+    <select id="getOutgoingList" resultType="workOutgoingListVO" parameterType="hashMap" statementType="PREPARED">   
+		 /*com.ppm.mes.domain.prd.pop.PopMapper.getOutgoingList*/
+		 
+		 SELECT A.COMPANY company,
+		        A.WLOT_NO wlotNo,
+		        A.WO_SEQ woSeq,
+		        B.ITEM_CD itemCd,
+		        B.ITEM_NM itemNm,
+		        B.PART_NO partNo,
+		        B.ITEM_TYPE itemType,
+		        B.SPEC spec,
+		        A.UNIT unit,
+		        A.BOM_UNIT bomUnit,
+		        B.BOM_TRANS bomTrans,     
+		        
+		        A.BOM_ITEM_QTY bomItemQty,
+		        A.ITEM_QTY itemQty,
+		        A.ITEM_QTY preItemQty,
+	            IFNULL(A.ITEM_QTY,0)*IFNULL(B.BOM_TRANS,1) AS transItemQty, 
+	            IFNULL(A.ITEM_QTY,0)*IFNULL(B.BOM_TRANS,1) AS transPreItemQty, 
+	           
+	           
+		        A.DISCARD_YN discardYn,
+		        A.DISCARD_TYPE discardType,
+		        
+		        
+		        A.STOCK_CD stockCd,		        
+		        C1.LOT_NO lotNo,
+		        C1.BARCODE barcode,		  		               
+		        C2.WH_CD whCd,
+		        C1.WH_CD toWarehouse,
+		        
+		        A.UPDATED_AT updatedAt
+		 FROM   TB_MES_WO150 A
+         INNER JOIN TB_MES_ITEM000 B
+	        ON     A.COMPANY = B.COMPANY
+	        AND     A.ITEM_CD = B.ITEM_CD
+         LEFT OUTER JOIN TB_MES_ST000 C1
+	        ON     A.COMPANY = C1.COMPANY
+	        AND     A.STOCK_CD = C1.STOCK_CD
+         LEFT OUTER JOIN TB_MES_ST000 C2
+	        ON     A.COMPANY = C2.COMPANY
+	        AND     A.STOCK_CD = C2.STOCK_CD
+		 WHERE  1=1
+        	AND    A.COMPANY = #{map.company}
+			AND    A.WLOT_NO  =  #{map.wlotNo}
+    		AND	   A.ITEM_QTY > 0    		
+    		
+		 <if test="map.discardYn != null and map.discardYn != ''">
+			<![CDATA[  
+      			AND A.DISCARD_YN = #{map.discardYn}
+  			]]>
+	    </if>
+    		
+    </select>
+        
+    
+    <!-- 폐기유형 DATA1 : 공정분류 	DATA3 : 공정코드 -->
+    <select id="getDiscardTypeList" resultType="discardTypeListVO" parameterType="hashMap" statementType="PREPARED">   
+    		/*com.ppm.mes.domain.prd.pop.PopMapper.getDiscardTypeList*/
+    		
+		SELECT 
+    			   A.SUB_CD discardType,
+			       A.SUB_NM discardTypeNm
+			FROM   TB_MES_CD100 A 
+			WHERE 1=1
+			AND A.MAIN_CD = 'DISCARD_TYPE'
+			
+			<!-- 
+			INNER JOIN TB_MES_RT600 B
+			ON A.COMPANY = B.COMPANY
+			AND A.SUB_CD = B.BAD_CD
+			WHERE 1=1
+			AND A.MAIN_CD = 'DISCARD_TYPE'
+			
+        	AND B.COMPANY = #{map.company}
+			AND	B.ROUT_CD = #{map.routCd} 
+			 -->
+			
+    </select>
+    
+    <!-- 불량유형 DATA1 : 30 (공정검사) DATA2 : 공정분류 	DATA3 : 공정코드 -->
+    <select id="getBadTypeList" resultType="badTypeListVO" parameterType="hashMap" statementType="PREPARED">   
+    		/*com.ppm.mes.domain.prd.pop.PopMapper.getBadTypeList*/
+    		
+		SELECT
+    			   A.SUB_CD badCd,
+			       A.SUB_NM badNm,
+			       A.DATA1 as qcType,
+			       A.DATA2 as routType,
+			       A.DATA3 as routCd
+			FROM   TB_MES_CD100 A 
+			INNER JOIN TB_MES_RT600 B
+				ON A.SUB_CD = B.BAD_CD
+			WHERE 1=1
+			AND A.MAIN_CD = 'BAD_CD'
+			
+        	AND B.COMPANY = #{map.company}
+			AND	B.ROUT_CD = #{map.routCd} 
+			
+    </select>
+    
+    <!-- 비가동유형 DATA1 : 공정분류 	DATA3 : 공정코드 -->
+    <select id="getNwrkTypeList" resultType="nwrkTypeListVO" parameterType="hashMap" statementType="PREPARED">   
+    		/*com.ppm.mes.domain.prd.pop.PopMapper.getNwrkTypeList*/
+    		
+    		SELECT 
+    			   A.SUB_CD nwrkCd,
+			       A.SUB_NM nwrkNm,
+			       A.DATA1 as qcType,
+			       A.DATA2 as routType,
+			       A.DATA3 as routCd
+			FROM   TB_MES_CD100 A 
+			INNER JOIN TB_MES_RT500 B
+				ON A.SUB_CD = B.NWRK_CD
+			WHERE 1=1
+			AND A.MAIN_CD = 'NWRK_CD'
+        	AND B.COMPANY = #{map.company}
+			AND	B.ROUT_CD = #{map.routCd} 
+			
+			
+    </select>
+    
+    <select id="getWorkBadList" resultType="workBadListVO" parameterType="hashMap" statementType="PREPARED">   
+    	   /*com.ppm.mes.domain.prd.pop.PopMapper.getWorkBadList*/
+    	   
+    	   SELECT A.COMPANY company,
+			       A.BAD_DT badDt,
+			       A.BAD_SEQ badSeq,
+			       A.WLOT_NO wlotNo,
+			       B.ITEM_CD itemCd,
+			       C.ITEM_NM itemNm,
+			       C.PART_NO partNo,
+			       C.ITEM_TYPE itemType,
+			       C.UNIT unit,
+			       A.BAD_CD badCd,
+			       (SELECT C.SUB_NM
+			       FROM    TB_MES_CD100 C
+			       WHERE   C.MAIN_CD = 'BAD_CD'
+			       AND     C.SUB_CD  = A.BAD_CD
+			       )
+			       AS badNm,
+			       A.BAD_QTY badQty,			       
+           		   DATE_FORMAT(A.BAD_DTM, '%Y-%m-%d %h:%i') badDtm
+			FROM   TB_MES_WO120 A
+	        INNER JOIN TB_MES_WO100 B
+		       ON     A.COMPANY = B.COMPANY
+		       AND    A.WLOT_NO = B.WLOT_NO
+	        INNER JOIN TB_MES_ITEM000 C
+		       ON     B.COMPANY = C.COMPANY
+		       AND    B.ITEM_CD = C.ITEM_CD
+			WHERE  1=1
+        	AND    A.COMPANY = #{map.company}
+			AND    A.WLOT_NO  =  #{map.wlotNo}
+    </select>
+    
+    <!-- 작업표준서 리스트 -->
+   <select id="getWoDocFileList" resultType="java.lang.Long" parameterType="hashMap" statementType="PREPARED">    
+	   	/*com.ppm.mes.domain.prd.pop.PopMapper.getWoDocFileList*/
+	   	
+	   	SELECT A.ID id
+		FROM TB_MES_FILE000 A 
+		WHERE 1=1                                                                                                  
+        AND A.TARGET_TYPE = 'WO_DOC_CODE'                                                                        
+        AND A.TARGET_ID =  #{map.routCd}                                                                
+        AND A.TARGET_ID2 =  #{map.itemCd}        
+    </select>
+</mapper>

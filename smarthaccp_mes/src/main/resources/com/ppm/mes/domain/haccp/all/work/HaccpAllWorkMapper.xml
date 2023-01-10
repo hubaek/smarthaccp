@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.all.work.HaccpAllWorkMapper">
+	<select id="getWorkList" resultType ="HaccpAllWorkVO" parameterType="hashMap" statementType="PREPARED">
+	/*com.ppm.mes.domain.haccp.all.work.HaccpAllWorkMapper.getInsectList */
+		SELECT
+			COMPANY company,
+			SUB_CODE subCode,
+			DATA1 classification,
+			SUB_NAME checklist,
+			DATA2 manageCrieteria
+		FROM TB_CCP_CD100 A
+		WHERE 1=1
+		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+	</select>
+	
+	<select id="getHaccpWorkList" resultType ="HaccpAllWorkVO" parameterType="hashMap" statementType="PREPARED">
+	/*com.ppm.mes.domain.haccp.all.work.HaccpAllWorkMapper.getHaccpInsectList */
+		SELECT
+			INSPECTION_DATE 	inspectionDate,
+			MAIN_CODE 			mainCode,
+			SUB_CODE 			subCode,
+			CLASS 				classification,
+			CHECKLIST 			checklist,
+			MANAGE_CRIETERIA 	manageCrieteria,
+			RESULT				result,
+			RESULT_TIME			resultTime,
+			REMARK 				remark
+		FROM TB_CCP_ALL100 A
+		WHERE 1=1			
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.subCode != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+	</select>
+
+</mapper>

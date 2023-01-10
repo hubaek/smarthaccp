@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.health.health000.HealthMapper">
+	<select id="getHealthList" resultType="healthVO" parameterType="hashMap" statementType="PREPARED">   
+	    /* com.ppm.mes.domain.health.health000.HealthMapper.getHealthList */ 
+	    
+	    SELECT
+	    		 A.USER_CD                                  AS userCd
+	    	   , B.USER_NM                                  AS userNm
+	    	   , A.HEALTH_CARD_SEQ							AS healthCardSeq
+	    	   , A.HEALTH_CARD_NO							AS healthCardNo
+	    	   , DATE_FORMAT(A.HEALTH_CARD_START_DT, '%Y-%m-%d') 	AS healthCardStartDt
+	    	   , DATE_FORMAT(A.HEALTH_CARD_END_DT, '%Y-%m-%d') 		AS healthCardEndDt
+               , A.REMARK									AS remark
+               , CONCAT(A.USER_CD, '-', A.HEALTH_CARD_SEQ)  AS userKey /* 첨부파일 unique key */
+	    FROM TH_HEALTH_CARD A
+	    LEFT JOIN TB_MES_USER000 B ON A.USER_CD = B.USER_CD
+	    WHERE 1=1
+	     	<if test="map.userCd != null and map.userCd != ''">
+	      			AND   A.USER_CD  = #{map.userCd}
+		    </if>
+			
+			 <if test="map.healthCardSeq != null and map.healthCardSeq != ''">
+				AND   A.HEALTH_CARD_SEQ  = #{map.healthCardSeq}
+		    </if>
+	     	
+    </select>
+    
+    <select id="getAlarmList" resultType="healthVO" parameterType="hashMap" statementType="PREPARED">   
+	    /* com.ppm.mes.domain.health.health000.HealthMapper.getAlarmList */ 
+	    
+	    SELECT 
+	           A.userNm
+	         , A.remainDt
+		FROM( 
+			 SELECT
+			         CONCAT(U.USER_NM, '(', U.USER_CD, ')' )                     AS userNm
+			       , IFNULL(( SELECT DATEDIFF(HEALTH_CARD_END_DT, NOW()) FROM TH_HEALTH_CARD H WHERE H.USER_CD = U.USER_CD ORDER BY HEALTH_CARD_END_DT DESC LIMIT 1), '미등록')      AS remainDt
+			   FROM
+			        TB_MES_USER000 U
+			   WHERE 1=1
+			   AND U.USE_YN = 'Y'
+			   AND U.USER_CD != 'system'
+		 ) A
+		 WHERE 1=1
+		 <![CDATA[  
+		 	AND (IFNULL(A.remainDt,'0') = 0 OR A.remainDt < 30)
+  		 ]]>
+	     	
+    </select>
+
+  
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.auth.auth000.AuthGroupMapper">
+
+    <select id="getAuthGroupList" resultType="authGroupVO" parameterType="hashMap" statementType="PREPARED">    
+    	/* com.ppm.mes.domain.auth.auth000.AuthGroupMapper.getAuthGroupList */
+		SELECT 
+	       	 DISTINCT A.COMPANY  company,
+	  		 A.GRP_AUTH_CD grpAuthCd,
+	  		 A.GRP_AUTH_NM grpAuthNm, 
+	  		 A.REMARK remark,
+	  		 A.DEFAULT_YN defaultYn,
+	  		 A.USE_YN useYn
+		FROM TB_MES_AUTH000 A
+		LEFT OUTER JOIN TB_MES_AUTH010 B
+			ON A.COMPANY = B.COMPANY
+			AND A.GRP_AUTH_CD = B.GRP_AUTH_CD
+			AND B.USE_YN = 'Y'
+		WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+	    
+	    <if test="map.grpAuthCd != null and map.grpAuthCd != ''">  
+			<![CDATA[  
+				AND  A.GRP_AUTH_CD  LIKE CONCAT('%',#{map.grpAuthCd},'%')
+  			]]>
+	    </if>
+	    
+	    <if test="map.grpAuthNm != null and map.grpAuthNm != ''">  
+			<![CDATA[  
+				AND  A.GRP_AUTH_NM  LIKE CONCAT('%',#{map.grpAuthNm},'%')
+  			]]>
+	    </if>
+	    <!-- 
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND B.USER_CD = #{map.userCd}
+  			]]>
+	    </if>
+	     -->
+	    
+		<if test="map.defaultYn != null and map.defaultYn != ''">  
+			<![CDATA[  
+				AND A.DEFAULT_YN = #{map.defaultYn}
+  			]]>
+	    </if>
+	    
+		<if test="map.useYn != null and map.useYn != ''">  
+			<![CDATA[  
+				AND A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.GRP_AUTH_CD
+	    
+    </select>    
+        
+    
+    <select id="getAuthUserList" resultType="authGroupVO" parameterType="hashMap" statementType="PREPARED">   
+		/* com.ppm.mes.domain.auth.auth000.AuthGroupMapper.getAuthUserList */
+      SELECT 
+	       A.COMPANY  company,
+	  		 A.GRP_AUTH_CD grpAuthCd,
+	  		 A.USER_CD userCd, 
+			 B.USER_NM			userNm,
+			 B.EMAIL 			email,
+			 B.DEPT_CD 			deptCd,
+	  		 A.REMARK remark,
+	  		 A.USE_YN useYn
+		FROM TB_MES_AUTH010 A
+		INNER JOIN TB_MES_USER000 B
+			ON A.USER_CD = B.USER_CD
+		WHERE 1=1
+		
+		
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.grpAuthCd != null and map.grpAuthCd != ''">  
+			<![CDATA[  
+				AND A.GRP_AUTH_CD = #{map.grpAuthCd}
+  			]]>
+	    </if>
+
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND A.USER_CD = #{map.userCd}
+  			]]>
+	    </if>
+	    
+		<if test="map.useYn != null and map.useYn != ''">  
+			<![CDATA[  
+				AND A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+    </select>
+        
+    
+    <select id="getUserAuthList" resultType="authGroupVO" parameterType="hashMap" statementType="PREPARED">    
+    	/* com.ppm.mes.domain.auth.auth000.AuthGroupMapper.getUserAuthList */
+      SELECT 
+	       A.COMPANY  company,
+	  		 A.GRP_AUTH_CD grpAuthCd,
+	  		 A.USER_CD userCd, 
+			 B.USER_NM			userNm,
+			 B.EMAIL 			email,
+			 B.DEPT_CD 			deptCd,
+	  		 A.REMARK remark,
+	  		 A.USE_YN useYn
+		FROM TB_MES_USER050 A
+		INNER JOIN TB_MES_USER000 B
+			ON A.USER_CD = B.USER_CD
+		WHERE 1=1
+		
+		
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.grpAuthCd != null and map.grpAuthCd != ''">  
+			<![CDATA[  
+				AND A.GRP_AUTH_CD = #{map.grpAuthCd}
+  			]]>
+	    </if>
+
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND A.USER_CD = #{map.userCd}
+  			]]>
+	    </if>
+	    
+		<if test="map.useYn != null and map.useYn != ''">  
+			<![CDATA[  
+				AND A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+    </select>
+    
+    <select id="getAuthMenuList" resultType="authMenuVO" parameterType="hashMap" statementType="PREPARED">    
+    	/* com.ppm.mes.domain.auth.auth000.AuthGroupMapper.getAuthMenuList */
+          SELECT 
+				A.MENU_GRP_CD menuGrpCd, 
+				A.MENU_CD menuCd,
+				A.MENU_NM menuNm,
+				A.MULTI_LANGUAGE multiLaguage,
+        		(CASE WHEN B.MENU_CD IS NULL THEN 'N' ELSE 'Y' END) useYn,
+			
+		  		IFNULL(B.SCH_AH,'N') schAh,
+        		IFNULL(B.SAV_AH,'N') savAh,
+		        IFNULL(B.EXL_AH,'N') exlAh,
+		        IFNULL(B.DEL_AH,'N') delAh,
+		        IFNULL(B.FN1_AH,'N') fn1Ah,
+		        IFNULL(B.FN2_AH,'N') fn2Ah,
+		        IFNULL(B.FN3_AH,'N') fn3Ah,
+		        IFNULL(B.FN4_AH,'N') fn4Ah,
+		        IFNULL(B.FN5_AH,'N') fn5Ah,
+		        
+		        IFNULL(C.SCH_AH,'N') schAhProg,
+		        IFNULL(C.SAV_AH,'N') savAhProg,
+		        IFNULL(C.EXL_AH,'N') exlAhProg,
+		        IFNULL(C.DEL_AH,'N') delAhProg,
+		        IFNULL(C.FN1_AH,'N') fn1AhProg,
+		        IFNULL(C.FN2_AH,'N') fn2AhProg,
+		        IFNULL(C.FN3_AH,'N') fn3AhProg,
+		        IFNULL(C.FN4_AH,'N') fn4AhProg,
+		        IFNULL(C.FN5_AH,'N') fn5AhProg  
+		        
+			FROM TB_MES_MENU000 A
+			
+			LEFT OUTER JOIN TB_MES_AUTH100 B
+				ON A.MENU_CD = B.MENU_CD
+				AND B.COMPANY = #{map.company}
+				AND B.GRP_AUTH_CD = #{map.grpAuthCd}	 
+				 
+		    INNER JOIN TB_MES_PGM000 C
+		    	ON	A.PROG_CD = C.PROG_CD		
+		    		
+			WHERE 1=1			
+				AND A.MENU_GRP_CD = #{map.menuGrpCd}
+				AND A.PROG_CD IS NOT NULL
+			
+			ORDER BY MENU_SORT ASC
+    </select>
+    
+</mapper>

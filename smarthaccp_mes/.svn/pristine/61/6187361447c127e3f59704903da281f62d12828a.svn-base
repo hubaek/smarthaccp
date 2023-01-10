@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.wh.wh000.WarehouseMasterMapper"> 
+    <select id="getWarehouseList" resultType="warehouseMasterVO" parameterType="hashMap" statementType="PREPARED">    
+		/*com.ppm.mes.domain.wh.wh000.WarehouseMasterMapper.getWarehouseList*/
+		SELECT A.COMPANY company,
+		       A.WH_CD whCd,
+		       A.WH_NM whNm,
+		       A.WH_TYPE whType,
+		       A.CUST_CD custCd,
+		       B.CUST_NM custNm,
+		       A.REMARK remark,
+		       A.USE_YN useYn,
+		       A.SORT sort
+		FROM   TB_MES_WH000 A
+        LEFT OUTER JOIN TB_MES_CUST000 B
+	        ON     A.COMPANY   = B.COMPANY
+	        AND    A.CUST_CD = B.CUST_CD
+		WHERE  1 = 1
+
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.whCd != null and map.whCd != ''">
+			<![CDATA[  
+      			AND   A.WH_CD = #{map.whCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.whNm != null and map.whNm != ''">
+			<![CDATA[  
+      			AND A.WH_NM LIKE UPPER(CONCAT('%',#{map.whNm},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.whType != null and map.whType != ''">
+			<![CDATA[  
+      			AND   A.WH_TYPE = #{map.whType}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.SORT ASC
+	    
+    </select>
+</mapper>

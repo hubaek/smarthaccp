@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.qc.qc200.QcItemMapper">
+    <select id="getQcItem" resultType="qcItemVO" parameterType="hashMap" statementType="PREPARED">    
+			/*com.ppm.mes.domain.qc.qc200.QcItemMapper.getQcItem*/
+			SELECT A.COMPANY company,
+			       A.QC_CD qcCd,
+			       A.QC_NM qcNm,
+			       A.QC_UNIT qcUnit,
+				   B.QC_TYPE qcType,
+			       B.ROUT_CD routCd,
+			       B.QC_SPEC qcSpec,
+			       B.MAGM_VAL magmVal,
+			       B.MAGM_MAX magmMax,
+			       B.MAGM_MIN magmMin,
+			       B.RMAG_MAX rmagMax,
+			       B.RMAG_MIN rmagMin,
+			       B.SPEC_MAX specMax,
+			       B.SPEC_MIN specMin,
+			       
+				   B.SMPL_CNT smplCnt,
+				   B.QC_CNT qcCnt,
+			
+			       
+			       B.SORT sort,
+			       B.USE_YN useYn,
+			       A.QC_EQUIP_YN qcEquipYn,
+			       A.REMARK remark
+			FROM   TB_MES_QC000 A
+			       INNER JOIN TB_MES_QC200 B
+			       ON     A.COMPANY   = B.COMPANY
+			       AND    A.QC_CD = B.QC_CD
+			WHERE  1 = 1 
+
+			 <if test="map.company != null and map.company != ''">
+				<![CDATA[  
+	      			AND A.COMPANY = #{map.company}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.itemCd != null and map.itemCd != ''">
+				<![CDATA[  
+		     			AND   B.ITEM_CD = #{map.itemCd}
+		  		]]>
+			 </if>
+			 
+			 <if test="map.qcType != null and map.qcType != ''">
+				<![CDATA[  
+	      			AND B.QC_TYPE = #{map.qcType}
+	  			]]>
+		    </if>        
+		    
+			 <if test="map.routCd != null and map.routCd != ''">
+				<![CDATA[  
+	      			AND B.ROUT_CD = #{map.routCd}
+	  			]]>
+		    </if>      
+		    
+			 <if test="map.qcCd != null and map.qcCd != ''">
+				<![CDATA[  
+	      			AND B.QC_CD = #{map.qcCd}
+	  			]]>
+		    </if>        
+		    
+			 <if test="map.useYn != null and map.useYn != ''">
+				<![CDATA[  
+	      			AND IFNULL(B.USE_YN,A.USE_YN) = #{map.useYn}
+	  			]]>
+		    </if>      
+		    
+		    ORDER BY B.SORT ASC
+    </select>    
+    
+     <select id="getQcGroupItem" resultType="qcItemVO" parameterType="hashMap" statementType="PREPARED">    
+     		/*com.ppm.mes.domain.qc.qc200.QcItemMapper.getQcGroupItem*/
+			SELECT A.COMPANY company,
+			       A.QC_GROUP_CD qcGroupCd,
+			       A.QC_TYPE qcType,
+			       C.QC_CD qcCd,
+			       C.QC_NM qcNm,
+			       C.QC_UNIT qcUnit,
+			       C.QC_SPEC qcSpec,
+			       C.QC_EQUIP_YN qcEquipYn,
+			       C.USE_YN useYn,
+			       C.REMARK remark
+			FROM   TB_MES_QC100 A
+			       INNER JOIN TB_MES_QC110 B
+			       ON     A.COMPANY       = B.COMPANY
+			       AND    A.QC_GROUP_CD = B.QC_GROUP_CD
+			       INNER JOIN TB_MES_QC000 C
+			       ON     B.COMPANY = C.COMPANY
+			       AND    B.QC_CD = C.QC_CD
+			WHERE  1 = 1
+			
+			 <if test="map.qcGroupCd != null and map.qcGroupCd != ''">
+				<![CDATA[  
+	      			AND A.QC_GROUP_CD = #{map.qcGroupCd}
+	  			]]>
+		    </if>      
+    </select>    
+    
+    
+    
+    <select id="getQcItemTargetList" resultType="qcItemTargetVO" parameterType="hashMap" statementType="PREPARED">  
+    		/*com.ppm.mes.domain.qc.qc200.QcItemMapper.getQcItemTargetList*/  
+  		 SELECT A.COMPANY company,
+ 		 		A.ITEM_CD itemCd,
+ 		 		A.ITEM_NM itemNm,
+ 		 		A.PART_NO partNo,
+ 		 		A.ITEM_TYPE itemType,
+	 		 
+				 A.ITEM_MAIN_CD 	itemMainCd,
+				 A1.ITEM_MAIN_NM 	itemMainNm,
+				 A.ITEM_SUB_CD 		itemSubCd,
+				 A2.ITEM_SUB_NM 	itemSubNm,
+ 		 		A.SPEC spec,		 		 		 		
+ 		 		A.UNIT unit, 		 		
+ 		 		A.USE_YN useYn,
+ 		 		A.REMARK remark, 		 		
+		        (SELECT MAX(ID) FROM TB_MES_FILE000 Z WHERE Z.TARGET_TYPE = 'QC010' AND Z.TARGET_ID  = A.ITEM_CD ) qcDocId,		        
+                (SELECT COUNT(1) FROM TB_MES_QC200 Z WHERE Z.COMPANY =A.COMPANY AND Z.ITEM_CD = A.ITEM_CD AND Z.QC_TYPE = #{map.qcType})  qcCount
+ 		 FROM TB_MES_ITEM000 A
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+		WHERE 1=1		
+			
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>	    	    	    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+  		
+	    ORDER BY A.ITEM_CD
+    </select>
+    
+    
+    
+    <select id="getQcRoutItemTargetList" resultType="qcItemTargetVO" parameterType="hashMap" statementType="PREPARED">    
+		/*com.ppm.mes.domain.qc.qc200.QcItemMapper.getQcRoutItemTargetList*/
+		
+		SELECT A.COMPANY company,
+		       A.ITEM_CD itemCd,
+		       A.ITEM_NM itemNm,
+		       A.PART_NO partNo,
+		       A.ITEM_TYPE itemType,
+   			   A.ITEM_MAIN_CD 	itemMainCd,
+			   A1.ITEM_MAIN_NM 	itemMainNm,
+			   A.ITEM_SUB_CD 		itemSubCd,
+			   A2.ITEM_SUB_NM 	itemSubNm,
+		       A.SPEC spec,
+		       A.UNIT unit,
+		       D.ROUT_CD,
+		       A.USE_YN useYn,
+		       A.REMARK remark,
+		       D.ROUT_CD routCd,
+		       
+		        (SELECT MAX(ID) FROM TB_MES_FILE000 Z WHERE Z.TARGET_TYPE = 'QC030' AND Z.TARGET_ID  = A.ITEM_CD ) qcDocId,
+		        
+		       (SELECT COUNT(1)
+		       FROM    TB_MES_QC200 Z
+		       WHERE   Z.COMPANY   =A.COMPANY
+		       AND     Z.ITEM_CD = A.ITEM_CD
+		       AND     Z.QC_TYPE   = #{map.qcType}
+		       AND     Z.ROUT_CD = D.ROUT_CD
+		       )
+		       qcCount
+		FROM   TB_MES_ITEM000 A
+        INNER JOIN TB_MES_RT120 B
+	        ON     A.COMPANY   = B.COMPANY
+	        AND    A.ITEM_CD = B.ITEM_CD
+        INNER JOIN TB_MES_RT100 C
+	        ON     B.COMPANY      = C.COMPANY
+	        AND    B.ROUTING_CD = C.ROUTING_CD
+        INNER JOIN TB_MES_RT110 D
+	        ON     C.COMPANY      = D.COMPANY
+	        AND    C.ROUTING_CD = D.ROUTING_CD
+        INNER JOIN TB_MES_RT000 E
+	        ON     D.COMPANY      = E.COMPANY
+	        AND    D.ROUT_CD = E.ROUT_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+		WHERE  1 = 1
+	
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+  		
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND   D.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+  		
+		 <if test="map.qcYn != null and map.qcYn != ''">
+			<![CDATA[  
+      			AND   E.QC_YN = #{map.qcYn}
+  			]]>
+	    </if>	    
+	    
+	    ORDER BY A.ITEM_CD
+	    
+    </select>
+    
+    <select id="getQcRoutItemSetupList" resultType="qcItemVO" parameterType="hashMap" statementType="PREPARED">
+    /*com.ppm.mes.domain.qc.qc200.QcItemMapper.getQcRoutItemSetupList*/     
+	SELECT 	 A.COMPANY company,
+	         B.ITEM_CD itemCd,
+	         G.ITEM_NM itemNm,
+	         G.PART_NO partNo,
+	         G.SPEC spec,
+	         A.ROUTING_CD routingCd,
+	         F.ROUTING_NM routingNm,
+	         A.ROUT_SEQ routSeq,
+	         A.ROUT_CD routCd,
+	         G.QC_GROUP_CD qcGrouCode,
+	         IFNULL(Z1.QC_TYPE,'30') qcType,
+	         Z.QC_CD qcCd,
+	         Z2.QC_NM qcNm,
+	         Z2.QC_UNIT qcUnit,
+	         Z1.QC_SPEC qcSpec,	         
+	         Z1.MAGM_VAL magmVal,
+	         Z1.MAGM_MAX magmMax,
+	         Z1.MAGM_MIN magmMin,
+	         Z1.RMAG_MAX rmagMax,
+	         Z1.RMAG_MIN rmagMin,
+	         Z1.SPEC_MAX specMax,
+	         Z1.SPEC_MIN specMin,
+	         Z1.SMPL_CNT smplCnt,
+	         Z1.QC_CNT qcCnt,	         
+	         Z1.REMARK remark,
+	         Z1.USE_YN useYn,
+	         Z1.SORT sort	         
+	  FROM   TB_MES_RT110 A
+	         INNER JOIN TB_MES_RT120 B
+	         ON     A.COMPANY      = B.COMPANY
+	         AND    A.ROUTING_CD = B.ROUTING_CD
+	         INNER JOIN TB_MES_RT000 C
+	         ON     A.COMPANY   = C.COMPANY
+	         AND    A.ROUT_CD = C.ROUT_CD
+	         INNER JOIN TB_MES_RT100 F
+	         ON     A.COMPANY      = F.COMPANY
+	         AND    A.ROUTING_CD = F.ROUTING_CD
+	         INNER JOIN TB_MES_ITEM000 G
+	         ON     B.COMPANY   = G.COMPANY
+	         AND    B.ITEM_CD = G.ITEM_CD	         
+	         LEFT OUTER JOIN TB_MES_QC110 Z
+	         ON     G.COMPANY      = Z.COMPANY
+	         AND    G.QC_GROUP_CD    = Z.QC_GROUP_CD
+	         LEFT OUTER JOIN TB_MES_QC200 Z1
+	         ON     Z.COMPANY      = Z1.COMPANY
+	         AND     Z1.ITEM_CD      = G.ITEM_CD
+	         AND     Z.QC_CD      = Z1.QC_CD
+	         AND     Z1.ROUT_CD      = C.ROUT_CD
+	         AND     Z1.QC_TYPE      = '30'
+	         INNER JOIN TB_MES_QC000 Z2
+	         ON     Z.COMPANY      = Z2.COMPANY
+	         AND     Z.QC_CD      = Z2.QC_CD
+	  WHERE  1 =1
+	  AND Z.QC_CD IS NOT NULL    
+	  
+	  
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   G.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>	    
+	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   G.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   G.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND G.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND G.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND G.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+  		
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND   C.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+  		
+    
+    </select>
+    
+</mapper>

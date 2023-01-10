@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.qc.qc100.QcGroupMapper">
+    <select id="getQcGroupList" resultType="qcGroupVO" parameterType="hashMap" statementType="PREPARED">    
+			/*com.ppm.mes.domain.qc.qc100.QcGroupMapper.getQcGroupList*/
+			SELECT A.COMPANY company,
+			       A.QC_GROUP_CD qcGroupCd,
+			       A.QC_GROUP_NM qcGroupNm,
+			       A.QC_TYPE qcType,
+			       A.REMARK remark,
+				   A.USE_YN useYn
+			FROM   TB_MES_QC100 A
+			WHERE  1 = 1 
+
+			 <if test="map.company != null and map.company != ''">
+				<![CDATA[  
+	      			AND A.COMPANY = #{map.company}
+	  			]]>
+		    </if>
+		    
+			 <if test="map.qcGroupCd != null and map.qcGroupCd != ''">
+				<![CDATA[  
+	      			AND A.QC_GROUP_CD  LIKE UPPER(CONCAT('%',#{map.qcGroupCd},'%'))
+		  		]]>
+			 </if>
+			 
+		    
+			 <if test="map.qcGroupNm != null and map.qcGroupNm != ''">
+				<![CDATA[  
+	      			AND A.QC_GROUP_NM  LIKE UPPER(CONCAT('%',#{map.qcGroupNm},'%'))
+		  		]]>
+			 </if>
+			 
+			 <if test="map.qcType != null and map.qcType != ''">
+				<![CDATA[  
+	      			AND A.QC_TYPE = #{map.qcType}
+	  			]]>
+		    </if>        
+		    
+			 
+		    <if test="map.qcCd != null and map.qcCd != ''">  
+				<![CDATA[  			
+					AND A.QC_GROUP_CD IN (SELECT QC_GROUP_CD FROM TB_MES_QC110 WHERE QC_CD IN ( SELECT QC_CD FROM TB_MES_QC100 WHERE QC_CD LIKE CONCAT('%',#{map.qcCd},'%')))
+	  			]]>
+		    </if>
+		    
+		    
+			 <if test="map.useYn != null and map.useYn != ''">
+				<![CDATA[  
+	      			AND A.USE_YN = #{map.useYn}
+	  			]]>
+		    </if>      
+    </select>    
+</mapper>

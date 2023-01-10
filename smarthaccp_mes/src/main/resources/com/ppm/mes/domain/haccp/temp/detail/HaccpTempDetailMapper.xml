@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper">
+
+	<select id="getHaccpSensingData" resultType ="HaccpSensingDataVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getHaccpSensingData */
+	
+	  SELECT 		
+             A.AUTO_COLLECT_ID,
+             DATE_FORMAT(A.MEASURE_DTM, "%Y-%m-%d %T") AS measure_dtm,
+             A.ATTRIBUTE_1_VALUE,
+             A.ATTRIBUTE_2_VALUE,
+             A.ATTRIBUTE_3_VALUE,
+             A.ATTRIBUTE_4_VALUE,
+             A.ATTRIBUTE_5_VALUE
+      FROM TH_SENSING_DATA A
+      WHERE A.AUTO_COLLECT_ID = #{map.ccpId}	   
+      AND DATE_FORMAT(A.MEASURE_DTM,"%Y%m%d") =  #{map.inspectionDate}
+      ORDER BY A.MEASURE_DTM ASC
+	</select>
+	
+	<select id="getHaccpReportData" resultType ="HaccpReportDataVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.HaccpReportDataVO */
+	
+	 select  
+		  	a.ccp_id,
+			a.measure_start_dtm,
+			a.measure_end_dtm,
+			DATE_FORMAT(a.measure_start_dtm,'%T') as measure_start_time,
+			DATE_FORMAT(a.measure_end_dtm,'%T') as measure_end_time,
+			a.leave_yn,
+			a.leave_cd,
+			a.leave_note,
+			a.attribute_1_value,
+			a.attribute_2_value,
+			a.attribute_3_value as value_03,
+			a.attribute_4_value as value_04,
+			a.attribute_5_value as value_05,
+			a.attribute_6_value as value_06,
+			a.attribute_7_value as value_07,
+			a.attribute_8_value as value_08,
+			a.attribute_9_value as value_09,
+			a.attribute_10_value as value_10,
+			a.attribute_11_value as value_11,
+			a.attribute_12_value as value_12,
+			a.attribute_13_value as value_13,
+			a.attribute_14_value as value_14,
+			a.attribute_15_value as value_15,
+			b.SUB_NM as attribute_3_value,
+			case when a.attribute_2_value = 'DETECT' then null when a.attribute_4_value = 'DETECT_CD_001' then 'o' else 'X' end as attribute_4_value,
+			case when a.attribute_2_value = 'DETECT' then null when a.attribute_5_value = 'DETECT_CD_001' then 'o' else 'X' end as attribute_5_value,
+			case when a.attribute_2_value = 'DETECT' then null when a.attribute_6_value = 'DETECT_CD_001' then 'o' else 'X' end as attribute_6_value,
+			case when a.attribute_2_value = 'DETECT' then null when a.attribute_7_value = 'DETECT_CD_001' then 'o' else 'X' end as attribute_7_value,
+			case when a.attribute_2_value = 'DETECT' then null when a.attribute_8_value = 'DETECT_CD_001' then 'o' else 'X' end as attribute_8_value
+	  from th_report_data a
+	  left join TB_MES_CD100 b
+	    on b.MAIN_CD  = 'SPECIMEN_POSITION_CD'
+	    and a.attribute_2_value  = 'TEST'
+	    and b.SUB_CD = a.attribute_3_value
+	 where a.ccp_id  = #{map.ccpId}
+	   and date_format(a.measure_start_dtm, '%Y%m%d') = #{map.inspectionDate}
+	   and a.attribute_2_value = #{map.status}
+	   order by a.measure_start_dtm asc
+	</select>
+	
+	<select id="getHaccpTempDetailList1" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getHaccpTempDetailList1 */
+	
+		SELECT 		
+               DATE_FORMAT(B.DTM, "%Y-%m-%d %T")    AS measurementTime
+             , B.TEMP   							AS temp
+             , B.PLC_IP   							AS plcIp
+             , B.JESANG								AS jesang
+             , B.DOOR								AS door
+
+      FROM TB_GET_TEMP B
+        INNER JOIN (SELECT MIN(DTM) AS DTM
+                   ,MIN(PLC_IP) AS PLC_IP
+           FROM (SELECT A.DTM
+                     ,A.PLC_IP
+                     ,SUBSTR(DATE_FORMAT(A.DTM , '%H:%i'),1,4) AS HI2
+                     ,SUBSTR(DATE_FORMAT(A.DTM , '%H:%i'),4,1) AS HI3
+                 FROM TB_GET_TEMP A
+                WHERE 1 = 1
+                  AND A.PLC_IP = #{map.plcIp} /* PLC ID */
+                  AND DATE_FORMAT(A.DTM, "%Y%m%d") = #{map.inspectionDate} /* CCP 일자 */
+                  ) B
+           WHERE 1 = 1
+             AND HI3 IN ('0' , '1', '2', '3', '4', '5') /* 0~9분 , 30~39분 */
+           GROUP BY HI2
+             ) C ON B.DTM = C.DTM AND B.PLC_IP = C.PLC_IP
+       ORDER BY B.DTM		    
+	</select>
+	
+	<select id="getHaccpTempDetailList2" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getHaccpTempDetailList2 */
+	
+		SELECT 		
+               DATE_FORMAT(B.DTM, "%Y-%m-%d %T")    AS measurementTime
+             , B.TEMP   							AS temp
+             , B.PLC_IP   							AS plcIp
+
+      FROM TB_GET_TEMP2 B
+        INNER JOIN (SELECT MIN(DTM) AS DTM
+                   ,MIN(PLC_IP) AS PLC_IP
+           FROM (SELECT A.DTM
+                     ,A.PLC_IP
+                     ,SUBSTR(DATE_FORMAT(A.DTM , '%H:%i'),1,4) AS HI2
+                     ,SUBSTR(DATE_FORMAT(A.DTM , '%H:%i'),4,1) AS HI3
+                 FROM TB_GET_TEMP2 A
+                WHERE 1 = 1
+                  AND A.PLC_IP = #{map.plcIp} /* PLC ID */
+                  AND DATE_FORMAT(A.DTM, "%Y%m%d") = #{map.inspectionDate} /* CCP 일자 */
+                  ) B
+           WHERE 1 = 1
+             AND HI3 IN ('0' , '1', '2', '3', '4', '5') /* 0~9분 , 30~39분 */
+           GROUP BY HI2
+             ) C ON B.DTM = C.DTM AND B.PLC_IP = C.PLC_IP
+       ORDER BY B.DTM		    
+	</select>
+	
+	<select id="GetCharts1" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.GetCharts */
+	SELECT IFNULL(T.DTM, '') AS measurementTime
+        , IFNULL(T.TEMP, '') AS temp
+        , IFNULL(T.PLC_IP, '') AS plcIp
+     FROM (SELECT A.DTM
+               ,A.TEMP
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_TEMP A
+          WHERE 1 = 1
+            AND A.PLC_IP = #{map.plcIp}
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="GetCharts2" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.GetCharts2 */
+	SELECT IFNULL(T.DTM, '') AS measurementTime
+        , IFNULL(T.TEMP, '') AS temp
+        , IFNULL(T.PLC_IP, '') AS plcIp
+     FROM (SELECT A.DTM
+               ,A.TEMP
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_TEMP2 A
+          WHERE 1 = 1
+            AND A.PLC_IP = #{map.plcIp}
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="getDetailList" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 				AS itemNm
+		     , IFNULL(MEASUREMENT_TIME, '') 	AS measurementTime
+		     , IFNULL(TEMP, '') 				AS temp
+		     , RESULT 							AS result	
+		     , IFNULL(REMARK, '')				AS remark
+		     , IFNULL(PLC_IP,'')				AS plcIp
+		     , JESANG							AS jesang
+             , DOOR								AS door
+		FROM TB_CCP_TEMP100
+		WHERE 1=1
+		<if test="map.plcIp != null and map.plcIp != ''">
+		<![CDATA[  
+     			 AND PLC_IP = #{map.plcIp}
+ 			]]>
+    	</if>  
+    	<if test="map.version != null and map.version != ''">
+		<![CDATA[  
+     			 AND VERSION = #{map.version}
+ 			]]>
+    	</if>
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	    
+	</select>
+	
+	<select id="getHaccpDetailList" resultType ="haccpTempDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 	AS itemNm
+		     , IFNULL(MEASUREMENT_TIME, '') 	AS measurementTime
+		     , IFNULL(TEMP, '') 				AS temp
+		     , RESULT 							AS result	
+		     , REMARK 							AS remark
+		     , IFNULL(PLC_IP,'')				AS plcIp
+		     , JESANG							AS jesang
+             , DOOR								AS door
+		FROM TB_CCP_TEMP100
+		WHERE 1=1
+		<if test="map.plcIp != null and map.plcIp != ''">
+		<![CDATA[  
+     			 AND PLC_IP = #{map.plcIp}
+ 			]]>
+    	</if>  
+    	<if test="map.version != null and map.version != ''">
+		<![CDATA[  
+     			 AND VERSION = #{map.version}
+ 			]]>
+    	</if>
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE  
+	</select>
+	
+</mapper>

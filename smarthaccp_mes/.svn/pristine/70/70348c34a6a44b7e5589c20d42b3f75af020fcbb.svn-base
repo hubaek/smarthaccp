@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.monit.prdSite.apm.ApmRecordMapper">
+    <!-- 자동 포장기 횟수-->
+    <select id="getApmRecord" resultType="ApmRecordVO" parameterType="hashMap" statementType="PREPARED">
+    	/*com.ppm.mes.domain.monit.prdSite.apm.ApmRecordMapper.getApmRecord*/
+	        SELECT 
+			     a.CNT cnt, 
+				 a.PRDSTAT prdStat,
+				 a.DTM	dtm 
+			FROM tb_get_prod a WHERE a.DTM = (SELECT MAX(dtm) from tb_get_prod)
+
+	</select>
+</mapper>

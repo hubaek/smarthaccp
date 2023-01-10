@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.rt.rt000.RoutManagementMapper"> 
+    <select id="getList" resultType="routManagementVO" parameterType="hashMap" statementType="PREPARED">   
+    	/*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getList*/ 
+ 		 SELECT A.COMPANY company,
+ 		 		A.ROUT_TYPE routType,
+ 		 		A.ROUT_CD routCd,
+ 		 		A.ROUT_NM routNm,
+ 		 		A.OUTSC_FLAG outscFlag,
+ 		 		A.CUST_CD custCd,
+ 		 		B.CUST_NM custNm,
+ 		 		A.USE_YN useYn,
+ 		 		A.WH_CD whCd,
+ 		 		A.EQUIP_USE_YN equipUseYn,
+                A.QC_YN qcYn,
+ 		 		A.SORT sort, 
+ 		 		A.REMARK remark,
+ 		 		
+ 		 		(SELECT COUNT(1) FROM TB_MES_RT200 Z WHERE Z.COMPANY = A.COMPANY AND Z.ROUT_CD = A.ROUT_CD) routManCnt,
+ 		 		(SELECT COUNT(1) FROM TB_MES_RT300 Z WHERE Z.COMPANY = A.COMPANY AND Z.ROUT_CD = A.ROUT_CD) routEqCnt,
+ 		 		(SELECT COUNT(1) FROM TB_MES_RT500 Z WHERE Z.COMPANY = A.COMPANY AND Z.ROUT_CD = A.ROUT_CD) routNwrkCnt,
+ 		 		(SELECT COUNT(1) FROM TB_MES_RT600 Z WHERE Z.COMPANY = A.COMPANY AND Z.ROUT_CD = A.ROUT_CD) routBadCnt
+ 		 FROM TB_MES_RT000 A 
+ 		 LEFT OUTER JOIN TB_MES_CUST000 B 		 
+            ON A.COMPANY=B.COMPANY 
+            AND A.CUST_CD=B.CUST_CD 
+		WHERE 1=1		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND   A.ROUT_TYPE = #{map.routType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD LIKE UPPER(CONCAT('%',#{map.routCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.routNm != null and map.routNm != ''">
+			<![CDATA[  
+      			AND A.ROUT_NM LIKE UPPER(CONCAT('%',#{map.routNm},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.outscFlag != null and map.outscFlag != ''">
+			<![CDATA[  
+      			AND   A.OUTSC_FLAG = #{map.outscFlag}
+  			]]>
+	    </if>
+	    
+		 <if test="map.custCd != null and map.custCd != ''">
+			<![CDATA[  
+      			AND   A.CUST_CD = #{map.custCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.equipUseYn != null and map.equipUseYn != ''">
+			<![CDATA[  
+      			AND   A.EQUIP_USE_YN = #{map.equipUseYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.qcYn != null and map.qcYn != ''">
+			<![CDATA[  
+      			AND   A.QC_YN = #{map.qcYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.SORT ASC
+    </select>
+    
+    
+    <select id="getRoutManList" resultType="routManManagementVO" parameterType="hashMap" statementType="PREPARED">
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutManList*/    
+ 		 SELECT
+	        A.COMPANY company,
+	        A.ROUT_TYPE routType,
+	        A.WH_CD whCd,
+	        A.EQUIP_USE_YN equipUseYn,
+	        A.QC_YN qcYn,
+	        B.ROUT_CD routCd,
+	        B.USER_CD userCd,
+	        C.USER_NM userNm,
+	        B.USE_YN useYn            
+	    FROM
+	        TB_MES_RT000 A               
+	    LEFT OUTER JOIN
+	        TB_MES_RT200 B              
+	            ON A.COMPANY = B.COMPANY              
+	            AND A.ROUT_CD = B.ROUT_CD              
+	    LEFT OUTER JOIN
+	        TB_MES_USER000 C                   
+	            ON B.USER_CD = C.USER_CD     
+	    WHERE
+	        1=1                         
+	        
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND   A.ROUT_TYPE = #{map.routType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.routNm != null and map.routNm != ''">
+			<![CDATA[  
+      			AND A.ROUT_NM LIKE UPPER(CONCAT('%',#{map.routNm},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.userCd != null and map.userCd != ''">
+			<![CDATA[  
+      			AND B.USER_CD = #{map.userCd}
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   B.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+    </select>
+        
+    <select id="getRoutEquipList" resultType="routEquipManagementVO" parameterType="hashMap" statementType="PREPARED">    
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutEquipList*/
+		SELECT A.COMPANY company,
+		       A.EQUIP_CD equipCd,
+		       A.EQUIP_NM equipNm,
+		       B.ROUT_CD routCd,
+		       A.EQUIP_TYPE equipType,
+		       A.EQUIP_SPEC equipSpec,
+		       A.EQUIP_MAKER equipMaker,
+		       A.MODEL_NM modelNm,
+		       A.PURCHASE_DT purchaseDt,
+		       A.PC_AMT pcAmt,
+		       A.REMARK remark,
+		       B.REF_YN refYn,
+		       B.USE_YN useYn,
+			   (SELECT COUNT(1) 
+				  FROM TB_MES_WO100 Z 
+				WHERE Z.COMPANY = A.COMPANY 
+				AND Z.EQUIP_CD = A.EQUIP_CD
+				AND Z.ORDER_ST IN ('RUN','NWRK')) prdEquipUseCnt,
+	           A.UPDATED_AT updatedAt,
+	           A.UPDATED_BY updatedBy
+	           
+		FROM   TB_MES_EQ000 A
+        INNER JOIN TB_MES_RT300 B
+	        ON     A.COMPANY   = B.COMPANY
+	        AND    A.EQUIP_CD = B.EQUIP_CD
+		WHERE  1 = 1
+		
+		 
+		 <!-- 사용설비권한이 Y일경우 등록된 설비+설비지정안된설비.. -->
+	 	<if test="map.equipAuthYn != null and map.equipAuthYn eq 'Y'.toString()">
+			<![CDATA[  
+		 			AND B.EQUIP_CD IN 
+		 				( SELECT EQUIP_CD 
+		 					FROM TB_MES_SYS310 Z 
+		 					WHERE Z.COMPANY = A.COMPANY 
+		 					AND USE_YN ='Y' 
+		 					AND UPPER(Z.USER_CD) = UPPER(#{map.userCd}))
+  			]]>  			
+	    </if>	    
+		 
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.equipCd != null and map.equipCd != ''">
+			<![CDATA[  
+      			AND   A.EQUIP_CD = #{map.equipCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND   B.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	    
+	    
+		 <if test="map.equipType != null and map.equipType != ''">
+			<![CDATA[  
+      			AND   A.EQUIP_TYPE = #{map.equipType}
+  			]]>
+	    </if>
+	    
+	    <!-- 연결설비여부 -->
+		 <if test="map.refYn != null and map.refYn != ''">
+			<![CDATA[  
+      			AND  B.REF_YN = #{map.refYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND  B.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    <!-- 사용중인 설비 제외 -->
+		 <if test="map.prdEquipUseYn != null and map.prdEquipUseYn eq 'N'.toString()">
+		 	<![CDATA[  
+			   AND  (SELECT COUNT(1) 
+						  FROM TB_MES_WO100 Z 
+						WHERE Z.COMPANY = A.COMPANY 
+						AND Z.EQUIP_CD = A.EQUIP_CD
+						AND Z.ORDER_ST IN ('RUN','NWRK')) = 0
+  			]]>
+	    </if>
+    </select>
+    
+    <!-- 라우팅별 품목 -->
+    <select id="getRoutingItemList" resultType="routingItemVO" parameterType="hashMap" statementType="PREPARED">    
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutingItemList*/
+ 		 SELECT A.COMPANY company,
+ 		 		A.ITEM_CD itemCd,
+ 		 		B.ITEM_NM itemNm,
+ 		 		B.PART_NO partNo,
+ 		 		B.ITEM_TYPE itemType,
+			    B.ITEM_MAIN_CD 	itemMainCd,
+			    B1.ITEM_MAIN_NM 	itemMainNm,
+			    B.ITEM_SUB_CD 		itemSubCd,
+			    B2.ITEM_SUB_NM 	itemSubNm,
+ 		 		B.SPEC spec, 		
+ 		 		B.UNIT unit,
+ 		 		A.ROUTING_CD routingCd,
+                A.USE_YN useYn
+ 		 FROM TB_MES_RT120 A 
+ 		 INNER JOIN TB_MES_ITEM000 B	 
+            ON A.COMPANY=B.COMPANY 
+            AND A.ITEM_CD=B.ITEM_CD 
+	        
+		 LEFT OUTER JOIN TB_MES_ITEM100 B1
+			ON B.COMPANY = B1.COMPANY 
+			AND B.ITEM_MAIN_CD = B1.ITEM_MAIN_CD
+			
+		 LEFT OUTER JOIN TB_MES_ITEM150 B2
+			ON B.COMPANY = B2.COMPANY 
+			AND B.ITEM_MAIN_CD = B2.ITEM_MAIN_CD
+			AND B.ITEM_SUB_CD = B2.ITEM_SUB_CD
+			
+		WHERE 1=1		
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND   A.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND B.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+                
+	    ORDER BY A.ITEM_CD
+    </select>
+    
+    
+    <!-- 라우팅 상세 -->
+    <select id="getRoutingItemDetailList" resultType="routingItemDetailVO" parameterType="hashMap" statementType="PREPARED">  
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutingItemDetailList*/  
+		 SELECT   B.COMPANY company,
+		          B.ROUTING_CD routingCd,
+		          A.ROUTING_NM routingNm,
+		          D.ROUT_TYPE routType,
+		          C.ITEM_CD itemCd,
+		          B.REG_SEQ routSeq,
+		          B.ROUT_CD routCd,
+		          B.ROUT_SEQ routSeq,
+		          B.LAST_FLAG lastFlag,
+		          B.REMARK remark,
+		          B.USE_YN useYn,
+		          D.WH_CD whCd,
+		          D.EQUIP_USE_YN equipUseYn,
+                  D.QC_YN qcYn,
+		          D.OUTSC_FLAG outscFlag
+		 FROM     TB_MES_RT100 A
+		          INNER JOIN TB_MES_RT110 B
+		          ON       A.COMPANY      = B.COMPANY
+		          AND      A.ROUTING_CD = B.ROUTING_CD
+		          INNER JOIN TB_MES_RT120 C
+		          ON       B.COMPANY      = C.COMPANY
+		          AND      B.ROUTING_CD = C.ROUTING_CD
+		          INNER JOIN TB_MES_RT000 D
+		          ON       B.COMPANY   = D.COMPANY
+		          AND      B.ROUT_CD = D.ROUT_CD
+		 WHERE    1                    =1
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND   C.ITEM_CD = #{map.itemCd}
+  			]]>
+	    </if>
+	    	    
+		 <if test="map.routSeq != null and map.routSeq != ''">
+			<![CDATA[  
+      			AND   B.ROUT_SEQ = #{map.routSeq}
+  			]]>
+	    </if>
+	    
+		 <if test="map.nextRoutCode != null and map.nextRoutCode != ''">
+			<![CDATA[  
+				                                                                                    
+		        AND   B.ROUT_SEQ >= (
+		            SELECT
+		                MIN(Z2.ROUT_SEQ) 
+		            FROM
+		                TB_MES_RT120 Z1 
+		                INNER JOIN  TB_MES_RT110 Z2
+		                ON Z1.COMPANY = Z2.COMPANY
+		                AND Z1.ROUTING_CD = Z2.ROUTING_CD
+		            WHERE
+		                Z1.ITEM_CD = #{map.itemCd}
+		                AND Z2.ROUT_CD = #{map.nextRoutCode}	    		                            
+		        )                                       
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND   B.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND   D.ROUT_TYPE = #{map.routType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND B.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.routNm != null and map.routNm != ''">
+			<![CDATA[  
+      			AND D.ROUT_NM LIKE UPPER(CONCAT('%',#{map.routNm},'%'))
+  			]]>
+	    </if>
+	     
+	    
+		 ORDER BY B.ROUT_SEQ ASC
+    </select>
+    
+    <!-- 품목별 생산정보 (작업표준) -->
+    <select id="getRoutItemInfo" resultType="routItemInfoVO" parameterType="hashMap" statementType="PREPARED">
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutItemInfo*/    
+		SELECT
+	        A.COMPANY company,
+	        B.ITEM_CD itemCd,
+	        G.ITEM_NM itemNm,
+	        G.PART_NO partNo,
+	        
+	        G.ITEM_TYPE	itemType,
+	        G1.ITEM_MAIN_NM itemMainNm,
+	        G2.ITEM_SUB_NM itemSubNm,
+	        G.SPEC spec,
+	        G.UNIT unit,
+	        
+	        A.ROUTING_CD routingCd,
+	        F.ROUTING_NM routingNm,
+	        A.ROUT_SEQ routSeq,
+	        C.ROUT_TYPE routType,
+	        A.ROUT_CD routCd,
+	        E.CYCLE_TIME cycleTime,
+	        E.CAVITY cavity,
+	        E.ROUT_UNIT_AMT routUnitAmt,
+	        E.REMARK remark,
+	        IFNULL(E.USE_YN,'Y') useYn,
+	        
+	        E.ST_VAL	AS stVal,
+	        E.IN_CNT	AS inCnt,
+	        E.WO_HR		AS woHr,
+	        E.OP_RATE	AS opRate,
+	        E.CAPA_VAL	AS capaVal
+	            
+	    FROM TB_MES_RT110 A       
+	    INNER JOIN
+	        TB_MES_RT120 B           
+	            ON     A.COMPANY      = B.COMPANY           
+	            AND    A.ROUTING_CD = B.ROUTING_CD       
+	    INNER JOIN
+	        TB_MES_RT000 C           
+	            ON     A.COMPANY   = C.COMPANY           
+	            AND    A.ROUT_CD = C.ROUT_CD       
+
+	    LEFT OUTER JOIN
+	        TB_MES_RT400 E           
+	            ON     A.COMPANY      = E.COMPANY           
+	            AND    B.ITEM_CD    = E.ITEM_CD           
+	            AND    A.ROUT_CD = E.ROUT_CD
+	            
+	    INNER JOIN
+	        TB_MES_RT100 F           
+	            ON     A.COMPANY      = F.COMPANY           
+	            AND    A.ROUTING_CD = F.ROUTING_CD      
+	             
+	    INNER JOIN
+	        TB_MES_ITEM000 G           
+	            ON     B.COMPANY   = G.COMPANY           
+	            AND    B.ITEM_CD = G.ITEM_CD 
+	            
+        LEFT OUTER JOIN 
+         	TB_MES_ITEM100 G1
+				ON G.COMPANY = G1.COMPANY 
+				AND G.ITEM_MAIN_CD = G1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 G2
+			ON G.COMPANY = G2.COMPANY 
+				AND G.ITEM_MAIN_CD = G2.ITEM_MAIN_CD
+				AND G.ITEM_SUB_CD = G2.ITEM_SUB_CD   
+	               
+	    WHERE 1=1
+	  
+		 <if test="map.company != null and map.company != ''">
+		 
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND G.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND G.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if> 
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND G.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if> 
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   G.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   G.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   G.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND   A.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>	
+	    
+	    <if test="map.routingNm != null and map.routingNm != ''">
+			<![CDATA[  
+      			AND   F.ROUTING_NM LIKE UPPER(CONCAT('%',#{map.routingNm},'%'))
+  			]]>
+	    </if>    
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND C.ROUT_TYPE = #{map.routType}
+  			]]>
+	    </if>	     
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	     
+	    
+		 <if test="map.equipCd != null and map.equipCd != ''">
+			<![CDATA[  
+      			AND D.EQUIP_CD = #{map.equipCd}
+  			]]>
+	    </if>	     	    
+	    
+		 ORDER BY B.ITEM_CD,A.ROUT_SEQ
+		 
+    </select>        
+
+	<!-- 공정별 불량정보 -->    
+    <select id="getRoutBadList" resultType="routBadVO" parameterType="hashMap" statementType="PREPARED">    
+    /*com.ppm.mes.domain.rt.rt000.RoutManagementMapper.getRoutBadList*/
+ 		SELECT 	B.COMPANY company,
+ 		 		B.ROUT_CD routCd,
+                B.BAD_CD badCd,
+                C.SUB_NM badNm,
+                C.SORT,
+                B.REMARK remark,
+                B.USE_YN useYn
+ 		 FROM TB_MES_RT000 A 
+         INNER JOIN TB_MES_RT600 B
+	         ON A.COMPANY = B.COMPANY
+	         AND A.ROUT_CD = B.ROUT_CD
+         INNER JOIN TB_MES_CD100 C
+	         ON B.BAD_CD = C.SUB_CD
+	         AND C.MAIN_CD = 'BAD_CD'
+		WHERE 1=1			
+
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   B.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND B.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.routNm != null and map.routNm != ''">
+			<![CDATA[  
+      			AND A.ROUT_NM LIKE UPPER(CONCAT('%',#{map.routNm},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   B.USE_YN = #{map.useYn}
+  			]]>
+	    </if>		
+	    
+		ORDER BY C.SORT	    
+    </select>
+</mapper>

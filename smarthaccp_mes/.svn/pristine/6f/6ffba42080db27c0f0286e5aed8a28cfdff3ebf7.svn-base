@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.rt.rt100.RoutingMasterMapper"> 
+    <select id="getRoutingList" resultType="RoutingMasterVO" parameterType="hashMap" statementType="PREPARED"> 
+    	/*com.ppm.mes.domain.rt.rt100.RoutingMasterMapper.getRoutingList*/   
+ 		 SELECT A.COMPANY  			company,
+ 		 		A.ROUTING_CD		routingCd,
+ 		 		A.ROUTING_NM		routingNm,
+ 		 		A.USE_YN			useYn			
+ 		 
+ 		 FROM TB_MES_RT100 A 
+ 		 
+		WHERE 1=1		
+		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>	
+	    
+		<if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND A.ROUTING_CD LIKE UPPER(CONCAT('%',#{map.routingCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		<if test="map.routingNm != null and map.routingNm != ''">
+			<![CDATA[  
+      			AND B.ROUTING_NM LIKE UPPER(CONCAT('%',#{map.routingNm},'%'))
+  			]]>
+	    </if>
+	    	    
+	    <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ROUTING_CD IN ( SELECT ROUTING_CD FROM TB_MES_RT120 WHERE ITEM_CD LIKE UPPER(CONCAT('%', #{map.itemCd},'%')))
+  			]]>
+	    </if>
+	    
+	    <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ROUTING_CD IN ( 
+	      			SELECT 
+	      				ROUTING_CD 
+	      			FROM TB_MES_RT120 A
+						LEFT OUTER JOIN TB_MES_ITEM000 B
+						ON A.COMPANY = B.COMPANY
+						AND A.ITEM_CD = B.ITEM_CD
+					WHERE 1=1
+					AND B.ITEM_NM LIKE UPPER(CONCAT('%', #{map.itemNm},'%'))
+      			)
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.ROUTING_CD
+	    
+    </select>
+</mapper>

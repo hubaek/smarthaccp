@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.cd.cd100.BasicCodeDetailMapper">
+ 	<!-- 기초 데이터 셋업/기초코드/공정/설비 -->
+    <select id="getAllByCodeMap" resultType="basicCodeDetailVO" parameterType="hashMap" statementType="PREPARED">   
+	    /* com.ppm.mes.domain.cd.cd100.BasicCodeDetailMapper.getAllByCodeMap */
+	    
+	    SELECT MAIN_CD mainCd,
+		 	SUB_CD subCd,
+	       SUB_NM subNm
+		FROM TB_MES_CD100
+			UNION 
+		SELECT 'WAREHOUSE_CODE' as mainCd,  
+			WH_CD subCd,
+			WH_NM subNm
+		FROM TB_MES_WH000
+			UNION 
+		SELECT 'COMPANY' as mainCd,
+			COMPANY subCd,
+			COMPANY_NM subNm
+		FROM TB_MES_CP000
+			UNION 
+		SELECT 'ROUT' as mainCd,
+			ROUT_CD subCd,
+			ROUT_NM subNm
+		FROM TB_MES_RT000
+			UNION 
+		SELECT 'EQUIP' as mainCd,
+			EQUIP_CD subCd,
+			EQUIP_NM subNm
+		FROM TB_MES_EQ000				
+		UNION 		
+		SELECT 'DEPT_CD' as mainCd,		
+				DEPT_CD subCd,
+				DEPT_NM subNm
+		FROM TB_MES_CP100
+    </select>
+    
+    <select id="getBasicDetailList" resultType="basicCodeDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    	/* com.ppm.mes.domain.cd.cd100.BasicCodeDetailMapper.getBasicDetailList */  
+			SELECT
+				MAIN_CD mainCd,
+				SUB_CD subCd,
+				SUB_NM subNm,
+				SUB_NM_EN subNmEn,
+				SUB_NM_ZH subNmZh,
+				SORT sort,
+				DATA1 data1,
+				DATA2 data2,
+				DATA3 data3,
+				DATA4 data4,
+				DATA5 data5,
+				REMARK remark,
+				USE_YN useYn	
+			FROM TB_MES_CD100 A
+			WHERE 1=1			
+	    
+		 <if test="map.mainCd != null and map.mainCd != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CD = #{map.mainCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subCd != null and map.subCd != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD = #{map.subCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subNm != null and map.subNm != ''">
+			<![CDATA[  
+      			AND   A.SUB_NM LIKE CONCAT('%',#{map.subNm},'%')
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD != #{map.subCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD = #{map.subCd}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>	
+	    			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND   A.DATA1 = #{map.data1}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.dataAllOr != null and map.dataAllOr != ''">
+			<![CDATA[  
+      			AND   (A.DATA1 = #{map.dataAllOr} OR A.DATA2 = #{map.dataAllOr} OR A.DATA3 = #{map.dataAllOr})
+  			]]>
+	    </if>	
+	    
+		 
+	    ORDER BY SORT ASC	
+    </select>
+    
+    
+    <select id="getBasicDetailLangList" resultType="basicCodeDetailVO" parameterType="hashMap" statementType="PREPARED"> 
+    		/* com.ppm.mes.domain.cd.cd100.BasicCodeDetailMapper.getBasicDetailLangList */    
+			SELECT
+				MAIN_CD mainCd,
+				SUB_CD subCd,
+				<![CDATA[  
+	                CASE WHEN #{map.lang} = 'ko' THEN SUB_NM
+	                     WHEN #{map.lang} = 'en' THEN SUB_NM_EN
+	                     WHEN #{map.lang} = 'zh' THEN SUB_NM_ZH
+	    	 		END subNm,
+	  			]]>
+				SORT sort,
+				DATA1 data1,
+				DATA2 data2,
+				DATA3 data3,
+				DATA4 data4,
+				DATA5 data5,
+				REMARK remark,
+				USE_YN useYn	
+			FROM TB_MES_CD100 A
+			WHERE 1=1			
+			
+		 <if test="map.mainCd != null and map.mainCd != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CD = #{map.mainCd}
+  			]]>
+	    </if>		
+		 <if test="map.subCd != null and map.subCd != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD = #{map.subCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subNm != null and map.subNm != ''">
+			<![CDATA[  
+      			AND   A.SUB_NM = #{map.subNm}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD != #{map.exceptValue}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CD = #{map.includeValue}
+  			]]>
+	    </if>		
+			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND   A.DATA1 = #{map.data1}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>		
+	    
+	    ORDER BY SORT ASC
+    </select>
+</mapper>

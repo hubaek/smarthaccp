@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ppm.mes.domain.key.key200.Key200Mapper">
+    
+    <!-- 재고코드 발행용   SEQ 리턴 -->
+    <select id="getCurrentSeq" resultType="int">
+    /*com.ppm.mes.domain.key.key200.Key200Mapper.getCurrentSeq*/    
+	 	SELECT 
+	 		SEQ
+	 	FROM
+	 		tb_mes_key200
+	 	WHERE
+	 		CODE_TYPE= 'STOCK_CD' AND
+	 		CODE_DT = concat(DATE_FORMAT(CURDATE(),'%y'), DATE_FORMAT(CURDATE(),'%m'))
+	</select>
+	
+	<!-- 신규 바코드 발행 -->
+    <select id="getNewBarcode" resultType="String">
+    /*com.ppm.mes.domain.key.key200.Key200Mapper.getNewBarcode*/
+		SELECT 
+			CONCAT(
+				'B',
+				DATE_FORMAT(CURDATE(),'%y'),
+				DATE_FORMAT(CURDATE(),'%m'),
+				LPAD(SEQ+1,4,'0')
+			) AS barcode
+		FROM
+			TB_MES_KEY200
+		WHERE
+			CODE_TYPE = 'BARCODE' AND
+			CODE_DT  = CONCAT(
+						DATE_FORMAT(
+							CURDATE(),
+							'%y'),
+						DATE_FORMAT(
+							CURDATE(),
+							'%m')
+						)
+    </select>
+	
+	<!-- 신규 재고코드 발행 -->
+	<select id="getNewStockCd" resultType="String">
+	/*com.ppm.mes.domain.key.key200.Key200Mapper.getNewStockCd*/
+		SELECT 
+			CONCAT(
+				'T', 
+				DATE_FORMAT(CURDATE(),'%y'), 
+				DATE_FORMAT(CURDATE(),'%m'),
+				LPAD(SEQ+1,4,'0')
+			)		
+		FROM	
+			TB_MES_KEY200
+		WHERE
+			CODE_TYPE = "STOCK_CD" AND
+			CODE_DT = CONCAT(
+				DATE_FORMAT(CURDATE(),'%y'), 
+				DATE_FORMAT(CURDATE(),'%m')
+			)
+	</select>
+</mapper>

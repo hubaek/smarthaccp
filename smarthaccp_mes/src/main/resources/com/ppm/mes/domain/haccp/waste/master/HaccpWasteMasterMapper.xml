@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+<mapper namespace="com.ppm.mes.domain.haccp.waste.master.HaccpWasteMasterMapper"> 
+	
+    <select id="getMasterList" resultType="haccpWasteMasterVO" parameterType="hashMap" statementType="PREPARED">    
+    /* com.ppm.mes.domain.haccp.waste.master.HaccpWasteMasterMapper.getMasterList */
+		
+		SELECT 
+				A.COMPANY company,
+		 		A.INSPECTION_DATE inspectionDate,
+		 		A.WASTE_AMT wasteAmt,
+		 		A.WASTEPICK_DT wastePickDt,
+		 		A.PICK_COMPANY pickCompany,
+		 		A.STATUS status,
+		 		A.REMARK1 remark1,
+		 		A.WRITER writer,
+		 		A.APPROVER approver,
+		 		A.SEQ seq,
+		 		A.WASTE_TYPE wasteType,
+		 		B.TARGET_TYPE targetType,
+		 		IF(ISNULL(TARGET_ID),'N','Y') fileYn,
+				(SELECT MAX(seq) FROM tb_ccp_waste000 ) maxSeq 
+		FROM   TB_CCP_WASTE000 A
+		
+		LEFT outer JOIN 
+			tb_mes_file000 B
+	
+	 			ON A.SEQ = B.TARGET_ID    
+	 			AND   B.TARGET_TYPE = "HACCP140_F"   
+		
+        WHERE  1 = 1
+        
+        <if test="map.approver != null and map.approver != ''">
+		<![CDATA[  
+     			AND   A.APPROVER = #{map.approver}
+ 			]]>
+    	</if>
+    	
+    	<if test="map.writer != null and map.writer != ''">
+		<![CDATA[  
+     			AND   A.WRITER = #{map.writer}
+ 			]]>
+    	</if>	    
+        
+
+        <if test="map.wastePrdStrdt != null and map.wastePrdStrdt != '' ">
+ 		<![CDATA[  
+    			  AND DATE_FORMAT(INSPECTION_DATE,'%Y%m%d') >= DATE_FORMAT(#{map.wastePrdStrdt},'%Y%m%d')
+		]]>
+		</if>
+		
+		<if test="map.wastePrdEnddt != null and map.wastePrdEnddt != '' ">
+		 	<![CDATA[  
+      		 AND DATE_FORMAT(INSPECTION_DATE,'%Y%m%d') <= DATE_FORMAT(#{map.wastePrdEnddt},'%Y%m%d')
+  			]]>
+		</if>
+		
+
+		
+		<if test="map.wastePickStrdt != null and map.wastePickStrdt != '' ">
+	 		<![CDATA[  
+     			 AND DATE_FORMAT(WASTEPICK_DT,'%Y%m%d') >= DATE_FORMAT(#{map.wastePickStrdt},'%Y%m%d')
+ 				]]>
+		</if>
+		
+		<if test="map.wastePickEndDt != null and map.wastePickEndDt != '' ">
+		 	<![CDATA[  
+      		 AND DATE_FORMAT(WASTEPICK_DT,'%Y%m%d') <= DATE_FORMAT(#{map.wastePickEndDt},'%Y%m%d')
+  			]]>
+		</if> 
+    </select>
+    
+
+</mapper>

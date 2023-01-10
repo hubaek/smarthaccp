@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.metal.detect.MetalDetectControlMapper">
+	<select id="getSpecimenTest" resultType="MetalDetectControlVO" parameterType="hashMap" statementType="PREPARED">  
+	/* com.ppm.mes.domain.haccp.metal.detect.MetalDetectControlMapper.getSpecimenTest */
+		SELECT
+			a.specimen_cd,
+			(extract(minute from now() - a.update_dtm)) as wait_min
+		from th_specimen_test a
+		where sensor_id = #{map.sensor_id}
+	</select>
+	
+	<update id="mergeSpecimen" parameterType="hashMap" statementType="PREPARED">  
+	/* com.ppm.mes.domain.haccp.metal.detect.MetalDetectControlMapper.mergeSpecimen */
+    	UPDATE th_specimen_test SET
+			product_nm = IFNULL(#{map.product_nm},product_nm) ,
+	    	specimen_cd = IFNULL(#{map.specimen_cd},specimen_cd) ,
+	    	pass_location_cd = IFNULL(#{map.pass_location_cd},pass_location_cd) ,
+	    	test_start_dtm = CASE WHEN CAST(#{map.specimen_cd} AS UNSIGNED) = 'SPECIMEN_CD_000' OR IFNULL(#{map.specimen_cd}, true) THEN now() ELSE test_start_dtm END,
+	    	update_user_id = #{map.update_user_id},
+	    	update_dtm = now()
+		WHERE sensor_id = #{map.sensor_id}
+	</update>
+	
+	<insert id="insertStartSensingData" parameterType="hashMap" statementType="PREPARED"> 
+	/* com.ppm.mes.domain.haccp.metal.detect.MetalDetectControlMapper.insertStartSensingData */
+		INSERT INTO th_sensing_data (
+			auto_collect_id,
+			measure_dtm,
+			attribute_1_value,
+			attribute_2_value,
+			attribute_3_value,
+			attribute_4_value,
+			attribute_5_value
+		)
+		SELECT
+			a.sensor_id,
+			now(),
+			#{map.detect_cd},
+			a.specimen_cd,
+			a.pass_location_cd,
+			a.product_nm,
+			a.test_start_dtm
+		FROM th_specimen_test a
+		WHERE sensor_id = #{map.sensor_id}
+	</insert>
+</mapper>

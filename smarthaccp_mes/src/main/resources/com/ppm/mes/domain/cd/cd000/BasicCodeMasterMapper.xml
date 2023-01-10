@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.cd.cd000.BasicCodeMasterMapper">
+    <select id="getBasicMasterList" resultType="basicCodeMasterVO" parameterType="hashMap" statementType="PREPARED">   
+		/* com.ppm.mes.domain.cd.cd000.BasicCodeMasterMapper.getBasicMasterList */
+		SELECT
+			A.MAIN_CD mainCd,
+			A.MAIN_NM mainNm,
+			A.PG_MODULE_CD pgModuleCd,
+			A.CD_TYPE cdType,
+			A.USER_CD userCd,
+			B.USER_NM userNm,
+			A.REMARK remark,
+			A.USE_YN useYn
+		FROM TB_MES_CD000 A
+			LEFT OUTER JOIN TB_MES_USER000 B
+			ON A.USER_CD = B.USER_CD		
+			
+		WHERE 1=1
+		
+		 <if test="map.mainCd != null and map.mainCd != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CD = #{map.mainCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainNm != null and map.mainNm != ''">  
+			<![CDATA[  
+				AND A.MAIN_NM LIKE CONCAT('%',#{map.mainNm},'%') 
+  			]]>
+	    </if>
+	    
+		 <if test="map.pgModuleCd != null and map.pgModuleCd != ''">
+			<![CDATA[  
+      			AND   A.PG_MODULE_CD = #{map.pgModuleCd}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.cdType != null and map.cdType != ''">
+			<![CDATA[  
+      			AND   A.CD_TYPE = #{map.cdType}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+	      		AND A.USER_CD  = #{map.userCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.userNm != null and map.userNm != ''">  
+			<![CDATA[  
+	      		AND B.USER_NM  LIKE CONCAT('%',#{map.userNm},'%')
+  			]]>
+	    </if>    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>		
+    </select>
+</mapper>

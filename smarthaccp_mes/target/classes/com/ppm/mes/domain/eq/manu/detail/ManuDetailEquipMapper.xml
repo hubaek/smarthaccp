@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.eq.manu.detail.ManuDetailEquipMapper"> 
+    <select id="getEquipDetailList" resultType="ManuDetailEquipVO" parameterType="hashMap" statementType="PREPARED">  
+    	/* com.ppm.mes.domain.eq.manu.detail.ManuDetailEquipMapper.getEquipDetailList */   
+		SELECT 
+			  COMPANY 	    	company
+			, EQUIP_CODE    	equipCode
+			, MANAGE_NO     	manageNo
+			, DATE_FORMAT(INSPECTION_DATE,'%Y-%m-%d')	inspectionDate
+			, BREAK_DOWN        breakDown
+			, FIRST_AID			firstAid
+			, REPAIR_HISTORY	repairHistory
+			, CASE WHEN CONFIRM = 'Y' THEN 'Y' END confirmY
+			, CASE WHEN CONFIRM = 'N' THEN 'N' END confirmN
+			, SEQ				seq
+		  FROM TB_CCP_EQ100
+		 WHERE  1 = 1
+		   AND  COMPANY    = #{map.company}
+		   AND  EQUIP_CODE = #{map.equipCode}
+		   AND  MANAGE_NO  = #{map.manageNo} 
+    </select>
+    
+    
+    <select id="getLastSeq" resultType="int" parameterType="ManuDetailEquip" statementType="PREPARED">
+    			/* com.ppm.mes.domain.eq.manu.detail.ManuDetailEquipMapper.getLastSeq */ 
+    			SELECT IFNULL((SELECT SEQ 
+							  FROM TB_CCP_EQ100 
+							 WHERE EQUIP_CODE      = #{equipCode} 
+							   AND MANAGE_NO  	   = #{manageNo}
+							   AND INSPECTION_DATE = #{inspectionDate}
+							 ORDER BY SEQ DESC LIMIT 1),1) AS SEQ FROM DUAL;
+    </select>
+    
+    
+    <delete id="deleteDetail" parameterType="ManuEquip" statementType="PREPARED">	
+    	/* com.ppm.mes.domain.eq.manu.detail.ManuDetailEquipMapper.deleteDetail */ 
+    	DELETE
+    	  FROM TB_CCP_EQ100 
+    	WHERE COMPANY     = #{company}
+          AND EQUIP_CODE  = #{equipCode} 
+          AND MANAGE_NO   = #{manageNo}
+    
+    </delete>
+    
+</mapper>

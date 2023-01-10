@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ppm.mes.domain.material.MaterialMasterMapper"> 
+    
+    <select id="getMaterialList" resultType="materialMasterVO" parameterType="hashMap" statementType="PREPARED">    
+		/* com.ppm.mes.domain.material.MaterialMasterMapper.getMaterialList */  
+			SELECT 
+		       A.COMPANY      company
+			 , A.IN_DATE      inDate
+			 , A.ITEM_TYPE    itemType
+			 , A.NNC_DTL      nncDtl
+			 , A.IMP_MSR      impMsr
+			 , A.CREATED_BY	createdBy
+			 , A.REV_ID       revId
+			 , A.APR_ID       aprId
+			 , A.STATUS       status
+			 , B.USER_NM      userNm
+		     FROM TB_CCP_MAT000 A
+	   INNER JOIN TB_MES_USER000 B
+		       ON A.CREATED_BY = B.USER_CD
+		    WHERE 1 = 1
+		    
+		    <if test="map.strDt != null and map.strDt != '' ">
+		 		<![CDATA[  
+      			   AND DATE_FORMAT(IN_DATE,'%Y%m%d') >= DATE_FORMAT(#{map.strDt},'%Y%m%d')
+  				]]>
+			</if>
+			
+			<if test="map.endDt != null and map.endDt != '' ">
+			 	<![CDATA[  
+	      			AND DATE_FORMAT(IN_DATE,'%Y%m%d') <= DATE_FORMAT(#{map.endDt},'%Y%m%d')
+	  			]]>
+			</if>	
+			
+		     <if test = "map.wrtId != null and map.wrtId != '' ">
+		     	<![CDATA[  
+		     		AND WRT_ID = #{map.wrtId}
+		     	]]>
+		     </if>
+		     
+		     <if test = "map.revId != null and map.revId != '' ">
+		     	<![CDATA[  
+		     		AND REV_ID = #{map.revId}
+		     	]]>
+		     </if>
+		     
+		     <if test = "map.aprId != null and map.aprId != '' ">
+		     	<![CDATA[  
+		     		AND APR_ID = #{map.aprId}
+		     	]]>
+		     </if>
+		     
+		     <if test = "map.inDate != null and map.inDate != '' ">
+		     	<![CDATA[  
+		     		AND IN_DATE = #{map.inDate}
+		     	]]>
+		     </if>
+		     
+			 GROUP BY A.COMPANY,A.IN_DATE
+		     ORDER BY A.IN_DATE ASC 
+    </select>
+    
+        <select id="getMaterialCheckInDate" resultType="materialMasterVO" parameterType="hashMap" statementType="PREPARED"> 
+        	/* com.ppm.mes.domain.material.MaterialMasterMapper.getMaterialCheckInDate */  
+        	SELECT IN_DATE
+        	  FROM TB_CCP_MAT000
+        	 WHERE DATE_FORMAT(IN_DATE,'%Y%m%d') = DATE_FORMAT(#{map.inDate},'%Y%m%d')
+        </select>
+    
+</mapper>

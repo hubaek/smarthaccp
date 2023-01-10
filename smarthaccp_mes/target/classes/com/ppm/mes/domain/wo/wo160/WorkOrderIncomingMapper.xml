@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.wo.wo160.WorkOrderIncomingMapper">
+	<!-- 작업종료시 작업상태 종료로 변경 -->
+	<update id="updateOrderStatus" parameterType="hashMap">
+		/* com.ppm.mes.domain.wo.wo160.WorkOrderIncomingMapper.updateOrderStatus */
+		UPDATE TB_MES_WO100 SET ORDER_ST = 'END' WHERE  
+			<![CDATA[
+				WLOT_NO = #{map.wlotNo}
+			]]>
+	</update>
+	
+    <delete id="cancelIncomingItem" parameterType="String" statementType="PREPARED">  
+    	/*com.ppm.mes.domain.wo.wo160.WorkOrderIncomingMapper.cancelIncomingItem*/  
+			DELETE FROM
+        		TB_MES_WO160 
+    		WHERE
+        		COMPANY='1000' 
+        		AND STOCK_CD=#{stockCd} 
+    </delete>
+    <select id ="getNewWoSeq" resultType="int" statementType="PREPARED">
+    	/*com.ppm.mes.domain.wo.wo160.WorkOrderIncomingMapper.getNewWoSeq*/
+    	SELECT  						
+			IFNULL(MAX(WO_SEQ), 0)+1
+		FROM 
+			tb_mes_wo160
+    </select>
+    <insert id="insertIncomingItem" parameterType="Map" statementType="PREPARED">
+    	/*com.ppm.mes.domain.wo.wo160.WorkOrderIncomingMapper.insertIncomingItem*/  
+    		INSERT INTO TB_MES_WO160
+				(
+					COMPANY,
+					WLOT_NO,
+					WO_SEQ,
+					CREATED_AT,
+					CREATED_BY,
+					UPDATED_AT,
+					UPDATED_BY,
+					ITEM_CD,
+					ITEM_QTY,
+					STOCK_CD,
+					PRD_IN_TYPE,
+					BARCODE
+				)
+			VALUES
+				(
+					#{company},
+					#{wlotNo},
+					#{woSeq},
+					NOW(),
+					#{user},
+					NOW(),
+					#{user},
+					#{itemCd},
+					#{itemQty},
+					#{stockCd},
+					#{prdInType},
+					#{barcode}
+				)
+    </insert>
+</mapper>

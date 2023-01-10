@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.haccp.code.master.HaccpProcessMasterMapper">
+				   
+    <select id="getList" resultType="haccpProcessMasterVO" parameterType="hashMap" statementType="PREPARED"> 
+    		/* com.ppm.mes.domain.haccp.code.master.HaccpProcessMasterMapper.getList */  
+		   	SELECT
+		        A.COMPANY company					, <!-- 회사 -->
+		        A.INSPECTION_DATE inspectionDate	, <!-- 점검일자 -->
+		        A.MAIN_CODE mainCode				, <!-- Haccp 유형 -->
+		        A.STATUS status						, <!-- 상태 -->
+		        A.WRITER writer						, <!-- 작성자 -->
+		        A.REVIEWER reviewer					, <!-- 검토자 -->
+		        A.APPROVER approver					, <!-- 승인자 -->
+		        A.RESOLVER resolver					, <!-- 조치자 -->
+		        A.REMARK1 remark1					, <!-- 부적합 사항 -->
+		        A.REMARK2 remark2					  <!-- 조치사항 -->	
+			        			
+			    			         
+			FROM tb_ccp_prc000 A
+     			
+			WHERE 1=1
+			<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	   		</if>
+	   		
+	   		<if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE LIKE CONCAT('%', #{map.mainCode}, '%')
+  			]]>
+	   		</if>
+	    
+		 	<if test="map.fromDate != null and map.fromDate != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_DATE >= #{map.fromDate}
+  			]]>
+	    	</if>
+		
+		 	<if test="map.toDate != null and map.toDate != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_DATE <= #{map.toDate}
+  			]]>
+	    	</if>    
+			    
+					 
+    </select>
+    
+
+</mapper>

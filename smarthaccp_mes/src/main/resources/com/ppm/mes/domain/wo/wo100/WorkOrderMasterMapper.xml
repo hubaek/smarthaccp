@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.wo.wo100.WorkOrderMasterMapper">
+    <select id="getWorkOrderMasterList" resultType="workOrderMasterVO" parameterType="hashMap" statementType="PREPARED">  
+    	/*com.ppm.mes.domain.wo.wo100.WorkOrderMasterMapper.getWorkOrderMasterList*/  
+		SELECT A.COMPANY company,
+		       A.ORDER_NO orderNo,
+		       A.ORDER_SEQ orderSeq,
+		       A.ROUT_SEQ routSeq,
+		       A.WORK_SEQ workSeq,
+		       A.ROUTING_CD routingCd,
+		       F.ROUTING_NM routingNm,
+		       A.WH_CD whCd,
+		       A.EQUIP_CD equipCd,
+		       E1.EQUIP_NM equipNm,
+		       A.REF_EQUIP_CD refEquipCd,
+		       E2.EQUIP_NM refEquipNm,
+		       C.ROUT_TYPE routType,
+		       A.ROUT_CD routCd,
+		       C.EQUIP_USE_YN equipUseYn,
+               C.QC_YN qcYn,
+		       A.OUTSC_FLAG outscFlag,
+		       A.ORDER_ST orderSt,
+		       A.ORDER_DT orderDt,
+		       A.ITEM_CD itemCd,
+		       B.ITEM_NM itemNm,
+		       B.UNIT unit,
+		       B.SPEC spec,
+		       B.PART_NO partNo,
+		       A.ORDER_QTY orderQty,
+		       A.PROD_QTY prodQty,
+		       A.BAD_QTY badQty,
+		       A.GOOD_QTY goodQty,
+		       A.WLOT_NO wlotNo,
+		       D.STOCK_CD stockCd,
+		       D.LOT_NO lotNo,
+		       D.BARCODE barcode,
+		       A.START_DT startDt,
+		       A.START_HOUR startHour,
+		       A.START_MINUTE startMinute,
+		       A.START_SECOND startSecond,
+		       A.START_DTM startDtm,
+		       A.END_DT endDt,
+		       A.END_HOUR endHour,
+		       A.END_MINUTE endMinute,
+		       A.END_SECOND endSecond,
+		       A.END_DTM endDtm,
+		       A.PARENT_WLOT_NO parentWlotNo,		       
+		       A.LAST_FLAG lastFlag,
+		       A.TEMP_ORDER_NO tempOrderNo,
+		       A.SCHEDULE_DT scheduleDt,
+		       A.PLAN_DT planDt,
+		   	   A.PLAN_ITEM_CD planItemCd,
+		       A.SORT sort
+		FROM   TB_MES_WO100 A
+		
+        INNER JOIN TB_MES_ITEM000 B
+	        ON     A.COMPANY   = B.COMPANY
+	        AND    A.ITEM_CD = B.ITEM_CD
+	        
+        INNER JOIN TB_MES_RT000 C
+	        ON     A.COMPANY   = C.COMPANY
+	        AND    A.ROUT_CD = C.ROUT_CD
+	        
+        LEFT OUTER JOIN TB_MES_ST000 D
+	        ON     A.COMPANY   = D.COMPANY
+	        AND    A.STOCK_CD = D.STOCK_CD
+				
+		LEFT OUTER JOIN TB_MES_ITEM100 B1
+			ON B.COMPANY = B1.COMPANY 
+			AND B.ITEM_MAIN_CD = B1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 B2
+			ON B.COMPANY = B2.COMPANY 
+			AND B.ITEM_MAIN_CD = B2.ITEM_MAIN_CD
+			AND B.ITEM_SUB_CD = B2.ITEM_SUB_CD
+				
+		LEFT OUTER JOIN TB_MES_EQ000 E1
+			ON A.COMPANY = E1.COMPANY 
+			AND A.EQUIP_CD = E1.EQUIP_CD
+				
+		LEFT OUTER JOIN TB_MES_EQ000 E2
+			ON A.COMPANY = E2.COMPANY 
+			AND A.REF_EQUIP_CD = E2.EQUIP_CD
+			
+		LEFT OUTER JOIN TB_MES_RT100 F
+			ON A.COMPANY = F.COMPANY 
+			AND A.ROUTING_CD = F.ROUTING_CD
+
+		WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+
+		 <if test="map.fromDate != null and map.fromDate != ''">
+			<![CDATA[  
+      			AND   A.ORDER_DT >= #{map.fromDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.toDate != null and map.toDate != ''">
+			<![CDATA[  
+      			AND   A.ORDER_DT <= #{map.toDate}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND B.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND B.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.spec != null and map.spec != ''">
+			<![CDATA[  
+      			AND B.SPEC LIKE UPPER(CONCAT('%',#{map.spec},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.routType != null and map.routType != ''">
+			<![CDATA[  
+      			AND C.ROUT_TYPE = #{map.routType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routingCd != null and map.routingCd != ''">
+			<![CDATA[  
+      			AND A.ROUTING_CD = #{map.routingCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.routCd != null and map.routCd != ''">
+			<![CDATA[  
+      			AND A.ROUT_CD = #{map.routCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.orderNo != null and map.orderNo != ''">
+			<![CDATA[  
+      			AND A.ORDER_NO = #{map.orderNo}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   B.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND  B.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   B.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+		 <if test="map.planDt != null and map.planDt != ''">
+			<![CDATA[  
+      			AND   A.PLAN_DT = #{map.planDt}
+  			]]>
+	    </if>
+	    
+		 <if test="map.planItemCd != null and map.planItemCd != ''">
+			<![CDATA[  
+      			AND   A.PLAN_ITEM_CD = #{map.planItemCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.equipCd != null and map.equipCd != ''">
+			<![CDATA[  
+	      		AND E1.EQUIP_CD  LIKE UPPER(CONCAT('%',#{map.equipCd},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.equipNm != null and map.equipNm != ''">
+			<![CDATA[  
+	      		AND E1.EQUIP_NM  LIKE UPPER(CONCAT('%',#{map.equipNm},'%'))
+  			]]>
+	    </if>
+		
+		<if test="map.orderSt != null and map.orderSt != ''">
+			<![CDATA[  
+      			AND   A.ORDER_ST = #{map.orderSt}
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.ORDER_NO DESC, A.ORDER_SEQ
+    </select>
+    <insert id ="updateGoodPrdQty" parameterType="hashMap">
+    /*com.ppm.mes.domain.st.wo100.StockMasterMapper.updateGoodPrd*/
+    	update tb_mes_wo100 set
+    		GOOD_QTY = IFNULL(GOOD_QTY, 0) + #{itemQty},
+    		PROD_QTY = IFNULL(PROD_QTY, 0) + #{itemQty}
+    	where WLOT_NO = #{wlotNo}
+    </insert>
+</mapper>

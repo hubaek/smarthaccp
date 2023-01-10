@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.prd.prd100.WorkPlanMapper">
+
+    <select id="getPlanList" resultType="workPlanVO" parameterType="hashMap" statementType="PREPARED">
+        /*com.ppm.mes.domain.prd.prd100.WorkPlanMapper.getPlanList*/
+    	SELECT
+	        A.COMPANY company,
+	        A.ITEM_CD itemCd,
+	        A.ITEM_NM itemNm,
+	        A.PART_NO partNo,
+	        A.ITEM_TYPE itemType,
+	        A.ITEM_MAIN_CD      itemMainCd,
+	        A1.ITEM_MAIN_NM      itemMainNm,
+	        A.ITEM_SUB_CD      itemSubCd,
+	        A2.ITEM_SUB_NM      itemSubNm,
+	        A.SPEC spec,
+	        A.UNIT unit,
+	        A.PART_NO partNo,
+	        IFNULL(A.SAFETY_QTY, 0) safetyQty,
+			B.PLAN_DT planDt,
+			B.PLAN_QTY planQty,
+			IFNULL((SELECT ORDER_QTY FROM TB_MES_WO100 Z WHERE Z.COMPANY = B.COMPANY AND Z.ITEM_CD = B.ITEM_CD AND Z.PLAN_DT = B.PLAN_DT AND Z.LAST_FLAG ='Y'),0) planOrderQty,
+			IFNULL((SELECT SUM(STOCK_QTY) FROM TB_MES_ST000 Z WHERE 1=1 AND Z.COMPANY = A.COMPANY AND Z.ITEM_CD = A.ITEM_CD AND Z.WIP_YN ='N'),0) stockQty
+	    FROM
+	        TB_MES_ITEM000 A     
+	    INNER JOIN
+	        TB_MES_PRD100 B      
+	            ON A.COMPANY= B.COMPANY     
+	            AND A.ITEM_CD = B.ITEM_CD     
+	    LEFT OUTER JOIN
+	        TB_MES_ITEM100 A1     
+	            ON A.COMPANY = A1.COMPANY      
+	            AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD     
+	    LEFT OUTER JOIN
+	        TB_MES_ITEM150 A2     
+	            ON A.COMPANY = A2.COMPANY      
+	            AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD     
+	            AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD     
+	    WHERE  1=1        
+	    
+	    
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+  		
+	    <if test="map.planDt != null and map.planDt != ''">
+			<![CDATA[  
+      			AND   B.PLAN_DT = #{map.planDt}
+  			]]>
+	    </if>
+	    
+	    	          
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	       
+    </select>
+
+    <select id="getMonthPlanList" resultType="workPlanVO" parameterType="hashMap" statementType="PREPARED">  
+    	/*com.ppm.mes.domain.prd.prd100.WorkPlanMapper.getMonthPlanList*/  
+	  SELECT 
+   	  		 A.COMPANY company,
+   	  		 A.ITEM_CD itemCd,
+             A.ITEM_NM itemNm,         
+             A.PART_NO partNo,
+	 	  	 A.ITEM_TYPE itemType,
+			 A.ITEM_MAIN_CD 	itemMainCd,
+			 A1.ITEM_MAIN_NM 	itemMainNm,
+			 A.ITEM_SUB_CD 		itemSubCd,
+			 A2.ITEM_SUB_NM 	itemSubNm,
+	         A.SPEC spec,
+	         A.PART_NO partNo,
+ 		 	 IFNULL(A.SAFETY_QTY,0) safetyQty,
+		  	 (SELECT SUM(STOCK_QTY) FROM TB_MES_ST000 Z WHERE Z.COMPANY = A.COMPANY AND Z.ITEM_CD = A.ITEM_CD AND Z.WIP_YN ='N') stockQty,
+             IFNULL(SUM(PLAN_QTY),0) AS totalPlanQty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 1 THEN PLAN_QTY ELSE NULL END),0) AS day1Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 2 THEN PLAN_QTY ELSE NULL END),0) AS day2Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 3 THEN PLAN_QTY ELSE NULL END),0) AS day3Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 4 THEN PLAN_QTY ELSE NULL END),0) AS day4Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 5 THEN PLAN_QTY ELSE NULL END),0) AS day5Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 6 THEN PLAN_QTY ELSE NULL END),0) AS day6Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 7 THEN PLAN_QTY ELSE NULL END),0) AS day7Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 8 THEN PLAN_QTY ELSE NULL END),0) AS day8Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 9 THEN PLAN_QTY ELSE NULL END),0) AS day9Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 10 THEN PLAN_QTY ELSE NULL END),0) AS day10Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 11 THEN PLAN_QTY ELSE NULL END),0) AS day11Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 12 THEN PLAN_QTY ELSE NULL END),0) AS day12Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 13 THEN PLAN_QTY ELSE NULL END),0) AS day13Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 14 THEN PLAN_QTY ELSE NULL END),0) AS day14Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 15 THEN PLAN_QTY ELSE NULL END),0) AS day15Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 16 THEN PLAN_QTY ELSE NULL END),0) AS day16Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 17 THEN PLAN_QTY ELSE NULL END),0) AS day17Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 18 THEN PLAN_QTY ELSE NULL END),0) AS day18Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 19 THEN PLAN_QTY ELSE NULL END),0) AS day19Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 20 THEN PLAN_QTY ELSE NULL END),0) AS day20Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 21 THEN PLAN_QTY ELSE NULL END),0) AS day21Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 22 THEN PLAN_QTY ELSE NULL END),0) AS day22Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 23 THEN PLAN_QTY ELSE NULL END),0) AS day23Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 24 THEN PLAN_QTY ELSE NULL END),0) AS day24Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 25 THEN PLAN_QTY ELSE NULL END),0) AS day25Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 26 THEN PLAN_QTY ELSE NULL END),0) AS day26Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 27 THEN PLAN_QTY ELSE NULL END),0) AS day27Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 28 THEN PLAN_QTY ELSE NULL END),0) AS day28Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 29 THEN PLAN_QTY ELSE NULL END),0) AS day29Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 30 THEN PLAN_QTY ELSE NULL END),0) AS day30Qty,
+             IFNULL(MAX(CASE WHEN B.PLAN_DD = 31 THEN PLAN_QTY ELSE NULL END),0) AS day31Qty
+		FROM TB_MES_ITEM000 A
+		LEFT OUTER JOIN TB_MES_PRD100 B 
+		ON A.COMPANY= B.COMPANY
+			AND A.ITEM_CD = B.ITEM_CD
+			AND B.PLAN_YY = #{map.planYy}
+			AND B.PLAN_MM = #{map.planMm}
+			
+		LEFT OUTER JOIN TB_MES_ITEM100 A1
+			ON A.COMPANY = A1.COMPANY 
+			AND A.ITEM_MAIN_CD = A1.ITEM_MAIN_CD
+			
+		LEFT OUTER JOIN TB_MES_ITEM150 A2
+			ON A.COMPANY = A2.COMPANY 
+			AND A.ITEM_MAIN_CD = A2.ITEM_MAIN_CD
+			AND A.ITEM_SUB_CD = A2.ITEM_SUB_CD
+			
+		WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.itemType != null and map.itemType != ''">
+			<![CDATA[  
+      			AND   A.ITEM_TYPE = #{map.itemType}
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemMainCd != null and map.itemMainCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_MAIN_CD = #{map.itemMainCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemSubCd != null and map.itemSubCd != ''">
+			<![CDATA[  
+      			AND   A.ITEM_SUB_CD = #{map.itemSubCd}
+  			]]>
+	    </if>
+
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>	        
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	    
+	    <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND A.PART_NO LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemTypeGroup != null and map.itemTypeGroup != ''">
+			<![CDATA[  
+				AND A.ITEM_TYPE IN (SELECT Z.SUB_CD FROM TB_MES_CD100 Z WHERE Z.MAIN_CD = 'ITEM_TYPE' AND DATA1 = #{map.itemTypeGroup})
+  			]]>
+  		</if>
+	    	    	    
+		GROUP BY A.COMPANY, A.ITEM_CD, A.ITEM_NM, A.PART_NO,A.ITEM_TYPE,A.ITEM_MAIN_CD,A.ITEM_SUB_CD,A.SAFETY_QTY
+    </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.haccp.itemCheck.detail.ItemCheckDetailMapper">
+		
+		<select id="getItemCheckDetailList" resultType="itemCheckDetailVO" parameterType="hashMap" statementType="PREPARED">
+				/* com.ppm.mes.domain.haccp.itemCheck.detail.ItemCheckDetailMapper.getItemCheckDetailList */
+				SELECT 
+					  COMPANY          company        
+					, INSPECTION_YM    inspectionYm  
+					, INSPECTION_DATE  inspectionDate
+					, INSPECTION_SEQ   inspectionSeq 
+					, ITEM_NAME        itemName      
+					, STELLATE         stellate       
+					, EXPRIATION_DT    expriationDt  
+					, DISPLAY_ITEM     displayItem   
+					, WEIGHT           weight         
+					, MSTR_CNTNT       mstrCntnt     
+					, FINAL_JDGMN      finalJdgmn
+					, PACKING 		   packing
+					, DXDZN_AGENT_YN   dxdznAgentYn
+					, PINHOLE_YN 	   pinholeYn
+					, REMARK           remark 
+				 FROM TB_CCP_ITEM100
+				WHERE 1 = 1
+				  AND COMPANY 		= #{map.company}
+				  AND INSPECTION_YM = #{map.inspectionYm}
+				  	
+		</select>
+		
+		
+		<delete id="deleteDetailAll" parameterType="itemCheckMaster" statementType="PREPARED">
+			/* com.ppm.mes.domain.haccp.itemCheck.detail.ItemCheckDetailMapper.deleteDetailAll */
+			DELETE 
+			  FROM TB_CCP_ITEM100
+			WHERE  COMPANY 		= #{company}
+			  AND INSPECTION_YM = #{inspectionYm}
+		</delete>
+		
+</mapper>

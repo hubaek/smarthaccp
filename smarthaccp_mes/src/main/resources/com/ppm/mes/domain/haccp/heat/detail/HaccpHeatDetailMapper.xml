@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.heat.detail.HaccpHeatDetailMapper">
+	
+	<select id="getHaccpHeatDetailList" resultType ="haccpHeatDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.heat.detail.HaccpHeatDetailMapper.getHaccpHeatDetailList */
+		
+		SELECT
+			  PLC_IP		AS plcIp
+			, TEMP			AS temp
+			, HEATSTAT		AS heatStat
+			, DATE_FORMAT(DTM, "%Y-%m-%d %T")		AS dtm
+		FROM
+			TB_GET_HEATER
+		WHERE 1=1
+		<if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+	    <if test="map.plcIp != null and map.plcIp != ''">
+			<![CDATA[  
+      			AND PLC_IP = #{map.plcIp}
+  			]]>
+	    </if>
+		
+ 		ORDER BY DTM		    
+	</select>
+	
+	
+	<select id="getDetailList" resultType ="haccpHeatDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.heat.detail.HaccpHeatDetailMapper.getDetailList */
+	
+		SELECT ITEM_NM 		AS itemNm
+		     , DTM			AS dtm
+		     , TEMP 		AS temp
+		     , RESULT		AS result	
+		     , REMARK		AS remark
+		     , PLC_IP		AS plcIp
+		     , HEATSTAT		AS heatStat
+		FROM TB_CCP_HEAT100
+		WHERE 1=1
+		AND PLC_IP = #{map.plcIp}
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+	    <if test="map.heatClean != null and map.heatClean != ''">
+			<![CDATA[  
+      			AND HEAT_CLEAN = #{map.heatClean}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	    
+	</select>
+	
+	<select id="getHaccpDetailList" resultType ="haccpHeatDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.heat.detail.HaccpHeatDetailMapper.getHaccpDetailList */
+	
+		SELECT ITEM_NM 		AS itemNm
+		     , DTM			AS dtm
+		     , TEMP 		AS temp
+		     , RESULT		AS result	
+		     , REMARK		AS remark
+		     , PLC_IP		AS plcIp
+		     , HEATSTAT		AS heatStat
+		FROM TB_CCP_HEAT100
+		WHERE 1=1
+		AND PLC_IP = #{map.plcIp}
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+	    <if test="map.heatClean != null and map.heatClean != ''">
+			<![CDATA[  
+      			AND HEAT_CLEAN = #{map.heatClean}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE  
+	</select>
+	
+</mapper>

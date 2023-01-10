@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.prod.detail.HaccpProdDetailMapper">
+	
+	<select id="getHaccpProdDetailList" resultType ="haccpProdDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.prod.detail.HaccpProdDetailMapper.getHaccpTempDetailList */
+	
+		SELECT
+			  PRDSTAT							AS prdStat
+			, CNT								AS cnt
+			, DATE_FORMAT(DTM, "%Y-%m-%d %T")	AS dtm
+		FROM
+			TB_GET_PROD
+		WHERE 1=1
+		<if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+		
+ 		ORDER BY DTM
+	</select>
+	
+	
+	
+	<select id="getDetailList" resultType ="haccpProdDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 				AS itemNm
+		     , IFNULL(DTM, '') 					AS dtm
+		     , IFNULL(CNT, '')	 				AS cnt
+		     , RESULT 							AS result	
+		     , IFNULL(REMARK, '')				AS remark
+		     , IFNULL(PRDSTAT,'')				AS prdStat
+		FROM TB_CCP_PROD100
+		WHERE 1=1		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	    
+	</select>
+	
+	<select id="getHaccpDetailList" resultType ="haccpProdDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.temp.detail.HaccpTempDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '') 				AS itemNm
+		     , IFNULL(DTM, '') 					AS dtm
+		     , IFNULL(CNT, '')	 				AS cnt
+		     , RESULT 							AS result	
+		     , IFNULL(REMARK, '')				AS remark
+		     , IFNULL(PRDSTAT,'')				AS prdStat
+		FROM TB_CCP_PROD100
+		WHERE 1=1		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE 
+	</select>
+	
+</mapper>

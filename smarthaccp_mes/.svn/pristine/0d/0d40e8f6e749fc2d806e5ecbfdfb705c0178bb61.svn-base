@@ -1,0 +1,253 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+html {
+  height: 100%;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: Pretendard sans-serif;
+  word-break: keep-all;
+  line-height: 1.5;
+}
+
+body {
+  background-color: #e4e6ee;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px;
+}
+
+.content {
+  height: 100%;
+}
+
+.index {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#header {
+  overflow: hidden;
+  padding-bottom: 20px;
+}
+
+#header .title {
+  font-size: 24px;
+  float: left;
+}
+
+#header .btn-round {
+  float: left;
+  margin-left: 10px;
+}
+
+#header .date {
+  float: right;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 2;
+}
+
+.grid-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: minmax(450px, max-content);
+  grid-gap: 20px;
+}
+
+.item-list {
+  border: none;
+  background-color: #fff;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.item-list .item-header h2 {
+  color: #fff;
+  font-size: 20px;
+  padding: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.item-list .item-body {
+  box-sizing: border-box;
+  padding: 20px 0;
+}
+
+.item-list .item-body .item-row {
+  overflow: hidden;
+  padding: 5px 20px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.item-list .item-body .item-row .icon-wrap {
+  float: left;
+  width: 60px;
+  margin-right: 15px;
+}
+
+.item-list .item-body .item-row .icon-wrap img {
+  width: 100%;
+}
+
+.item-list .item-body .item-row h2 {
+  float: right;
+  font-size: 50px;
+  font-weight: 400;
+
+}
+
+.item-list .item-body .item-row span {
+  font-size: 15px;
+  color: #555;
+}
+
+.item-list .item-body .item-row button {
+  margin-top: 10px;
+}
+
+
+.item-list .item-body .item-row .item-row-title {
+  float: left;
+  font-weight: 600;
+  line-height: 2;
+  font-size: 28px;
+}
+
+.item-list .item-body .item-row .item-row-title img {
+  float: left;
+}
+
+.item-list .item-body .item-row .item-row-value {
+  float: right;
+  line-height: 2;
+  font-weight: 400;
+  font-size: 28px;
+}
+
+.item-list .item-body .item-description-wrap {
+  padding: 20px;
+}
+
+.item-list .item-body .item-description-wrap .item-description {
+  overflow: hidden;
+  font-size: 18px;
+}
+
+.item-list .item-body .item-description-wrap .item-description .item-title {
+  float: left;
+  font-weight: 700;
+  color: #222;
+}
+
+.item-list .item-body .item-description-wrap .item-description .item-value {
+  float: right;
+  font-weight: 500;
+  color: #555;
+}
+
+.division {
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+}
+
+.bg-main {
+  background-color: #0094C2;
+}
+
+.bg-red {
+  background-color: #C53522;
+}
+
+.color-main {
+  color: #0094C2;
+}
+
+.color-red {
+  color: #C53522;
+}
+
+.warning {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.warning img {
+  width: 100%;
+}
+
+.btn-bottom {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.middle {
+  position: absolute;
+  top: 55%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+}
+
+strong {
+  font-weight: 900;
+}
+
+@media (max-width: 1700px) {
+  .item-list .item-body .item-row h2 {
+    font-size: 30px;
+  }
+
+  .item-list .item-body .item-row .icon-wrap {
+    width: 30px;
+  }
+
+  .item-list .item-body .item-row .item-row-title,
+  .item-list .item-body .item-row .item-row-value {
+    font-size: 18px;
+  }
+
+  .item-list .item-body .item-description-wrap .item-description .item-title,
+  .item-list .item-body .item-description-wrap .item-description .item-value {
+    font-size: 15px;
+  }
+
+  .division {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+
+  .item-list .item-body {
+    padding-top: 20px;
+  }
+
+  .item-list .item-body .item-row {
+    padding: 5px 20px;
+  }
+
+  .item-list .item-header h2 {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+}

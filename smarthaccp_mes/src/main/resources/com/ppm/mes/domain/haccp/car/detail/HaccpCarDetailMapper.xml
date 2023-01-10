@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.car.detail.HaccpCarDetailMapper">
+
+	<select id="getHaccpCarDetailList" resultType ="haccpCarDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.car.detail.HaccpCarDetailMapper.getHaccpCarDetailList */
+		SELECT
+			COMPANY company,
+			INSPECTION_YM inspectionYm,
+			DELIVERY_DATE deliveryDate,
+			DELIVERY_SEQ deliverySeq,
+			LICENSE_PLATE licensePlate,
+			CUST_CODE custCode,
+			DEPARTURE_TIME departureTime,
+			ARRIVAL_TIME arrivalTime,
+			MILEAGE mileage,
+			REMARK remark,
+			FOREIN_STATUS foreinStatus,
+			OFF_FLAVOR_STATUS offFlavorStatus,
+			LOAD_STATUS loadStatus,
+			LOCK_STATUS lockStatus,
+			PROPRIETY_STATUS proprietyStatus,
+			STER_STATUS sterStatus
+		FROM TB_CCP_CAR100 A
+		WHERE 1=1
+		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionYm != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_YM = #{map.inspectionYm}
+  			]]>
+	    </if>		
+	    ORDER BY A.DELIVERY_DATE, A.DELIVERY_SEQ
+	</select>
+	<!--  선택된 detail 삭제 -->
+	<select id="deleteDetail" parameterType="HaccpCarDetail">
+	/* com.ppm.mes.domain.haccp.car.detail.HaccpCarDetailMapper.deleteDetail */
+		DELETE from TB_CCP_CAR100 
+		WHERE 			COMPANY = #{company}
+				AND   	INSPECTION_YM = #{inspectionYm}
+				AND   	DELIVERY_DATE = #{deliveryDate}
+				AND   	DELIVERY_SEQ = #{deliverySeq}
+	</select>
+</mapper>

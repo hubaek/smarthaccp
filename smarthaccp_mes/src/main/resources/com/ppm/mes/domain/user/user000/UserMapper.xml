@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.user.user000.UserMapper">
+    <select id="getUserList" resultType="userVO" parameterType="hashMap" statementType="PREPARED">   
+    /*com.ppm.mes.domain.user.user000.UserMapper.getUserList*/  
+	    SELECT A.USER_CD     userCd,
+	           A.USER_NM     userNm,
+	           A.EMAIL       email,
+	           A.HP_NO       hpNo,
+	           A.USE_YN      useYn,
+	           A.USER_ST userSt,
+	           A.REMARK      remark,
+	           A.DEPT_CD     deptCd,
+	           A.USER_POSITION     userPosition,
+	           A.USER_DUTY     userDuty,
+	           A.SYSTEM_TYPE systemType,
+	           ( SELECT DATEDIFF(HEALTH_CARD_END_DT, NOW()) FROM TH_HEALTH_CARD H WHERE H.USER_CD = A.USER_CD ORDER BY HEALTH_CARD_END_DT DESC LIMIT 1) AS remainDt
+	      FROM TB_MES_USER000 A
+		WHERE 1=1		
+		
+	
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND A.USER_CD LIKE CONCAT('%',#{map.userCd},'%') 
+  			]]>
+	    </if>
+	    
+	    <if test="map.userNm != null and map.userNm != ''">  
+			<![CDATA[  
+				AND A.USER_NM LIKE CONCAT('%',#{map.userNm},'%') 
+  			]]>
+	    </if>
+	    
+		 <if test="map.deptCd != null and map.deptCd != ''">  
+			<![CDATA[  
+				AND A.DEPT_CD = #{map.deptCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.systemType != null and map.systemType != ''">  
+			<![CDATA[  
+				AND A.SYSTEM_TYPE = #{map.systemType}
+  			]]>
+	    </if>
+	    
+	    ORDER BY A.USER_NM
+    </select>    
+    
+    
+    <select id="getPopAuthUserList" resultType="popAuthUserVO" parameterType="hashMap" statementType="PREPARED">   
+    /*com.ppm.mes.domain.user.user000.UserMapper.getPopAuthUserList*/
+	    SELECT A.COMPANY     company,
+	           A.USER_CD     userCd,
+	           A.USER_NM     userNm,
+	           B.ROUT_TYPE     routType,
+	           B.ROUT_CD     routCd,
+	           B.PRINT_CD     printCd,
+	           B.EQUIP_AUTH_YN     equipAuthYn,
+	           B.AUTH_YN     authYn,
+	           B.REMARK     remark
+	      FROM TB_MES_USER000 A
+	      LEFT OUTER JOIN TB_MES_SYS300 B
+	      ON A.USER_CD = B.USER_CD
+		WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">  
+			<![CDATA[  
+				AND A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    
+		 <if test="map.userCd != null and map.userCd != ''">  
+			<![CDATA[  
+				AND A.USER_CD = #{map.userCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.deptCd != null and map.deptCd != ''">  
+			<![CDATA[  
+				AND A.DEPT_CD = #{map.deptCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.systemType != null and map.systemType != ''">  
+			<![CDATA[  
+				AND A.SYSTEM_TYPE = #{map.systemType}
+  			]]>
+	    </if>
+	    
+	    <if test="map.userNm != null and map.userNm != ''">  
+			<![CDATA[  
+				AND A.USER_NM LIKE '%'||#{map.userNm}||'%'
+  			]]>
+	    </if>	  
+	    
+	    ORDER BY A.USER_NM
+    </select>    
+</mapper>

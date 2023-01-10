@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.lamp.master.HaccpLampMasterMapper">
+	<select id="getList" resultType ="HaccpLampMasterVO" parameterType="hashMap" statementType="PREPARED">
+	/*com.ppm.mes.domain.haccp.lamp.master.HaccpLampMasterMapper.getList */
+		
+		SELECT
+			A.COMPANY 			company			,
+			A.INSPECTION_DATE 	inspectionDate	,
+			A.WRITER			writer			,
+			A.APPROVER			approver		,
+			A.STATUS      		status			,
+			codename('STATUS',A.STATUS)      statusNm,
+			A.REMARK1      		remark1			,
+       		A.REMARK2      		remark2
+		FROM TB_CCP_LAMP000 A
+		WHERE 1=1
+		
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+	    <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND   A.INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+	    <if test="map.fromDate != null and map.fromDate != ''">
+		<![CDATA[  
+     			AND   A.INSPECTION_DATE >= #{map.fromDate}
+ 			]]>
+    	</if>
+	
+	 	<if test="map.toDate != null and map.toDate != ''">
+		<![CDATA[  
+     			AND   A.INSPECTION_DATE <= #{map.toDate}
+ 			]]>
+    	</if>	 	
+	</select>
+
+</mapper>

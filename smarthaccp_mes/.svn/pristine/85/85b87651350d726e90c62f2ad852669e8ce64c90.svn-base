@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.haccp.check.HaccpCheckMapper">
+                   
+ 	    
+    <select id="getHygieneList" resultType="haccpCheckVO" parameterType="hashMap" statementType="PREPARED">   
+    		/* com.ppm.mes.domain.haccp.check.HaccpCheckMapper.getHygieneList */
+			SELECT
+		        A.COMPANY         AS company      ,
+		        A.MAIN_CODE         AS mainCode      ,
+		        A.SUB_CODE         AS subCode      ,
+		        A.SUB_NAME          AS subName      ,
+		        A.DATA1             AS checkType          ,
+		        IFNULL(CHK.INSPECTION_DATE,        DATE_FORMAT(NOW(),        '%Y-%m-%d'))   AS inspectionDate          ,
+		        CHK.INSPECTION_RESULT AS inspectionResult          ,
+		        CHK.REMARK1        AS remark1          ,
+		        CHK.REMARK2        AS remark2          ,
+		        CHK.REMARK3        AS remark3          ,
+		        CHK.DRAFTER        AS drafter          ,
+		        CHK.APPROVER        AS approver          ,
+		        CHK.STATUS            AS status     
+		    FROM  TB_CCP_CD100 A  
+			 LEFT JOIN   
+		    ( SELECT B.COMPANY
+		           , B.INSPECTION_DATE
+		           , B.MAIN_CODE
+		           , B.DRAFTER
+		           , B.APPROVER
+		           , B.STATUS
+		           , C.SUB_CODE
+		           , C.SUB_NAME
+		           , C.INSPECTION_RESULT
+		           , C.REMARK1
+		           , C.REMARK2
+		           , C.REMARK3
+		     FROM  TB_CCP_CHK000 B     
+			 INNER JOIN TB_CCP_CHK100 C     
+		         ON B.COMPANY = C.COMPANY     
+		         AND B.INSPECTION_DATE = C.INSPECTION_DATE
+		         AND B.MAIN_CODE = C.MAIN_CODE
+		     ) CHK
+		         ON A.COMPANY = CHK.COMPANY     
+		         AND A.MAIN_CODE = CHK.MAIN_CODE
+		         AND A.SUB_CODE = CHK.SUB_CODE
+		    WHERE
+		        A.MAIN_CODE = 'CCP_HG'                               
+		        AND   A.COMPANY = '1000'		
+			
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.mainCode != null and map.mainCode != ''">
+			<![CDATA[  
+      			AND   A.MAIN_CODE = #{map.mainCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subCode != null and map.subCode != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.subName != null and map.subName != ''">
+			<![CDATA[  
+      			AND   A.SUB_NAME = #{map.subName}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.exceptValue != null and map.exceptValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE != #{map.subCode}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.includeValue != null and map.includeValue != ''">
+			<![CDATA[  
+      			AND   A.SUB_CODE = #{map.subCode}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.useYn != null and map.useYn != ''">
+			<![CDATA[  
+      			AND   A.USE_YN = #{map.useYn}
+  			]]>
+	    </if>	
+	    			
+		 <if test="map.data1 != null and map.data1 != ''">
+			<![CDATA[  
+      			AND   A.DATA1 = #{map.data1}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data2 != null and map.data2 != ''">
+			<![CDATA[  
+      			AND   A.DATA2 = #{map.data2}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.data3 != null and map.data3 != ''">
+			<![CDATA[  
+      			AND   A.DATA3 = #{map.data3}
+  			]]>
+	    </if>		
+	    
+	    <if test="map.dataAllOr != null and map.dataAllOr != ''">
+			<![CDATA[  
+      			AND   (A.DATA1 = #{map.dataAllOr} OR A.DATA2 = #{map.dataAllOr} OR A.DATA3 = #{map.dataAllOr})
+  			]]>
+	    </if>	
+		 
+	    ORDER BY A.DATA1, A.SUB_CODE	
+    </select>
+        
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper">
+	
+	<select id="getHaccpSterDetailList" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.getHaccpSterDetailList */
+	
+		SELECT
+			  A.TEMP1								temp1
+			, A.TEMP2								temp2
+			, A.TEMP3								temp3
+			, DATE_FORMAT(A.DTM, "%Y-%m-%d %T")		dtm
+			, A.STAT								stat
+		FROM TB_GET_STER A
+		LEFT OUTER JOIN TB_CCP_STER100 B
+		ON A.DTM = B.DTM
+		WHERE 1=1 	
+		<if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   B.COMPANY = #{map.company}
+  			]]>
+	    </if>		
+	    
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND DATE_FORMAT(A.DTM, "%Y%m%d") = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY A.DTM     
+	</select>
+	
+	<select id="GetCharts1" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.GetCharts1 */
+	SELECT IFNULL(T.DTM, '') AS dtm
+        , IFNULL(T.TEMP1, '') AS temp1
+     FROM (SELECT A.DTM
+               ,A.TEMP1
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_STER A
+          WHERE 1 = 1
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="GetCharts2" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.GetCharts1 */
+	SELECT IFNULL(T.DTM, '') AS dtm
+        , IFNULL(T.TEMP2, '') AS temp2
+     FROM (SELECT A.DTM
+               ,A.TEMP2
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_STER A
+          WHERE 1 = 1
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="GetCharts3" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.GetCharts1 */
+	SELECT IFNULL(T.DTM, '') AS dtm
+        , IFNULL(T.TEMP3, '') AS temp3
+     FROM (SELECT A.DTM
+               ,A.TEMP3
+               ,A.PLC_IP
+               ,DATE_FORMAT(A.DTM , '%Y-%m-%d %H:%i:%s') AS DTM2
+           FROM TB_GET_STER A
+          WHERE 1 = 1
+            AND A.DTM BETWEEN STR_TO_DATE(CONCAT(#{map.inspectionDate} , '000000'), '%Y%m%d%H%i%s') 
+                      AND STR_TO_DATE(CONCAT(#{map.inspectionDate} , '235959'), '%Y%m%d%H%i%s')
+          ) T
+   ORDER BY T.DTM  
+		    		    
+	</select>
+	
+	<select id="getDetailList" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '')	AS itemNm
+		     , IFNULL(DTM, '')	 	AS dtm
+		     , IFNULL(TEMP1, '')	AS temp1
+		     , IFNULL(TEMP2, '')	AS temp2
+		     , IFNULL(TEMP3, '')	AS temp3
+		     , IFNULL(STAT, '')		AS stat
+		     , RESULT				AS result	
+		     , IFNULL(REMARK, '')	AS remark
+		     , IFNULL(WONMUL, '')	AS wonmul
+		FROM TB_CCP_STER100
+		WHERE 1=1
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE
+	    
+	</select>
+	
+	<select id="getHaccpDetailList" resultType ="haccpSterDetailVO" parameterType="hashMap" statementType="PREPARED">
+	/* com.ppm.mes.domain.haccp.ster.detail.HaccpSterDetailMapper.getDetailList */
+	
+		SELECT IFNULL(ITEM_NM, '')	AS itemNm
+		     , IFNULL(DTM, '')	 	AS dtm
+		     , IFNULL(TEMP1, '')	AS temp1
+		     , IFNULL(TEMP2, '')	AS temp2
+		     , IFNULL(TEMP3, '')	AS temp3
+		     , IFNULL(STAT, '')		AS stat
+		     , RESULT				AS result	
+		     , IFNULL(REMARK, '')	AS remark
+		     , IFNULL(WONMUL, '')	AS wonmul
+		FROM TB_CCP_STER100
+		WHERE 1=1
+		
+		 <if test="map.inspectionDate != null and map.inspectionDate != ''">
+			<![CDATA[  
+      			AND INSPECTION_DATE = #{map.inspectionDate}
+  			]]>
+	    </if>
+		ORDER BY INSPECTION_DATE 
+	</select>
+	
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppm.mes.domain.cust.cust000.CustInfoMapper">
+    <insert id="insertCustInfo" parameterType="CustInfo" statementType="PREPARED">   
+		/* com.ppm.mes.domain.cust.cust000.CustInfoMapper.insertCustInfo*/
+		INSERT INTO TB_MES_CUST000
+			( 
+				COMPANY             , CUST_CD       , CUST_TYPE      , CUST_NM,   BUSINESS_NO    , CEO_NM
+            	,BUSINESS_TYPE1     , BUSINESS_TYPE2   , EMAIL   , TEL         , FAX        , REMARK, USE_YN
+            	,CREATED_BY			, CREATED_AT		, UPDATED_BY	, UPDATED_AT, ZIPCODE, ADDRESS
+			)
+		VALUES
+			(
+				'1000'              , #{custCd}     , #{custType}       , #{custNm}, #{businessNo}    , #{ceoNm}
+			    ,#{businessType1}   , #{businessType2}  , #{email}  , #{tel}        , #{fax}     , #{remark}, 'Y'
+			    ,#{createdBy}		, now()				, #{updatedBy}	,	now(), #{zipcode}, #{address}
+			)		
+    </insert>
+</mapper>

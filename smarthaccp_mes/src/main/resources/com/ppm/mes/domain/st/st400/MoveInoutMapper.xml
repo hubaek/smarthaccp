@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ppm.mes.domain.st.st400.MoveInoutMapper">
+ 
+    <select id="header" resultType="moveInoutVO" parameterType="hashMap" statementType="PREPARED">    
+    /*com.ppm.mes.domain.st.st400.MoveInoutMapper.header*/
+	   	SELECT A.COMPANY company,
+		       A.SLIP_CD slipCd,
+		       A.SLIP_DT slipDt,
+	       	   A.REF_WH_CD refWhCd,
+	       	   A.WH_CD whCd,
+		       A.USER_CD userCd,
+			   C.USER_NM userNm,	       
+		       A.REMARK remark,
+		       (SELECT COUNT(DISTINCT Z.ITEM_CD) FROM TB_MES_ST410 Z WHERE Z.SLIP_CD = A.SLIP_CD) sumItemQty,
+	           A.UPDATED_AT updatedAt,
+	           A.UPDATED_BY updatedBy
+	           
+			FROM TB_MES_ST400 A
+	        LEFT OUTER JOIN TB_MES_USER000 C
+				ON A.USER_CD = C.USER_CD 
+				
+	      WHERE 1=1
+		
+		  <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   A.COMPANY = #{map.company}
+  			]]>
+	    </if>
+			    		
+		 <if test="map.fromDate != null and map.fromDate != ''">
+			<![CDATA[  
+      			AND   A.SLIP_DT >= #{map.fromDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.toDate != null and map.toDate != ''">
+			<![CDATA[  
+      			AND   A.SLIP_DT <= #{map.toDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.slipCd != null and map.slipCd != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD = #{map.slipCd}
+  			]]>
+	    </if>
+	    
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT SLIP_CD FROM TB_MES_ST410 WHERE ITEM_CD = #{map.itemCd})
+  			]]>
+	    </if>
+	    
+	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND A.SLIP_CD IN (SELECT SLIP_CD FROM TB_MES_ST410 WHERE ITEM_CD IN ( SELECT ITEM_CD FROM TB_MES_ITEM000 WHERE ITEM_NM LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))))
+  			]]>
+	    </if>
+	    	    
+		 <if test="map.userCd != null and map.userCd != ''">
+			<![CDATA[  
+      			AND A.USER_CD LIKE UPPER(CONCAT('%',#{map.userCd},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.userNm != null and map.userNm != ''">
+			<![CDATA[  
+      			AND C.USER_NM LIKE UPPER(CONCAT('%',#{map.userNm},'%'))
+  			]]>
+	    </if>    
+	    
+	    ORDER BY A.SLIP_CD DESC
+    </select>
+    
+    
+    <select id="itemDetail" resultType="moveInoutVO" parameterType="hashMap" statementType="PREPARED">  
+		/*com.ppm.mes.domain.st.st400.MoveInoutMapper.itemDetail*/ 
+    	SELECT 
+    		C.SLIP_CD slipCd,
+	       	C.SLIP_DT slipDt,
+	       	A.SLIP_SEQ slipSeq,
+	        C.REF_WH_CD refWhCd,
+	       	C.WH_CD whCd,
+	       	A.ITEM_CD itemCd,
+	       	D.ITEM_NM	itemNm,
+	      	D.PART_NO	partNo,
+	       	D.SPEC spec,
+	       	D.UNIT unit,
+	       	A.PRE_ITEM_QTY preItemQty,
+	       	A.ITEM_QTY itemQty,
+	       	A.STOCK_CD stockCd,
+	       	A.REF_STOCK_CD refStockCd,
+	       	
+	       	
+	        B.LOT_NO lotNo,
+	        B.WLOT_NO wlotNo,
+	        B.BARCODE barcode,
+	        B.ROUT_CD routCd,
+           	
+	       	C.REMARK remark,	       
+	       	C.COMPANY company,
+	      	F.USER_NM userNm,
+           	A.UPDATED_AT updatedAt,
+           	A.UPDATED_BY updatedBy
+           
+		FROM TB_MES_ST410 A 
+		INNER JOIN TB_MES_ST400 C
+			ON A.SLIP_CD = C.SLIP_CD 
+			
+        INNER JOIN TB_MES_ST000 B
+            ON     A.COMPANY = B.COMPANY    
+            AND     A.STOCK_CD = B.STOCK_CD      
+              
+	   	INNER JOIN TB_MES_ITEM000 D
+			ON A.ITEM_CD = D.ITEM_CD 
+			
+        LEFT OUTER JOIN TB_MES_USER000 F
+			ON C.USER_CD = F.USER_CD 
+			
+        WHERE 1=1
+		
+		 <if test="map.company != null and map.company != ''">
+			<![CDATA[  
+      			AND   C.COMPANY = #{map.company}
+  			]]>
+	    </if>
+		
+	    		
+		 <if test="map.fromDate != null and map.fromDate != ''">
+			<![CDATA[  
+      			AND   C.SLIP_DT >= #{map.fromDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.toDate != null and map.toDate != ''">
+			<![CDATA[  
+      			AND   C.SLIP_DT <= #{map.toDate}
+  			]]>
+	    </if>
+		
+		 <if test="map.slipCd != null and map.slipCd != ''">
+			<![CDATA[  
+      			AND C.SLIP_CD = #{map.slipCd}
+  			]]>
+	    </if>
+	    		
+		 <if test="map.itemCd != null and map.itemCd != ''">
+			<![CDATA[  
+      			AND A.ITEM_CD LIKE UPPER(CONCAT('%',#{map.itemCd},'%'))
+  			]]>
+	    </if>
+	    	    
+		 <if test="map.itemNm != null and map.itemNm != ''">
+			<![CDATA[  
+      			AND D.ITEM_NM  LIKE UPPER(CONCAT('%',#{map.itemNm},'%'))
+  			]]>
+	    </if>
+	      
+		 <if test="map.partNo != null and map.partNo != ''">
+			<![CDATA[  
+      			AND D.PART_NO  LIKE UPPER(CONCAT('%',#{map.partNo},'%'))
+  			]]>
+	    </if>
+	    
+		 <if test="map.userCd != null and map.userCd != ''">
+			<![CDATA[  
+      			AND C.USER_CD LIKE UPPER(CONCAT('%',#{map.userCd},'%'))
+  			]]>
+	    </if>
+	    		
+		 <if test="map.userNm != null and map.userNm != ''">
+			<![CDATA[  
+      			AND F.USER_NM LIKE UPPER(CONCAT('%',#{map.userNm},'%'))
+  			]]>
+	    </if>    
+	    
+	    ORDER BY C.SLIP_CD DESC,A.SLIP_SEQ   
+    </select>
+    
+</mapper>

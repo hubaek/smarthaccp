@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.13.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transaction_v2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="e682ac54-947e-41ee-8f8e-f4efc5e44bb0">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="gupo_dev"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="slipcd" class="java.lang.String"/>
+	<parameter name="report_path" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT 1 as 'tt'
+FROM TB_MES_SA300 A,
+     TB_MES_CUST000 B,
+     TB_MES_CP000 C
+WHERE A.COMPANY = B.COMPANY
+AND   A.CUST_CD = B.CUST_CD
+AND   A.COMPANY = C.COMPANY
+AND   A.SLIP_CD =  $P{slipcd}]]>
+	</queryString>
+	<field name="tt" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="391">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="374" width="535" height="13" uuid="739b61bf-86af-41b3-b085-31f1e4edf870"/>
+				<textElement verticalAlignment="Top"/>
+				<text><![CDATA[-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="0" width="534" height="374" uuid="de9ffdcb-fd23-42ca-a94f-31516fc6e727"/>
+				<subreportParameter name="s_slipcd">
+					<subreportParameterExpression><![CDATA[$P{slipcd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{report_path} + "/transaction_v2_sub.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="91" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<subreport>
+				<reportElement x="0" y="0" width="535" height="91" uuid="22430ede-7196-4eb5-8de0-b09a93abc57d"/>
+				<subreportParameter name="s_slipcd">
+					<subreportParameterExpression><![CDATA[$P{slipcd}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{report_path} + "/transaction_v2_sub.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnHeader>
+</jasperReport>

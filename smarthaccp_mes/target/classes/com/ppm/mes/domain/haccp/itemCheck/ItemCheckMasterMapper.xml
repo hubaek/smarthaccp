@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+        
+<mapper namespace="com.ppm.mes.domain.haccp.itemCheck.ItemCheckMasterMapper">
+
+			<select id="getItemCheckList" resultType="itemCheckMaster" parameterType="hashMap" statementType="PREPARED">
+					/* com.ppm.mes.domain.haccp.itemCheck.ItemCheckMasterMapper.getItemCheckList */
+					SELECT COMPANY         company       
+					     , INSPECTION_YM   inspectionYm 
+					     , STATUS          status        
+					     , WRITER          writer        
+					     , APPROVER        approver      
+					     , REMARK          remark        
+					  FROM TB_CCP_ITEM000
+				     WHERE 1 = 1
+				     
+		     <if test="map.writer != null and map.writer != '' ">
+		     	<![CDATA[  
+		     		WRITER = #{map.writer}	
+		     	]]>
+		     </if>
+		     
+		     <if test="map.approver != null and map.approver != '' ">
+		     	<![CDATA[  
+		     		APPROVER = #{map.approver}	
+		     	]]>
+		     </if>		
+			
+			 <if test="map.strMon != null and map.strMon != '' ">
+		 		<![CDATA[  
+      			   AND INSPECTION_YM >= #{map.strMon}
+  				]]>
+			</if>
+			
+			<if test="map.endMon != null and map.endMon != '' ">
+			 	<![CDATA[  
+	      			AND INSPECTION_YM <= #{map.endMon}
+	  			]]>
+			</if>	
+			
+			<if test="map.inspectionYm != null and map.inspectionYm != '' ">
+			 	<![CDATA[  
+	      			AND INSPECTION_YM = #{map.inspectionYm}
+	  			]]>
+			</if>
+			
+			
+			</select>
+</mapper>
